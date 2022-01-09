@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'com.epam.esm.gcs.common-conventions'
+}
+
+group 'com.epam.esm'
+version '1.0-SNAPSHOT'
+
+ext{
+    springVersion = '5.3.14'
+}
+
+dependencies {
+    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+
+    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.springframework:spring-core:${springVersion}"
+    implementation "org.springframework:spring-context:${springVersion}"
+}
