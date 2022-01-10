@@ -19,4 +19,5 @@ dependencies {
     implementation "org.springframework:spring-webmvc:${springVersion}"
     implementation "org.springframework:spring-core:${springVersion}"
     implementation "org.springframework:spring-context:${springVersion}"
+    implementation project(':business')
 }

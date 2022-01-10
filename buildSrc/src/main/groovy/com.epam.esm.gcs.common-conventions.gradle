@@ -4,6 +4,7 @@ repositories {
 
 ext{
     junitVersion = '5.8.2'
+    log4jVersion = '2.17.1'
 }
 
 sourceCompatibility = '1.8'
@@ -14,6 +15,11 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
+    implementation "org.slf4j:slf4j-api:1.7.32"
+    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }

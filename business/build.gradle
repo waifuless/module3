@@ -12,4 +12,5 @@ ext{
 
 dependencies {
     implementation "org.springframework:spring-context:${springVersion}"
+    implementation project(':persistence')
 }

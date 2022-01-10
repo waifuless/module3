@@ -1,13 +1,13 @@
-package com.epam.esm.gcs.dto;
+package com.epam.esm.gcs.business.dto;
 
 public class TagDto {
 
     private final Long id;
     private final String name;
 
-    protected TagDto(){
-        id=null;
-        name=null;
+    protected TagDto() {
+        id = null;
+        name = null;
     }
 
     public TagDto(Long id, String name) {
