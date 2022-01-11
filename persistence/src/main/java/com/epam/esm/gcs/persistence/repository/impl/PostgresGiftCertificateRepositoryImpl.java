@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 
 @Component
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -23,13 +22,13 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public GiftCertificateModel save(GiftCertificateModel model) throws RepositoryException {
+    public Long save(GiftCertificateModel model) throws RepositoryException {
         return null;
     }
 
     @Override
-    public Optional<GiftCertificateModel> findById(long id) throws RepositoryException {
-        return Optional.empty();
+    public GiftCertificateModel findById(long id) throws RepositoryException {
+        return null;
     }
 
     @Override
@@ -38,8 +37,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public GiftCertificateModel update(GiftCertificateModel model) throws RepositoryException {
-        return null;
+    public void update(GiftCertificateModel model) throws RepositoryException {
     }
 
     @Override

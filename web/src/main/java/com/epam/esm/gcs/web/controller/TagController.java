@@ -3,9 +3,13 @@ package com.epam.esm.gcs.web.controller;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,22 +29,29 @@ public class TagController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    private TagDto create(@RequestBody TagDto tag) {
-        return tagService.create(tag);
+    private ResponseEntity<Void> create(@RequestBody TagDto tag) {
+        Long tagId = tagService.create(tag);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(tagId)
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{id}")
     private TagDto findById(@PathVariable Long id) {
-        return tagService.remove(id);
+        return tagService.findById(id);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    private TagDto update(@PathVariable Long id, @RequestBody TagDto tag) {
-        return tagService.update(new TagDto(id, tag.getName()));
+    private void update(@PathVariable Long id, @RequestBody TagDto tag) {
+        tagService.update(new TagDto(id, tag.getName()));
     }
 
     @DeleteMapping("/{id}")
-    private TagDto delete(@PathVariable Long id) {
-        return tagService.remove(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void delete(@PathVariable Long id) {
+        tagService.remove(id);
     }
 }
