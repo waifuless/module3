@@ -38,11 +38,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Long create(@NonNull TagDto tag) {
+    public TagDto create(@NonNull TagDto tag) {
         if (existsByName(tag.getName())) {
             throw new TagAlreadyExistsException();
         }
-        return tagRepository.save(tagMapper.toModel(tag));
+        return tagMapper.toDto(tagRepository.save(tagMapper.toModel(tag)));
     }
 
     @Override

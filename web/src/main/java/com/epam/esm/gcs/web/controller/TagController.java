@@ -5,11 +5,8 @@ import com.epam.esm.gcs.business.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,15 +25,10 @@ public class TagController {
         return tagService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<Void> create(@RequestBody TagDto tag) {
-        Long tagId = tagService.create(tag);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(tagId)
-                .toUri();
-        return ResponseEntity.created(location).build();
+    private TagDto create(@RequestBody TagDto tag) {
+        return tagService.create(tag);
     }
 
     @GetMapping("/{id}")

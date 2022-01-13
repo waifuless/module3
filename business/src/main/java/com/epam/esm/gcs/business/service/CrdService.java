@@ -10,7 +10,7 @@ public interface CrdService<T> {
 
     List<T> findAll();
 
-    Long create(@NonNull T dto);
+    T create(@NonNull T dto);
 
     void remove(@NonNull Long id);
 }

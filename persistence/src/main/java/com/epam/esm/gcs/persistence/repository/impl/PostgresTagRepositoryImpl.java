@@ -44,10 +44,11 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Long save(TagModel tagModel) {
+    public TagModel save(TagModel tagModel) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME_COLUMN, tagModel.getName());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        tagModel.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+        return tagModel;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
                     new Object[]{id}, new int[]{Types.BIGINT}, tagRowMapper));
-        } catch (EmptyResultDataAccessException ex){
+        } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
     }
