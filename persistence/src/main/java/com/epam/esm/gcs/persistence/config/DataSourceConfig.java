@@ -13,6 +13,7 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
         HikariConfig config = new HikariConfig("/db/dev.properties");
+        //todo: move driverClassName to properties
         config.setDriverClassName("org.postgresql.Driver");
         return new HikariDataSource(config);
     }

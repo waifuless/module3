@@ -12,6 +12,7 @@ public class TagRowMapperImpl implements TagRowMapper {
 
     @Override
     public TagModel mapRow(ResultSet rs, int rowNum) throws SQLException {
+        //todo: move attributes to enum
         return new TagModel(rs.getLong("id"), rs.getString("name"));
     }
 }
