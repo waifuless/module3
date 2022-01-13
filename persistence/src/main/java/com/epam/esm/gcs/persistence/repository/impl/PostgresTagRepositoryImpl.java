@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -53,7 +54,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Iterable<TagModel> findAll() throws RepositoryException {
+    public List<TagModel> findAll() throws RepositoryException {
         return jdbcTemplate.query(FIND_ALL_QUERY, tagRowMapper);
     }
 

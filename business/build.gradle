@@ -15,6 +15,7 @@ dependencies {
     implementation "org.springframework:spring-context:${springVersion}"
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.modelmapper:modelmapper:3.0.0'
 
     implementation project(':persistence')
 }

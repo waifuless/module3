@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Component
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -32,7 +33,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public Iterable<GiftCertificateModel> findAll() throws RepositoryException {
+    public List<GiftCertificateModel> findAll() throws RepositoryException {
         return null;
     }
 
