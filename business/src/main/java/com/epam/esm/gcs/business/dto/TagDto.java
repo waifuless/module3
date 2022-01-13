@@ -2,7 +2,7 @@ package com.epam.esm.gcs.business.dto;
 
 import lombok.*;
 
-@Value
+@Data
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TagDto {
