@@ -10,11 +10,11 @@ import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
@@ -60,7 +60,7 @@ public class TagServiceImpl implements TagService {
         return existsByNameWithoutValidation(name);
     }
 
-    private boolean existsByNameWithoutValidation(String name){
+    private boolean existsByNameWithoutValidation(String name) {
         return tagRepository.existsByName(name);
     }
 }

@@ -20,7 +20,7 @@ public class TagValidatorImpl implements TagValidator {
 
     @Override
     public void validateName(String name) {
-        if(name == null || name.isBlank() || name.length() > MAX_NAME_SIZE){
+        if (name == null || name.isBlank() || name.length() > MAX_NAME_SIZE) {
             throw new TagInvalidException();
         }
     }
