@@ -44,11 +44,6 @@ public class TagController {
         return tagService.findById(id);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    private void update(@PathVariable Long id, @RequestBody TagDto tag) {
-        tagService.update(new TagDto(id, tag.getName()));
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void delete(@PathVariable Long id) {

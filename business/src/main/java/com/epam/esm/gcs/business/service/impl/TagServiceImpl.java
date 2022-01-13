@@ -41,11 +41,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void update(TagDto tag) {
-        tagRepository.update(new TagModel(tag.getId(), tag.getName()));
-    }
-
-    @Override
     public void remove(Long id) {
         //todo: check existence in db
         tagRepository.delete(id);

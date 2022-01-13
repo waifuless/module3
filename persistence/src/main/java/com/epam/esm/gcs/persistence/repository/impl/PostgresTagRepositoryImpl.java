@@ -23,7 +23,6 @@ public class PostgresTagRepositoryImpl implements TagRepository {
 
     private final static String FIND_ALL_QUERY = "SELECT id as id, name as name FROM tag";
     private final static String FIND_BY_ID_QUERY = FIND_ALL_QUERY + " WHERE id = ?";
-    private final static String UPDATE_QUERY = "UPDATE tag SET name = ? WHERE id = ?";
     private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
 
     private final DataSource dataSource;
@@ -56,11 +55,6 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     @Override
     public Iterable<TagModel> findAll() throws RepositoryException {
         return jdbcTemplate.query(FIND_ALL_QUERY, tagRowMapper);
-    }
-
-    @Override
-    public void update(TagModel tagModel) throws RepositoryException {
-        jdbcTemplate.update(UPDATE_QUERY, tagModel.getName(), tagModel.getId());
     }
 
     @Override
