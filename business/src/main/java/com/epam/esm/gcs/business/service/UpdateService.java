@@ -1,6 +1,8 @@
 package com.epam.esm.gcs.business.service;
 
+import lombok.NonNull;
+
 public interface UpdateService<T> {
 
-    void update(T dto);
+    void update(@NonNull T dto);
 }

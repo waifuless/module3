@@ -1,6 +1,5 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
-import com.epam.esm.gcs.persistence.exception.RepositoryException;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -23,31 +23,31 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public Long save(GiftCertificateModel model) throws RepositoryException {
+    public Long save(GiftCertificateModel model) {
         return null;
     }
 
     @Override
-    public GiftCertificateModel findById(long id) throws RepositoryException {
+    public Optional<GiftCertificateModel> findById(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<GiftCertificateModel> findAll() {
         return null;
     }
 
     @Override
-    public List<GiftCertificateModel> findAll() throws RepositoryException {
-        return null;
+    public void update(GiftCertificateModel model) {
     }
 
     @Override
-    public void update(GiftCertificateModel model) throws RepositoryException {
-    }
-
-    @Override
-    public void delete(long id) throws RepositoryException {
+    public void delete(long id) {
 
     }
 
     @Override
-    public Boolean existsById(long id) throws RepositoryException {
+    public Boolean existsById(long id) {
         return null;
     }
 }

@@ -1,10 +1,10 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
-import com.epam.esm.gcs.persistence.exception.RepositoryException;
 import com.epam.esm.gcs.persistence.mapper.TagRowMapper;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,7 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class PostgresTagRepositoryImpl implements TagRepository {
@@ -43,37 +44,41 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Long save(TagModel tagModel) throws RepositoryException {
+    public Long save(TagModel tagModel) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME_COLUMN, tagModel.getName());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
-    public TagModel findById(long id) throws RepositoryException {
-        return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
-                new Object[]{id}, new int[]{Types.BIGINT}, tagRowMapper);
+    public Optional<TagModel> findById(long id) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
+                    new Object[]{id}, new int[]{Types.BIGINT}, tagRowMapper));
+        } catch (EmptyResultDataAccessException ex){
+            return Optional.empty();
+        }
     }
 
     @Override
-    public List<TagModel> findAll() throws RepositoryException {
+    public List<TagModel> findAll() {
         return jdbcTemplate.query(FIND_ALL_QUERY, tagRowMapper);
     }
 
     @Override
-    public void delete(long id) throws RepositoryException {
+    public void delete(long id) {
         jdbcTemplate.update(DELETE_QUERY, id);
     }
 
     @Override
-    public Boolean existsById(long id) throws RepositoryException {
+    public Boolean existsById(long id) {
         return jdbcTemplate.queryForObject(EXISTS_BY_ID_QUERY,
                 new Object[]{id}, new int[]{Types.BOOLEAN},
                 Boolean.class);
     }
 
     @Override
-    public Boolean existsByName(String name) throws RepositoryException {
+    public Boolean existsByName(String name) {
         return jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY,
                 new Object[]{name}, new int[]{Types.VARCHAR},
                 Boolean.class);

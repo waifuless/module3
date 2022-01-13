@@ -1,14 +1,16 @@
 package com.epam.esm.gcs.business.service;
 
+import lombok.NonNull;
+
 import java.util.List;
 
 public interface CrdService<T> {
 
-    T findById(Long id);
+    T findById(@NonNull Long id);
 
     List<T> findAll();
 
-    Long create(T dto);
+    Long create(@NonNull T dto);
 
-    void remove(Long id);
+    void remove(@NonNull Long id);
 }
