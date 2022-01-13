@@ -7,7 +7,7 @@ plugins {
 group 'com.epam.esm.gcs'
 version '1.0-SNAPSHOT'
 
-ext{
+ext {
     springVersion = '5.3.14'
 }
 

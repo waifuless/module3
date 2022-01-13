@@ -1,6 +1,6 @@
 package com.epam.esm.gcs.business.exception;
 
-public class EntityNotFoundException extends RuntimeException{
+public class EntityNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = -401339724009700957L;
 
