@@ -1,10 +1,11 @@
 package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.TagDto;
-import com.epam.esm.gcs.business.exception.TagAlreadyExistsException;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
+import com.epam.esm.gcs.business.exception.TagAlreadyExistsException;
 import com.epam.esm.gcs.business.mapper.TagMapper;
 import com.epam.esm.gcs.business.service.TagService;
+import com.epam.esm.gcs.business.validation.TagValidator;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import lombok.NonNull;
@@ -18,11 +19,13 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
+    private final TagValidator tagValidator;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, TagMapper tagMapper) {
+    public TagServiceImpl(TagRepository tagRepository, TagMapper tagMapper, TagValidator tagValidator) {
         this.tagRepository = tagRepository;
         this.tagMapper = tagMapper;
+        this.tagValidator = tagValidator;
     }
 
     @Override
@@ -39,7 +42,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto create(@NonNull TagDto tag) {
-        if (existsByName(tag.getName())) {
+        tagValidator.validateForCreation(tag);
+        if (existsByNameWithoutValidation(tag.getName())) {
             throw new TagAlreadyExistsException();
         }
         return tagMapper.toDto(tagRepository.save(tagMapper.toModel(tag)));
@@ -52,6 +56,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public boolean existsByName(@NonNull String name) {
+        tagValidator.validateName(name);
+        return existsByNameWithoutValidation(name);
+    }
+
+    private boolean existsByNameWithoutValidation(String name){
         return tagRepository.existsByName(name);
     }
 }
