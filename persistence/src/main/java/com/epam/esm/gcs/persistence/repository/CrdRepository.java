@@ -13,4 +13,6 @@ public interface CrdRepository<T> {
     List<T> findAll() throws RepositoryException;
 
     void delete(long id) throws RepositoryException;
+
+    Boolean existsById(long id) throws RepositoryException;
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.TagDto;
+import com.epam.esm.gcs.business.exception.EntityAlreadyExistsException;
 import com.epam.esm.gcs.business.mapper.TagMapper;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -35,12 +36,19 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Long create(TagDto tag) {
+        if (existsByName(tag.getName())) {
+            throw new EntityAlreadyExistsException();
+        }
         return tagRepository.save(tagMapper.toModel(tag));
     }
 
     @Override
     public void remove(Long id) {
-        //todo: check existence in db
         tagRepository.delete(id);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return tagRepository.existsByName(name);
     }
 }

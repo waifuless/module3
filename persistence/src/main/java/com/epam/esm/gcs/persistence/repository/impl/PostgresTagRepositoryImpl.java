@@ -25,6 +25,8 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     private final static String FIND_ALL_QUERY = "SELECT id as id, name as name FROM tag";
     private final static String FIND_BY_ID_QUERY = FIND_ALL_QUERY + " WHERE id = ?";
     private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
+    private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE id = ?))";
+    private final static String EXISTS_BY_NAME_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE name = ?))";
 
     private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
@@ -61,5 +63,19 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     @Override
     public void delete(long id) throws RepositoryException {
         jdbcTemplate.update(DELETE_QUERY, id);
+    }
+
+    @Override
+    public Boolean existsById(long id) throws RepositoryException {
+        return jdbcTemplate.queryForObject(EXISTS_BY_ID_QUERY,
+                new Object[]{id}, new int[]{Types.BOOLEAN},
+                Boolean.class);
+    }
+
+    @Override
+    public Boolean existsByName(String name) throws RepositoryException {
+        return jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY,
+                new Object[]{name}, new int[]{Types.VARCHAR},
+                Boolean.class);
     }
 }

@@ -45,4 +45,9 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     public void delete(long id) throws RepositoryException {
 
     }
+
+    @Override
+    public Boolean existsById(long id) throws RepositoryException {
+        return null;
+    }
 }
