@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.epam.esm.gcs.common-conventions'
+    id "io.freefair.lombok" version "6.3.0"
 }
 
 group 'com.epam.esm.gcs'
@@ -12,5 +13,8 @@ ext{
 
 dependencies {
     implementation "org.springframework:spring-context:${springVersion}"
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+
     implementation project(':persistence')
 }
