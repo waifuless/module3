@@ -92,7 +92,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void create_returnNewDto_ifInputTagValid_andThatTagDoNotExists() {
+    void save_returnNewDto_ifInputTagValid_andThatTagDoNotExists() {
         TagDto inputTagDto = new TagDto(null, "123");
         TagModel inputTagModel = new TagModel(null, "123");
         TagModel answerTagModel = new TagModel(123L, "123");
@@ -103,42 +103,42 @@ class TagServiceImplTest {
         when(tagRepository.save(inputTagModel)).thenReturn(answerTagModel);
         when(tagMapper.toDto(answerTagModel)).thenReturn(answerTagDto);
 
-        assertEquals(answerTagDto, tagService.create(inputTagDto));
+        assertEquals(answerTagDto, tagService.save(inputTagDto));
     }
 
     @Test
-    void create_throwTagInvalidException_ifInputTagInvalid() {
+    void save_throwTagInvalidException_ifInputTagInvalid() {
         TagDto inputTagDto = new TagDto(null, "123");
         doThrow(TagInvalidException.class).when(tagValidator).validateForCreation(inputTagDto);
 
-        assertThrows(TagInvalidException.class, () -> tagService.create(inputTagDto));
+        assertThrows(TagInvalidException.class, () -> tagService.save(inputTagDto));
     }
 
     @Test
-    void create_throwTagAlreadyExists_ifInputTagValid_andThatTagAlreadyExists() {
+    void save_throwTagAlreadyExists_ifInputTagValid_andThatTagAlreadyExists() {
         TagDto inputTagDto = new TagDto(null, "123");
 
         doNothing().when(tagValidator).validateForCreation(inputTagDto);
         when(tagRepository.existsByName(inputTagDto.getName())).thenReturn(true);
 
-        assertThrows(TagAlreadyExistsException.class, () -> tagService.create(inputTagDto));
+        assertThrows(TagAlreadyExistsException.class, () -> tagService.save(inputTagDto));
     }
 
     @Test
-    void remove_invokeTagRepositoryDelete_oneTime() {
+    void delete_invokeTagRepositoryDelete_oneTime() {
         long id = 234L;
         doNothing().when(tagRepository).delete(id);
 
-        tagService.remove(id);
+        tagService.delete(id);
         verify(tagRepository, times(1)).delete(id);
     }
 
     @Test
-    void remove_throwException_ifIdInvalid() {
+    void delete_throwException_ifIdInvalid() {
         long id = 234L;
         doThrow(TagInvalidException.class).when(tagRepository).delete(id);
 
-        assertThrows(TagInvalidException.class, () -> tagService.remove(id));
+        assertThrows(TagInvalidException.class, () -> tagService.delete(id));
     }
 
     @Test

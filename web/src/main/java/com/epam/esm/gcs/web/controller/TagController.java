@@ -28,7 +28,7 @@ public class TagController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     private TagDto create(@RequestBody TagDto tag) {
-        return tagService.create(tag);
+        return tagService.save(tag);
     }
 
     @GetMapping("/{id}")
@@ -39,6 +39,6 @@ public class TagController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void delete(@PathVariable Long id) {
-        tagService.remove(id);
+        tagService.delete(id);
     }
 }

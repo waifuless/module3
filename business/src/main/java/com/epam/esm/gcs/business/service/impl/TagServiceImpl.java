@@ -41,7 +41,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto create(TagDto tag) {
+    public TagDto save(TagDto tag) {
         tagValidator.validateForCreation(tag);
         if (existsByNameWithoutValidation(tag.getName())) {
             throw new TagAlreadyExistsException();
@@ -50,7 +50,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void remove(Long id) {
+    public void delete(Long id) {
         tagValidator.validateId(id);
         tagRepository.delete(id);
     }
