@@ -13,12 +13,10 @@ import java.util.Optional;
 @Repository
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
 
-    private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     private PostgresGiftCertificateRepositoryImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
