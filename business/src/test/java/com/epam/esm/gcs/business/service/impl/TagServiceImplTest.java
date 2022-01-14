@@ -41,6 +41,7 @@ class TagServiceImplTest {
         String name = "simpleName";
         TagModel tagModel = new TagModel(id, name);
         TagDto tagDto = new TagDto(id, name);
+        doNothing().when(tagValidator).validateId(id);
         when(tagRepository.findById(id)).thenReturn(Optional.of(tagModel));
         when(tagMapper.toDto(tagModel)).thenReturn(tagDto);
         assertEquals(tagDto, tagService.findById(id));
@@ -49,8 +50,16 @@ class TagServiceImplTest {
     @Test
     void findById_throwException_ifModelNotFound() {
         long id = 2L;
+        doNothing().when(tagValidator).validateId(id);
         when(tagRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> tagService.findById(id));
+    }
+
+    @Test
+    void findById_throwException_ifIdInvalid() {
+        long id = -12L;
+        doThrow(TagInvalidException.class).when(tagValidator).validateId(id);
+        assertThrows(TagInvalidException.class, () -> tagService.findById(id));
     }
 
     @Test
@@ -122,6 +131,14 @@ class TagServiceImplTest {
 
         tagService.remove(id);
         verify(tagRepository, times(1)).delete(id);
+    }
+
+    @Test
+    void remove_throwException_ifIdInvalid() {
+        long id = 234L;
+        doThrow(TagInvalidException.class).when(tagRepository).delete(id);
+
+        assertThrows(TagInvalidException.class, () -> tagService.remove(id));
     }
 
     @Test

@@ -8,7 +8,6 @@ import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.business.validation.TagValidator;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto findById(@NonNull Long id) {
+    public TagDto findById(Long id) {
+        tagValidator.validateId(id);
         return tagMapper.toDto(tagRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new));
     }
@@ -41,7 +41,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto create(@NonNull TagDto tag) {
+    public TagDto create(TagDto tag) {
         tagValidator.validateForCreation(tag);
         if (existsByNameWithoutValidation(tag.getName())) {
             throw new TagAlreadyExistsException();
@@ -50,12 +50,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void remove(@NonNull Long id) {
+    public void remove(Long id) {
+        tagValidator.validateId(id);
         tagRepository.delete(id);
     }
 
     @Override
-    public boolean existsByName(@NonNull String name) {
+    public boolean existsByName(String name) {
         tagValidator.validateName(name);
         return existsByNameWithoutValidation(name);
     }
