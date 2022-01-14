@@ -2,8 +2,8 @@ package com.epam.esm.gcs.business.mapper;
 
 import lombok.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface Mapper<M, D> {
 
@@ -12,18 +12,15 @@ public interface Mapper<M, D> {
     D toDto(@NonNull M model);
 
     default List<M> toModel(@NonNull List<D> dtos) {
-        List<M> models = new ArrayList<>();
-        for (D dto : dtos) {
-            models.add(toModel(dto));
-        }
-        return models;
+        return dtos.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
     }
 
     default List<D> toDto(@NonNull List<M> models) {
-        List<D> dtos = new ArrayList<>();
-        for (M model : models) {
-            dtos.add(toDto(model));
-        }
-        return dtos;
+        return models.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
     }
 }
