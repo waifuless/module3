@@ -7,4 +7,6 @@ public interface TagValidator {
     void validateForCreation(TagDto dto);
 
     void validateName(String name);
+
+    void validateId(Long id);
 }

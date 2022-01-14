@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class TagValidatorImpl implements TagValidator {
 
     private final static int MAX_NAME_SIZE = 100;
+    private final static int MINIMAL_ID_VALUE = 1;
 
     @Override
     public void validateForCreation(TagDto dto) {
@@ -16,11 +17,19 @@ public class TagValidatorImpl implements TagValidator {
             throw new TagInvalidException();
         }
         validateName(dto.getName());
+        validateId(dto.getId());
     }
 
     @Override
     public void validateName(String name) {
         if (name == null || name.isBlank() || name.length() > MAX_NAME_SIZE) {
+            throw new TagInvalidException();
+        }
+    }
+
+    @Override
+    public void validateId(Long id) {
+        if (id == null || id < MINIMAL_ID_VALUE) {
             throw new TagInvalidException();
         }
     }
