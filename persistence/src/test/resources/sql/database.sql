@@ -41,4 +41,3 @@ create table gift_certificate_tag
     constraint gift_certificate_tag_pk
         primary key (gift_certificate_id, tag_id)
 );
-

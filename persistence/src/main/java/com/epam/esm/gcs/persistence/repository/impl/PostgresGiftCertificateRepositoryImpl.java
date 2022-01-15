@@ -16,7 +16,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private PostgresGiftCertificateRepositoryImpl(DataSource dataSource) {
+    public PostgresGiftCertificateRepositoryImpl(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 

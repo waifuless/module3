@@ -35,7 +35,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     private final TagRowMapper tagRowMapper;
 
     @Autowired
-    private PostgresTagRepositoryImpl(DataSource dataSource, TagRowMapper tagRowMapper) {
+    public PostgresTagRepositoryImpl(DataSource dataSource, TagRowMapper tagRowMapper) {
         this.tagRowMapper = tagRowMapper;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(TABLE_NAME)
@@ -73,7 +73,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     @Override
     public Boolean existsById(long id) {
         return jdbcTemplate.queryForObject(EXISTS_BY_ID_QUERY,
-                new Object[]{id}, new int[]{Types.BOOLEAN},
+                new Object[]{id}, new int[]{Types.BIGINT},
                 Boolean.class);
     }
 
