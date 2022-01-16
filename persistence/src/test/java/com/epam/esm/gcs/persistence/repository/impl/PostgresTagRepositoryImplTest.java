@@ -43,7 +43,7 @@ class PostgresTagRepositoryImplTest {
     }
 
     //todo: remake it
-    @Sql("/sql/database.sql")
+    @Sql("classpath:/sql/database.sql")
     @Test
     @Order(1)
     void init() {
