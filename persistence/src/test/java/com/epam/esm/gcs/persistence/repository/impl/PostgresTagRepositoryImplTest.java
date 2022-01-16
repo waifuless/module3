@@ -1,22 +1,21 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
-import com.epam.esm.gcs.persistence.mapper.impl.TagRowMapperImpl;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
-import com.epam.esm.gcs.persistence.repository.testconfig.TestTablesInitializer;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.NonNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
-import java.io.IOException;
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -26,33 +25,34 @@ import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
 import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = {"/test-config.xml"})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PostgresTagRepositoryImplTest {
 
-    private static HikariDataSource dataSource;
-    private static TagRepository tagRepository;
-    private static JdbcTemplate jdbcTemplate;
-    private static SimpleJdbcInsert jdbcInsert;
+    private final TagRepository tagRepository;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    @BeforeAll
-    static void setUp() throws IOException {
-        HikariConfig config = new HikariConfig("/db/test.properties");
-        dataSource = new HikariDataSource(config);
-        tagRepository = new PostgresTagRepositoryImpl(dataSource, new TagRowMapperImpl());
+    @Autowired
+    public PostgresTagRepositoryImplTest(DataSource dataSource, TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("tag")
                 .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
-        TestTablesInitializer tablesInitializer = new TestTablesInitializer(jdbcTemplate);
-        tablesInitializer.initialize();
     }
 
-    @AfterAll
-    static void tearDown() {
-        dataSource.close();
+    //todo: remake it
+    @Sql("/sql/database.sql")
+    @Test
+    @Order(1)
+    void init() {
+        //it inits database by @Sql annotation
     }
 
     @AfterEach
     void cleanTables() {
-        jdbcTemplate.execute("DELETE FROM tag");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "tag");
     }
 
     @Test
