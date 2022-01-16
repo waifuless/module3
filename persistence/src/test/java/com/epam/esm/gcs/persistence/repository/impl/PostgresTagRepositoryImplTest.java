@@ -3,7 +3,7 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import lombok.NonNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,9 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -27,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"/test-config.xml"})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
@@ -35,24 +32,13 @@ class PostgresTagRepositoryImplTest {
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public PostgresTagRepositoryImplTest(DataSource dataSource, TagRepository tagRepository) {
+    public PostgresTagRepositoryImplTest(DataSource dataSource, TagRepository tagRepository,
+                                         TestTablesManager testTablesManager) throws SQLException {
         this.tagRepository = tagRepository;
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("tag")
                 .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
-    }
-
-    //todo: remake it
-    @Sql("classpath:/sql/database.sql")
-    @Test
-    @Order(1)
-    void init() {
-        //it inits database by @Sql annotation
-    }
-
-    @AfterEach
-    void cleanTables() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "tag");
+        testTablesManager.createOrCleanTables();
     }
 
     @Test
