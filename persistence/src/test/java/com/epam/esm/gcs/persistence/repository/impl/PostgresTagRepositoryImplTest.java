@@ -2,6 +2,7 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
