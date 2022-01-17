@@ -8,7 +8,7 @@ public interface CrdService<T> {
 
     List<T> findAll();
 
-    T save(T dto);
+    T create(T dto);
 
     void delete(Long id);
 }

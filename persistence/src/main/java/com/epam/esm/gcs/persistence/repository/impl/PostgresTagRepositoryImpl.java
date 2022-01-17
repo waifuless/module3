@@ -43,7 +43,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public TagModel save(TagModel tagModel) {
+    public TagModel create(TagModel tagModel) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME.getColumnName(), tagModel.getName());
         tagModel.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());

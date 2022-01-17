@@ -25,7 +25,7 @@ public class TagController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     private TagDto create(@RequestBody TagDto tag) {
-        return tagService.save(tag);
+        return tagService.create(tag);
     }
 
     @GetMapping("/{id}")

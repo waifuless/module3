@@ -81,24 +81,24 @@ class TagServiceImplTest {
     }
 
     @Test
-    void save_returnNewDto_ifInputTagValid_andThatTagDoNotExists() {
+    void create_returnNewDto_ifInputTagValid_andThatTagDoNotExists() {
         TagDto inputTagDto = new TagDto(null, "123");
         TagModel inputTagModel = new TagModel(null, "123");
         TagModel answerTagModel = new TagModel(123L, "123");
         TagDto answerTagDto = new TagDto(123L, "123");
         when(tagRepository.existsByName(inputTagDto.getName())).thenReturn(false);
-        when(tagRepository.save(inputTagModel)).thenReturn(answerTagModel);
+        when(tagRepository.create(inputTagModel)).thenReturn(answerTagModel);
 
-        assertEquals(answerTagDto, tagService.save(inputTagDto));
+        assertEquals(answerTagDto, tagService.create(inputTagDto));
     }
 
     @Test
-    void save_throwTagAlreadyExists_ifInputTagValid_andThatTagAlreadyExists() {
+    void create_throwTagAlreadyExists_ifInputTagValid_andThatTagAlreadyExists() {
         TagDto inputTagDto = new TagDto(null, "123");
 
         when(tagRepository.existsByName(inputTagDto.getName())).thenReturn(true);
 
-        assertThrows(NotUniquePropertyException.class, () -> tagService.save(inputTagDto));
+        assertThrows(NotUniquePropertyException.class, () -> tagService.create(inputTagDto));
     }
 
     @Test

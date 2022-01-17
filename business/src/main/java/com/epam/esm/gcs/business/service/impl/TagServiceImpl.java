@@ -39,11 +39,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto save(TagDto tag) {
+    public TagDto create(TagDto tag) {
         if (existsByName(tag.getName())) {
             throw new NotUniquePropertyException(ENTITY_NAME, NAME_FIELD, tag.getName());
         }
-        return modelMapper.map(tagRepository.save(modelMapper.map(tag, TagModel.class)), TagDto.class);
+        return modelMapper.map(tagRepository.create(modelMapper.map(tag, TagModel.class)), TagDto.class);
     }
 
     @Override

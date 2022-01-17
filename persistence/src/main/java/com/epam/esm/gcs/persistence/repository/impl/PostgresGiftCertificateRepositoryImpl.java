@@ -21,7 +21,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public GiftCertificateModel save(GiftCertificateModel model) {
+    public GiftCertificateModel create(GiftCertificateModel model) {
         return null;
     }
 
