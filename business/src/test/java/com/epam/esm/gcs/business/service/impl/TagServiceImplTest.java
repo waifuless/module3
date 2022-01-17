@@ -2,7 +2,7 @@ package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
-import com.epam.esm.gcs.business.exception.TagAlreadyExistsException;
+import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
@@ -98,7 +98,7 @@ class TagServiceImplTest {
 
         when(tagRepository.existsByName(inputTagDto.getName())).thenReturn(true);
 
-        assertThrows(TagAlreadyExistsException.class, () -> tagService.save(inputTagDto));
+        assertThrows(NotUniquePropertyException.class, () -> tagService.save(inputTagDto));
     }
 
     @Test
