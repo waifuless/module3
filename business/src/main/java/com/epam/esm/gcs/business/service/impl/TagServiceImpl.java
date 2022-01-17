@@ -6,6 +6,7 @@ import com.epam.esm.gcs.business.exception.TagAlreadyExistsException;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public TagServiceImpl(TagRepository tagRepository, ModelMapper modelMapper) {
-        this.tagRepository = tagRepository;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public TagDto findById(Long id) {
