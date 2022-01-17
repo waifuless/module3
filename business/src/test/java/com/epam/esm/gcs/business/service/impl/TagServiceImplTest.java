@@ -81,7 +81,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void create_returnNewDto_ifInputTagValid_andThatTagDoNotExists() {
+    void create_returnNewDto_andTagDtoWithThatNameNotExists() {
         TagDto inputTagDto = new TagDto(null, "123");
         TagModel inputTagModel = new TagModel(null, "123");
         TagModel answerTagModel = new TagModel(123L, "123");
@@ -93,7 +93,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void create_throwTagAlreadyExists_ifInputTagValid_andThatTagAlreadyExists() {
+    void create_throwTagAlreadyExists_andTagDtoWithThatNameAlreadyExists() {
         TagDto inputTagDto = new TagDto(null, "123");
 
         when(tagRepository.existsByName(inputTagDto.getName())).thenReturn(true);
@@ -111,14 +111,14 @@ class TagServiceImplTest {
     }
 
     @Test
-    void existsByName_returnFalse_ifNameIsValid_andDoNotExists() {
+    void existsByName_returnFalse_tagWithThatNameDoNotExists() {
         String validName = "someValidName";
         when(tagRepository.existsByName(validName)).thenReturn(false);
         assertFalse(tagService.existsByName(validName));
     }
 
     @Test
-    void existsByName_returnTrue_ifNameIsValid_andExists() {
+    void existsByName_returnTrue_tagWithThatNameAlreadyExists() {
         String validName = "someValidName";
         when(tagRepository.existsByName(validName)).thenReturn(true);
         assertTrue(tagService.existsByName(validName));
