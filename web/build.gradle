@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'war'
     id 'com.epam.esm.gcs.common-conventions'
+    id "io.freefair.lombok" version "6.3.0"
 }
 
 group 'com.epam.esm'

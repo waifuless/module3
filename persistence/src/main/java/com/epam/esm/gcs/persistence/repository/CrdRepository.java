@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface CrdRepository<T> {
 
-    T save(T model);
+    T create(T model);
 
     Optional<T> findById(long id);
 

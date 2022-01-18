@@ -2,7 +2,9 @@ package com.epam.esm.gcs.business.exception;
 
 public class EntityNotFoundException extends RuntimeException {
 
-    private static final long serialVersionUID = -401339724009700957L;
+    private final static String ENTITY_NOT_FOUND_MCG = "Entity not found (%s where %s = %s)";
+
+    private final static long serialVersionUID = -2334075934552684682L;
 
     public EntityNotFoundException() {
     }
@@ -11,11 +13,7 @@ public class EntityNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public EntityNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public EntityNotFoundException(Throwable cause) {
-        super(cause);
+    public EntityNotFoundException(String entityName, String searchParamName, Object searchParamValue) {
+        super(String.format(ENTITY_NOT_FOUND_MCG, entityName, searchParamName, searchParamValue.toString()));
     }
 }

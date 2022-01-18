@@ -43,17 +43,17 @@ class PostgresTagRepositoryImplTest {
     }
 
     @Test
-    void save_returnTagWithIdAndSameName() {
+    void create_returnTagWithIdAndSameName() {
         TagModel inputModel = new TagModel("someVerySimpleName");
-        TagModel returnedModel = tagRepository.save(inputModel);
+        TagModel returnedModel = tagRepository.create(inputModel);
         assertTrue(returnedModel.getId() != null && returnedModel.getId() > 0);
         assertEquals(inputModel.getName(), returnedModel.getName());
     }
 
     @Test
-    void save_returnedTagModelEqualsModelInDatabase() {
+    void create_returnedTagModelEqualsModelInDatabase() {
         TagModel inputModel = new TagModel("lola");
-        TagModel returnedModel = tagRepository.save(inputModel);
+        TagModel returnedModel = tagRepository.create(inputModel);
         Optional<TagModel> readModel = readById(returnedModel.getId());
         assertTrue(readModel.isPresent());
         assertEquals(returnedModel.getName(), readModel.get().getName());
@@ -62,11 +62,11 @@ class PostgresTagRepositoryImplTest {
     @Test
     void findById_returnModel_ifExistInDatabase() {
         String name = "name";
-        Long id = save(new TagModel(name));
-        TagModel savedModel = new TagModel(id, name);
+        Long id = create(new TagModel(name));
+        TagModel createdModel = new TagModel(id, name);
         Optional<TagModel> readModel = tagRepository.findById(id);
         assertTrue(readModel.isPresent());
-        assertEquals(savedModel, readModel.get());
+        assertEquals(createdModel, readModel.get());
     }
 
     @Test
@@ -80,8 +80,8 @@ class PostgresTagRepositoryImplTest {
     void findAll_returnListOfTagsInDatabase_ifExisted() {
         String tagName1 = "name1";
         String tagName2 = "name2";
-        Long id1 = save(new TagModel(tagName1));
-        Long id2 = save(new TagModel(tagName2));
+        Long id1 = create(new TagModel(tagName1));
+        Long id2 = create(new TagModel(tagName2));
         List<TagModel> tagsInDatabase = new ArrayList<>();
         tagsInDatabase.add(new TagModel(id1, tagName1));
         tagsInDatabase.add(new TagModel(id2, tagName2));
@@ -101,7 +101,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void delete() {
         String name = "name";
-        Long id = save(new TagModel(name));
+        Long id = create(new TagModel(name));
         TagModel modelInDatabase = new TagModel(id, name);
 
         tagRepository.delete(modelInDatabase.getId());
@@ -113,8 +113,8 @@ class PostgresTagRepositoryImplTest {
     void delete_shouldNotHaveSideEffects_ifDeleteExistedRow() {
         String tagName1 = "name1";
         String tagName2 = "name2";
-        Long id1 = save(new TagModel(tagName1));
-        Long id2 = save(new TagModel(tagName2));
+        Long id1 = create(new TagModel(tagName1));
+        Long id2 = create(new TagModel(tagName2));
         TagModel modelInDatabase1 = new TagModel(id1, tagName1);
         TagModel modelInDatabase2 = new TagModel(id2, tagName2);
 
@@ -126,7 +126,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void delete_shouldNotHaveSideEffects_ifDeleteNotExistedRow() {
         String tagName = "name";
-        Long id = save(new TagModel(tagName));
+        Long id = create(new TagModel(tagName));
         TagModel modelInDatabase = new TagModel(id, tagName);
 
         tagRepository.delete(modelInDatabase.getId() + 111);
@@ -137,7 +137,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void existsById_returnTrue_ifExistsInDatabase() {
         String tagName = "name";
-        Long id = save(new TagModel(tagName));
+        Long id = create(new TagModel(tagName));
         TagModel modelInDatabase = new TagModel(id, tagName);
 
         assertTrue(tagRepository.existsById(modelInDatabase.getId()));
@@ -151,7 +151,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void existsByName_returnTrue_ifExistsInDatabase() {
         String tagName = "name";
-        Long id = save(new TagModel(tagName));
+        Long id = create(new TagModel(tagName));
         TagModel modelInDatabase = new TagModel(id, tagName);
 
         assertTrue(tagRepository.existsByName(modelInDatabase.getName()));
@@ -178,7 +178,7 @@ class PostgresTagRepositoryImplTest {
         }
     }
 
-    private Long save(TagModel tagModel) {
+    private Long create(TagModel tagModel) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME.getColumnName(), tagModel.getName());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
