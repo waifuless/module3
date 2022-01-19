@@ -15,10 +15,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class TagDto {
 
-    @Null
+    @Null(message = "{entity.field.null}")
     Long id;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "{entity.field.blank}")
+    @Size(max = 100, message = "{entity.field.size.max}")
     String name;
 }
