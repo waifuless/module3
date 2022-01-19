@@ -1,14 +1,17 @@
 package com.epam.esm.gcs.persistence.repository;
 
-import com.epam.esm.gcs.persistence.exception.RepositoryException;
+import java.util.List;
+import java.util.Optional;
 
 public interface CrdRepository<T> {
 
-    Long save(T model) throws RepositoryException;
+    T create(T model);
 
-    T findById(long id) throws RepositoryException;
+    Optional<T> findById(long id);
 
-    Iterable<T> findAll() throws RepositoryException;
+    List<T> findAll();
 
-    void delete(long id) throws RepositoryException;
+    void delete(long id);
+
+    Boolean existsById(long id);
 }

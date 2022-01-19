@@ -1,6 +1,6 @@
 package com.epam.esm.gcs.business.service;
 
-public interface UpdateService<T> {
+public interface CrudService<T> extends CrdService<T> {
 
     void update(T dto);
 }
