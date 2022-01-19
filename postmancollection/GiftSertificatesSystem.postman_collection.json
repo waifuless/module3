@@ -1,100 +1,100 @@
 {
-	"info": {
-		"_postman_id": "3c95e729-ab56-4cd1-9370-9e9759745ef3",
-		"name": "GiftSertificatesSystem",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "findAllTags",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
-						"tags"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "createNewTag",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"1223244\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
-						"tags"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "findTagById",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/11",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
-						"tags",
-						"11"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "deleteTagById",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/17",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
-						"tags",
-						"17"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "3c95e729-ab56-4cd1-9370-9e9759745ef3",
+    "name": "GiftSertificatesSystem",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "findAllTags",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "createNewTag",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"1223244\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "findTagById",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/11",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags",
+            "11"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteTagById",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/17",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags",
+            "17"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }

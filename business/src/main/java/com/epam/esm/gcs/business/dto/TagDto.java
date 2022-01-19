@@ -16,9 +16,9 @@ import javax.validation.constraints.Size;
 public class TagDto {
 
     @Null(message = "{entity.field.null}")
-    Long id;
+    private Long id;
 
     @NotBlank(message = "{entity.field.blank}")
     @Size(max = 100, message = "{entity.field.size.max}")
-    String name;
+    private String name;
 }

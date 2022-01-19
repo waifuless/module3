@@ -50,6 +50,14 @@ public class GenericExceptionHandler {
 //                "40001");
 //    }
 
+//    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+//    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+//    public ErrorResponse handleMethodNotSupported(HttpRequestMethodNotSupportedException e, Locale locale) {
+//        log.error(e.getMessage(), e);
+//        return new ErrorResponse(serverErrorMessageSource.getMessage(INTERNAL_SERVER_ERROR, null, locale),
+//                String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+//    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(Exception e, Locale locale) {

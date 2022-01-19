@@ -22,7 +22,7 @@ public class ValidatorConfig {
     }
 
     @Bean
-    MessageSource serverErrorMessageSource() {
+    public MessageSource serverErrorMessageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:/localization/error/server-error-messages");
         messageSource.setDefaultEncoding("UTF-8");
