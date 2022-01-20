@@ -12,12 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -34,6 +36,9 @@ public class GenericExceptionHandler {
     private final static String NOT_UNIQUE_PROPERTY_ERROR = "not.unique.property";
     private final static String ARGUMENT_TYPE_MISMATCH_ERROR = "argument.type.mismatch";
     private final static String DEFAULT_BAD_REQUEST = "default.bad.request";
+    private final static String NO_HANDLER_FOUND = "no.handler.found";
+    private final static String NO_METHOD_SUPPORTED = "no.method.supported";
+    private final static String METHOD_NOT_ALLOWED = "method.not.allowed";
 
     private final MessageSource clientErrorMessageSource;
     private final MessageSource serverErrorMessageSource;
@@ -59,14 +64,6 @@ public class GenericExceptionHandler {
 //                "40001");
 //    }
 
-//    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-//    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-//    public ErrorResponse handleMethodNotSupported(HttpRequestMethodNotSupportedException e, Locale locale) {
-//        log.error(e.getMessage(), e);
-//        return new ErrorResponse(serverErrorMessageSource.getMessage(INTERNAL_SERVER_ERROR, null, locale),
-//                String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-//    }
-
     @ExceptionHandler(NotUniquePropertyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleNotUniquePropertyValue(NotUniquePropertyException ex, Locale locale) {
@@ -81,7 +78,7 @@ public class GenericExceptionHandler {
         return new ErrorResponse(clientErrorMessageSource
                 .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
                         new Object[]{ex.getName(), ex.getValue(), ex.getRequiredType()}, locale),
-                String.valueOf(HttpStatus.BAD_REQUEST.value()));
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -97,7 +94,7 @@ public class GenericExceptionHandler {
                             locale),
                     HttpStatus.BAD_REQUEST, invalidFormatEx.getPath().get(0).getFrom().getClass());
         } catch (Exception ex) {
-            return new ErrorResponse(DEFAULT_BAD_REQUEST, String.valueOf(HttpStatus.BAD_REQUEST.value()));
+            return new ErrorResponse(DEFAULT_BAD_REQUEST, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -109,11 +106,35 @@ public class GenericExceptionHandler {
                 HttpStatus.NOT_FOUND, ex.getDtoClass());
     }
 
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoHandlerFound(NoHandlerFoundException ex, Locale locale) {
+        return new ErrorResponse(clientErrorMessageSource
+                .getMessage(NO_HANDLER_FOUND, new Object[]{ex.getHttpMethod(), ex.getRequestURL()}, locale),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, Locale locale) {
+        String message;
+        if (ex.getSupportedHttpMethods() == null) {
+            message = clientErrorMessageSource.getMessage(NO_METHOD_SUPPORTED, null, locale);
+        } else {
+            String supportedMethods = ex.getSupportedHttpMethods().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.joining(", "));
+            message = clientErrorMessageSource
+                    .getMessage(METHOD_NOT_ALLOWED, new Object[]{ex.getMethod(), supportedMethods}, locale);
+        }
+        return new ErrorResponse(message, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(Exception e, Locale locale) {
         log.error(e.getMessage(), e);
         return new ErrorResponse(serverErrorMessageSource.getMessage(INTERNAL_SERVER_ERROR, null, locale),
-                String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
