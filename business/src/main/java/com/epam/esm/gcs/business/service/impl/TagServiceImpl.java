@@ -8,17 +8,15 @@ import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private final static String ENTITY_NAME = "tag";
     private final static String ID_FIELD = "id";
     private final static String NAME_FIELD = "name";
 
@@ -27,9 +25,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto findById(Long id) {
-        return modelMapper.map(tagRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException(TagDto.class, ID_FIELD, String.valueOf(id))),
-                TagDto.class);
+        TagModel tag = tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(TagDto.class, ID_FIELD, String.valueOf(id)));
+        return modelMapper.map(tag, TagDto.class);
     }
 
     @Override
@@ -40,11 +38,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto create(TagDto tag) {
-        if (existsByName(tag.getName())) {
-            throw new NotUniquePropertyException(TagDto.class, NAME_FIELD, String.valueOf(tag.getName()));
+    public TagDto create(TagDto tagDto) {
+        if (existsByName(tagDto.getName())) {
+            throw new NotUniquePropertyException(TagDto.class, NAME_FIELD, tagDto.getName());
         }
-        return modelMapper.map(tagRepository.create(modelMapper.map(tag, TagModel.class)), TagDto.class);
+        TagModel tagModel = modelMapper.map(tagDto, TagModel.class);
+        tagModel = tagRepository.create(tagModel);
+        return modelMapper.map(tagModel, TagDto.class);
     }
 
     @Override

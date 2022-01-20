@@ -6,33 +6,40 @@ import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
 import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"/test-config.xml"})
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    @Autowired
     public PostgresTagRepositoryImplTest(DataSource dataSource, TagRepository tagRepository,
                                          TestTablesManager testTablesManager) throws SQLException {
         this.tagRepository = tagRepository;

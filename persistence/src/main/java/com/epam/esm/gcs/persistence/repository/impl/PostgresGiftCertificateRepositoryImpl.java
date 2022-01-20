@@ -2,7 +2,6 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +14,6 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public PostgresGiftCertificateRepositoryImpl(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }

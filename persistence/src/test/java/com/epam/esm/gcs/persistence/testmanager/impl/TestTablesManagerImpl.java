@@ -1,7 +1,6 @@
 package com.epam.esm.gcs.persistence.testmanager.impl;
 
 import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
@@ -23,7 +22,6 @@ public class TestTablesManagerImpl implements TestTablesManager {
 
     private final AtomicBoolean tablesAreCreated = new AtomicBoolean(false);
 
-    @Autowired
     public TestTablesManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);

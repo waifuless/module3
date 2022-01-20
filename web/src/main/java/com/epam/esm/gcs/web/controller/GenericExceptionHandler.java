@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GenericExceptionHandler {
@@ -80,8 +79,8 @@ public class GenericExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, Locale locale) {
         return new ErrorResponse(clientErrorMessageSource
-                .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR, new Object[]{ex.getName(), ex.getValue(),
-                        ex.getRequiredType()}, locale),
+                .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
+                        new Object[]{ex.getName(), ex.getValue(), ex.getRequiredType()}, locale),
                 String.valueOf(HttpStatus.BAD_REQUEST.value()));
     }
 
