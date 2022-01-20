@@ -48,13 +48,13 @@ public class GenericExceptionHandler {
     public ErrorResponse handleArgumentNotValidException(MethodArgumentNotValidException ex,
                                                          Locale locale) {
         BindingResult result = ex.getBindingResult();
+        Class<?> targetClass = Objects.requireNonNull(result.getTarget()).getClass();
         result.getObjectName();
         String errorMessage = result.getAllErrors()
                 .stream()
                 .map(objectError -> clientErrorMessageSource.getMessage(objectError, locale))
                 .collect(Collectors.joining("; ", "", "."));
-        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST,
-                Objects.requireNonNull(result.getTarget()).getClass());
+        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
     }
 
 //    @ExceptionHandler(ConstraintViolationException.class)
@@ -67,18 +67,18 @@ public class GenericExceptionHandler {
     @ExceptionHandler(NotUniquePropertyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleNotUniquePropertyValue(NotUniquePropertyException ex, Locale locale) {
-        return new ErrorResponse(clientErrorMessageSource
-                .getMessage(NOT_UNIQUE_PROPERTY_ERROR, new Object[]{ex.getField(), ex.getValue()}, locale),
-                HttpStatus.CONFLICT, ex.getDtoClass());
+        String errorMessage = clientErrorMessageSource
+                .getMessage(NOT_UNIQUE_PROPERTY_ERROR, new Object[]{ex.getField(), ex.getValue()}, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.CONFLICT, ex.getDtoClass());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, Locale locale) {
-        return new ErrorResponse(clientErrorMessageSource
+        String errorMessage = clientErrorMessageSource
                 .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
-                        new Object[]{ex.getName(), ex.getValue(), ex.getRequiredType()}, locale),
-                HttpStatus.BAD_REQUEST);
+                        new Object[]{ex.getName(), ex.getValue(), ex.getRequiredType()}, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -87,12 +87,13 @@ public class GenericExceptionHandler {
         try {
             InvalidFormatException invalidFormatEx = (InvalidFormatException) messageReadableEx.getCause();
             JsonMappingException.Reference ref = invalidFormatEx.getPath().get(0);
-            return new ErrorResponse(clientErrorMessageSource
+            String errorMessage = clientErrorMessageSource
                     .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
                             new Object[]{ref.getFieldName(), invalidFormatEx.getValue(),
                                     invalidFormatEx.getTargetType()},
-                            locale),
-                    HttpStatus.BAD_REQUEST, invalidFormatEx.getPath().get(0).getFrom().getClass());
+                            locale);
+            Class<?> targetClass = invalidFormatEx.getPath().get(0).getFrom().getClass();
+            return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
         } catch (Exception ex) {
             return new ErrorResponse(DEFAULT_BAD_REQUEST, HttpStatus.BAD_REQUEST);
         }
@@ -101,17 +102,17 @@ public class GenericExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(EntityNotFoundException ex, Locale locale) {
-        return new ErrorResponse(clientErrorMessageSource
-                .getMessage(NOT_FOUND_ERROR, new Object[]{ex.getField(), ex.getValue()}, locale),
-                HttpStatus.NOT_FOUND, ex.getDtoClass());
+        String errorMessage = clientErrorMessageSource
+                .getMessage(NOT_FOUND_ERROR, new Object[]{ex.getField(), ex.getValue()}, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.NOT_FOUND, ex.getDtoClass());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoHandlerFound(NoHandlerFoundException ex, Locale locale) {
-        return new ErrorResponse(clientErrorMessageSource
-                .getMessage(NO_HANDLER_FOUND, new Object[]{ex.getHttpMethod(), ex.getRequestURL()}, locale),
-                HttpStatus.NOT_FOUND);
+        String errorMessage = clientErrorMessageSource
+                .getMessage(NO_HANDLER_FOUND, new Object[]{ex.getHttpMethod(), ex.getRequestURL()}, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -134,7 +135,7 @@ public class GenericExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(Exception e, Locale locale) {
         log.error(e.getMessage(), e);
-        return new ErrorResponse(serverErrorMessageSource.getMessage(INTERNAL_SERVER_ERROR, null, locale),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+        String errorMessage = serverErrorMessageSource.getMessage(INTERNAL_SERVER_ERROR, null, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
