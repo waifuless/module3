@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "3c95e729-ab56-4cd1-9370-9e9759745ef3",
+    "_postman_id": "76237ff7-0186-4a28-bf1f-55bfb1249254",
     "name": "GiftSertificatesSystem",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -91,6 +91,68 @@
             "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
             "tags",
             "17"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "findTag_ruLanHeader",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept-Language",
+            "value": "ru-RU",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/11",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags",
+            "11"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "createNewTag_withError_ruLangHeader",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept-Language",
+            "value": "ru-RU",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\": \"123\",\n    \"name\": \"pupa\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
+            "tags"
           ]
         }
       },
