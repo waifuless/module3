@@ -28,7 +28,8 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDto findById(Long id) {
         return modelMapper.map(tagRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME, ID_FIELD, id)), TagDto.class);
+                        .orElseThrow(() -> new EntityNotFoundException(TagDto.class, ID_FIELD, String.valueOf(id))),
+                TagDto.class);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDto create(TagDto tag) {
         if (existsByName(tag.getName())) {
-            throw new NotUniquePropertyException(ENTITY_NAME, NAME_FIELD, tag.getName());
+            throw new NotUniquePropertyException(TagDto.class, NAME_FIELD, String.valueOf(tag.getName()));
         }
         return modelMapper.map(tagRepository.create(modelMapper.map(tag, TagModel.class)), TagDto.class);
     }

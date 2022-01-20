@@ -1,21 +1,15 @@
 package com.epam.esm.gcs.business.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class NotUniquePropertyException extends RuntimeException {
 
-    private final static String NOT_UNIQUE_PROPERTY_MCG =
-            "Entity with such property already exists (%s with %s = %s)";
+    private static final long serialVersionUID = 7939959298681285504L;
 
-    private static final long serialVersionUID = -2193299383602759449L;
-
-    public NotUniquePropertyException() {
-    }
-
-    public NotUniquePropertyException(String message) {
-        super(message);
-    }
-
-    public NotUniquePropertyException(String entityName, String duplicateParamName, Object duplicateParamValue) {
-        super(String.format(NOT_UNIQUE_PROPERTY_MCG,
-                entityName, duplicateParamName, duplicateParamValue.toString()));
-    }
+    private final Class<?> dtoClass;
+    private final String field;
+    private final String value;
 }

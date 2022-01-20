@@ -13,9 +13,9 @@ import java.util.Locale;
 public class ValidatorConfig {
 
     @Bean
-    public MessageSource validationMessageSource() {
+    public MessageSource clientErrorMessageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/localization/error/validation-messages");
+        messageSource.setBasename("classpath:/localization/error/client-error-messages");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setDefaultLocale(Locale.US);
         return messageSource;
@@ -33,7 +33,7 @@ public class ValidatorConfig {
     @Bean
     public LocalValidatorFactoryBean validator() {
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
-        validatorFactoryBean.setValidationMessageSource(validationMessageSource());
+        validatorFactoryBean.setValidationMessageSource(clientErrorMessageSource());
         return validatorFactoryBean;
     }
 
