@@ -35,8 +35,8 @@ public class GenericExceptionHandler {
 
     private final static String INTERNAL_SERVER_ERROR = "server.error.internal";
     private final static String NOT_FOUND_ERROR = "not.found.error";
-    private final static String NOT_UNIQUE_PROPERTY_ERROR = "not.unique.property";
-    private final static String ARGUMENT_TYPE_MISMATCH_ERROR = "argument.type.mismatch";
+    private final static String NOT_UNIQUE_PROPERTY = "not.unique.property";
+    private final static String ARGUMENT_TYPE_MISMATCH = "argument.type.mismatch";
     private final static String DEFAULT_BAD_REQUEST = "default.bad.request";
     private final static String NO_HANDLER_FOUND = "no.handler.found";
     private final static String NO_METHOD_SUPPORTED = "no.method.supported";
@@ -84,7 +84,7 @@ public class GenericExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleNotUniquePropertyValue(NotUniquePropertyException ex, Locale locale) {
         String errorMessage = clientErrorMessageSource
-                .getMessage(NOT_UNIQUE_PROPERTY_ERROR, new Object[]{ex.getField(), ex.getValue()}, locale);
+                .getMessage(NOT_UNIQUE_PROPERTY, new Object[]{ex.getField(), ex.getValue()}, locale);
         return new ErrorResponse(errorMessage, HttpStatus.CONFLICT, ex.getDtoClass());
     }
 
@@ -92,7 +92,7 @@ public class GenericExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, Locale locale) {
         String errorMessage = clientErrorMessageSource
-                .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
+                .getMessage(ARGUMENT_TYPE_MISMATCH,
                         new Object[]{ex.getName(), ex.getValue(), ex.getRequiredType()}, locale);
         return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
     }
@@ -104,7 +104,7 @@ public class GenericExceptionHandler {
             InvalidFormatException invalidFormatEx = (InvalidFormatException) messageReadableEx.getCause();
             JsonMappingException.Reference ref = invalidFormatEx.getPath().get(0);
             String errorMessage = clientErrorMessageSource
-                    .getMessage(ARGUMENT_TYPE_MISMATCH_ERROR,
+                    .getMessage(ARGUMENT_TYPE_MISMATCH,
                             new Object[]{ref.getFieldName(), invalidFormatEx.getValue(),
                                     invalidFormatEx.getTargetType()},
                             locale);
