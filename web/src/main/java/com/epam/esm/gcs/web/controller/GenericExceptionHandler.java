@@ -11,7 +11,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.MimeType;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,6 +41,7 @@ public class GenericExceptionHandler {
     private final static String NO_HANDLER_FOUND = "no.handler.found";
     private final static String NO_METHOD_SUPPORTED = "no.method.supported";
     private final static String METHOD_NOT_ALLOWED = "method.not.allowed";
+    private final static String MEDIA_TYPE_NOT_SUPPORTED = "media.type.not.supported";
 
     private final MessageSource clientErrorMessageSource;
     private final MessageSource serverErrorMessageSource;
@@ -55,6 +58,19 @@ public class GenericExceptionHandler {
                 .map(objectError -> clientErrorMessageSource.getMessage(objectError, locale))
                 .collect(Collectors.joining("; ", "", "."));
         return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    public ErrorResponse handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+                                                     Locale locale) {
+        String contentType = ex.getContentType() == null ? "" : ex.getContentType().toString();
+        String supportedMediaTypes = ex.getSupportedMediaTypes().stream()
+                .map(MimeType::toString)
+                .collect(Collectors.joining(", "));
+        String errorMessage = clientErrorMessageSource
+                .getMessage(MEDIA_TYPE_NOT_SUPPORTED, new Object[]{contentType, supportedMediaTypes}, locale);
+        return new ErrorResponse(errorMessage, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
 //    @ExceptionHandler(ConstraintViolationException.class)
