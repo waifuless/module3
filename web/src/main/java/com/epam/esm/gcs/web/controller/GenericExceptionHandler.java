@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -73,12 +74,18 @@ public class GenericExceptionHandler {
         return new ErrorResponse(errorMessage, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
-//        return new ErrorResponse("ConstraintViolationException: " + e.getLocalizedMessage(),
-//                "40001");
-//    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e, Locale locale) {
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(constraintViolation ->
+                        clientErrorMessageSource.getMessage(constraintViolation.getMessage(),
+                                new Object[]{constraintViolation.getInvalidValue(),
+                                        constraintViolation.getPropertyPath()},
+                                locale))
+                .collect(Collectors.joining("; ", "", "."));
+        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NotUniquePropertyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
