@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import java.util.Locale;
 
@@ -37,12 +38,8 @@ public class ValidatorConfig {
         return validatorFactoryBean;
     }
 
-//    @Bean
-//    public MethodValidationPostProcessor methodValidationPostProcessor() {
-//        MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
-//        processor.setProxyTargetClass(true);
-//        processor.setValidatorFactory(validator());
-//        processor.setOrder(Ordered.HIGHEST_PRECEDENCE);
-//        return processor;
-//    }
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
 }
