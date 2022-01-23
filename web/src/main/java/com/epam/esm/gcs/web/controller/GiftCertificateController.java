@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,19 +28,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GiftCertificateController {
 
-    private final static String PATH_VARIABLE_NOT_POSITIVE_MSG = "path.variable.not.positive";
+    private final static String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
 
     private final GiftCertificateService giftCertificateService;
 
     @GetMapping
-    public List<GiftCertificateDto> findAll() {
-        return giftCertificateService.findAll();
-    }
-
-    @GetMapping("/tagged/{tagName}")
-    public List<GiftCertificateDto> findAllTagged(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
-        System.out.println(giftCertificateDtoContext);
-        return giftCertificateService.findAll();
+    public List<GiftCertificateDto> findAll(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
+        return giftCertificateService.findAll(giftCertificateDtoContext);
     }
 
     @Validated(OnCreate.class)
@@ -58,5 +53,17 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
         giftCertificateService.delete(id);
+    }
+
+    @PatchMapping("/{id}")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void update(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id,
+                       @Valid @RequestBody GiftCertificateDto giftCertificate) {
+        giftCertificateService.updateById(id, giftCertificate);
+    }
+
+    @GetMapping("/tagged/{tagName}")
+    public List<GiftCertificateDto> findAllTagged(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
+        return giftCertificateService.findAll(giftCertificateDtoContext);
     }
 }

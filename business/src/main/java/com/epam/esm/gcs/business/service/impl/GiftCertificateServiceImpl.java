@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
+import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void update(GiftCertificateDto dto) {
+    public void updateById(Long id, GiftCertificateDto dto) {
 
+    }
+
+    @Override
+    public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
+        return null;
     }
 }

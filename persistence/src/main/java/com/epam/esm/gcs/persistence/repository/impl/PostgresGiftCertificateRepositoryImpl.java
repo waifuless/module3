@@ -34,7 +34,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public void update(GiftCertificateModel model) {
+    public void updateById(long id, GiftCertificateModel model) {
     }
 
     @Override
