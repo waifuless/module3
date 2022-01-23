@@ -28,6 +28,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
     private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE id = ?))";
     private final static String EXISTS_BY_NAME_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE name = ?))";
+    private final static String FIND_BY_NAME_QUERY = "SELECT id as id, name as name FROM tag WHERE name = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -80,5 +81,15 @@ public class PostgresTagRepositoryImpl implements TagRepository {
         return jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY,
                 new Object[]{name}, new int[]{Types.VARCHAR},
                 Boolean.class);
+    }
+
+    @Override
+    public Optional<TagModel> findByName(String name) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY,
+                    new Object[]{name}, new int[]{Types.VARCHAR}, tagRowMapper));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 }
