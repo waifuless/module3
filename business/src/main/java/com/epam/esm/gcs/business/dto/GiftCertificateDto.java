@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -28,40 +29,41 @@ public class GiftCertificateDto {
     private final static int DEFAULT_SCALE = 2;
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
-    @Null
+    @Null(message = "{entity.field.should.be.null}")
     private Long id;
 
-    @NotBlank(groups = OnCreate.class)
-    @Size(max = 500)
+    @NotBlank(groups = OnCreate.class, message = "violation.entity.field.blank")
+    @Length(max = 500, message = "{entity.field.length.max}")
     private String name;
 
-    @NotBlank(groups = OnCreate.class)
-    @Size(max = 20000)
+    @NotBlank(groups = OnCreate.class, message = "violation.entity.field.blank")
+    @Length(max = 20000, message = "{entity.field.length.max}")
     private String description;
 
     @Setter(AccessLevel.NONE)
-    @NotNull(groups = OnCreate.class)
-    @DecimalMin("0.01")
-    @DecimalMax("999999999999999999.99")
+    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @DecimalMin(value = "0.01", message = "{entity.field.min}")
+    @DecimalMax(value = "999999999999999999.99", message = "{entity.field.max}")
     private BigDecimal price;
 
-    @NotNull(groups = OnCreate.class)
-    @Min(1)
+    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @Min(value = 1, message = "{entity.field.min}")
     private Integer duration;
 
-    @Null
+    @Null(message = "{entity.field.should.be.null}")
     private LocalDateTime createDate;
 
-    @Null
+    @Null(message = "{entity.field.should.be.null}")
     private LocalDateTime lastUpdateDate;
 
-    @NotNull(groups = OnCreate.class)
-    @Size(min = 1)
+    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @Size(min = 1, message = "{entity.field.size.min}")
     private List<@Valid TagDto> tags;
 
     public GiftCertificateDto(Long id, String name, String description, BigDecimal price, Integer duration,
                               LocalDateTime createDate, LocalDateTime lastUpdateDate,
                               List<TagDto> tags) {
+
         this.id = id;
         this.name = name;
         this.description = description;

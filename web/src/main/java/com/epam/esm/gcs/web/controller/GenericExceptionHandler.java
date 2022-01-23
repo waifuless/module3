@@ -12,10 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.MimeType;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+//todo: make default messages
 public class GenericExceptionHandler {
 
     private final static String INTERNAL_SERVER_ERROR = "server.error.internal";
@@ -47,10 +48,9 @@ public class GenericExceptionHandler {
     private final MessageSource clientErrorMessageSource;
     private final MessageSource serverErrorMessageSource;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleArgumentNotValidException(MethodArgumentNotValidException ex,
-                                                         Locale locale) {
+    public ErrorResponse handleArgumentNotValidException(BindException ex, Locale locale) {
         BindingResult result = ex.getBindingResult();
         Class<?> targetClass = Objects.requireNonNull(result.getTarget()).getClass();
         result.getObjectName();
@@ -84,7 +84,8 @@ public class GenericExceptionHandler {
                                         constraintViolation.getPropertyPath()},
                                 locale))
                 .collect(Collectors.joining("; ", "", "."));
-        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
+        Class<?> targetClass = e.getConstraintViolations().iterator().next().getLeafBean().getClass();
+        return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
     }
 
     @ExceptionHandler(NotUniquePropertyException.class)
