@@ -2,21 +2,18 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public PostgresGiftCertificateRepositoryImpl(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
 
     @Override
     public GiftCertificateModel create(GiftCertificateModel model) {
