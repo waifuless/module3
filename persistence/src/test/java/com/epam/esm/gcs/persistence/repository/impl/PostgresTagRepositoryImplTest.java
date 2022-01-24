@@ -14,15 +14,21 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
 import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"/test-config.xml"})
@@ -33,11 +39,11 @@ class PostgresTagRepositoryImplTest {
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public PostgresTagRepositoryImplTest(DataSource dataSource, TagRepository tagRepository,
+    public PostgresTagRepositoryImplTest(JdbcTemplate jdbcTemplate, TagRepository tagRepository,
                                          TestTablesManager testTablesManager) throws SQLException {
         this.tagRepository = tagRepository;
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("tag")
+        this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("tag")
                 .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
         testTablesManager.createOrCleanTables();
     }

@@ -3,13 +3,11 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.mapper.TagRowMapper;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
@@ -34,11 +32,10 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final TagRowMapper tagRowMapper;
 
-    @Autowired
-    public PostgresTagRepositoryImpl(DataSource dataSource, TagRowMapper tagRowMapper) {
+    public PostgresTagRepositoryImpl(JdbcTemplate jdbcTemplate, TagRowMapper tagRowMapper) {
         this.tagRowMapper = tagRowMapper;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(TABLE_NAME)
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
     }
 
