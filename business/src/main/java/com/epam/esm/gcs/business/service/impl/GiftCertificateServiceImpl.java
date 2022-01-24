@@ -73,6 +73,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return null;
     }
 
+    //todo: move to tagService
     private TagModel findTagOrCreate(TagModel tag) {
         Optional<TagModel> optionalTag =
                 tagService.findByName(tag.getName())
