@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -25,5 +26,10 @@ public class DataSourceConfig {
         config.setUsername(environment.getProperty("dataSource.user"));
         config.setPassword(environment.getProperty("dataSource.password"));
         return new HikariDataSource(config);
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
     }
 }
