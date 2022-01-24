@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,11 +17,13 @@ import java.util.List;
 @Builder
 public class GiftCertificateModel {
 
+    @With
     private Long id;
     private String name;
     private String description;
     private BigDecimal price;
     private Integer duration;
+    //todo: remake to ZonedDateTime or something like that
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private List<TagModel> tags;

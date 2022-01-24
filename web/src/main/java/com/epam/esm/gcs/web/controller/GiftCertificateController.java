@@ -34,7 +34,10 @@ public class GiftCertificateController {
 
     @GetMapping
     public List<GiftCertificateDto> findAll(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
-        return giftCertificateService.findAll(giftCertificateDtoContext);
+//        return giftCertificateService.findAll(giftCertificateDtoContext);
+        //todo: replace with findByContext
+        //todo: USE IT FOR TEST
+        return giftCertificateService.findAll();
     }
 
     @Validated(OnCreate.class)

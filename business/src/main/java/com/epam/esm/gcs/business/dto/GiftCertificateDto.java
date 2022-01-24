@@ -51,6 +51,7 @@ public class GiftCertificateDto {
     private Integer duration;
 
     @Null(message = "{entity.field.should.be.null}")
+    //todo: remake to ZonedDateTime or something like that
     private LocalDateTime createDate;
 
     @Null(message = "{entity.field.should.be.null}")

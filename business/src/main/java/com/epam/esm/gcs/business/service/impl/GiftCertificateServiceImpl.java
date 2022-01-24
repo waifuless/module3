@@ -38,6 +38,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDto> findAll() {
+        //todo: replace with findByContext
+        //todo: USE IT FOR TEST
         return giftCertificateRepository.findAll().stream()
                 .map(model -> modelMapper.map(model, GiftCertificateDto.class))
                 .collect(Collectors.toList());
