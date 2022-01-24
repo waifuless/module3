@@ -9,4 +9,6 @@ public interface TagService extends CrdService<TagDto> {
     boolean existsByName(String name);
 
     Optional<TagDto> findByName(String name);
+
+    TagDto findOrCreate(String name);
 }

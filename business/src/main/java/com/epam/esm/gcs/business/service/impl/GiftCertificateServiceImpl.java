@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,12 +43,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional //todo: make enabletransactionmanagement
+    @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificateModel giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificateModel.class);
         List<TagModel> tags = giftCertificate.getTags();
         tags = tags.stream()
-                .map(this::findTagOrCreate)
+                .map(tagModel -> {
+                    TagDto tag = tagService.findOrCreate(tagModel.getName());
+                    return modelMapper.map(tag, TagModel.class);
+                })
                 .collect(Collectors.toList());
         giftCertificate.setTags(tags);
         GiftCertificateModel createdGiftCertificate = giftCertificateRepository.create(giftCertificate);
@@ -71,16 +73,5 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
         //todo: make model context with fields of sort??
         return null;
-    }
-
-    //todo: move to tagService
-    private TagModel findTagOrCreate(TagModel tag) {
-        Optional<TagModel> optionalTag =
-                tagService.findByName(tag.getName())
-                        .map(tagDto -> modelMapper.map(tagDto, TagModel.class));
-        return optionalTag.orElseGet(() -> {
-            TagDto createdTag = tagService.create(new TagDto(null, tag.getName()));
-            return modelMapper.map(createdTag, TagModel.class);
-        });
     }
 }
