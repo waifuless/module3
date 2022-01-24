@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public GiftCertificateModel create(GiftCertificateModel model) {
-        return null;
+        return GiftCertificateModel.builder().build();
     }
 
     @Override
@@ -41,6 +42,11 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public Boolean existsById(long id) {
+        return null;
+    }
+
+    @Override
+    public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
         return null;
     }
 }

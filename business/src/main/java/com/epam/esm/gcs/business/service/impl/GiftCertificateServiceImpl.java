@@ -7,6 +7,7 @@ import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +48,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificateModel giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificateModel.class);
         List<TagModel> tags = giftCertificate.getTags();
-        tags = tags.stream()
-                .map(tagModel -> {
-                    TagDto tag = tagService.findOrCreate(tagModel.getName());
-                    return modelMapper.map(tag, TagModel.class);
-                })
-                .collect(Collectors.toList());
+        tags = prepareTags(tags);
         giftCertificate.setTags(tags);
         GiftCertificateModel createdGiftCertificate = giftCertificateRepository.create(giftCertificate);
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
@@ -64,14 +60,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public void updateById(Long id, GiftCertificateDto dto) {
-        GiftCertificateModel giftCertificateModel = modelMapper.map(dto, GiftCertificateModel.class);
-        giftCertificateRepository.updateById(id, giftCertificateModel);
+        GiftCertificateModel giftCertificate = modelMapper.map(dto, GiftCertificateModel.class);
+        if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
+            List<TagModel> tags = giftCertificate.getTags();
+            tags = prepareTags(tags);
+            giftCertificate.setTags(tags);
+        }
+        giftCertificateRepository.updateById(id, giftCertificate);
     }
 
     @Override
     public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
-        //todo: make model context with fields of sort??
-        return null;
+        GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
+        return giftCertificateRepository.findAll(modelContext).stream()
+                .map(model -> modelMapper.map(model, GiftCertificateDto.class))
+                .collect(Collectors.toList());
+    }
+
+    private List<TagModel> prepareTags(List<TagModel> tags) {
+        return tags.stream()
+                .map(tagModel -> {
+                    TagDto tag = tagService.findOrCreate(tagModel.getName());
+                    return modelMapper.map(tag, TagModel.class);
+                })
+                .collect(Collectors.toList());
     }
 }
