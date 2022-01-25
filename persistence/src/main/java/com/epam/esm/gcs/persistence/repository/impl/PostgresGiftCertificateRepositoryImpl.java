@@ -6,6 +6,8 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +39,12 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     private final static String FIND_ALL_QUERY = "SELECT id as id, name as name, description as description, " +
             " price as price, duration as duration, create_date as create_date, " +
-            "last_update_date as last_update_date FROM gift_certificate";
+            " last_update_date as last_update_date FROM gift_certificate";
     private final static String FIND_BY_ID_QUERY = "SELECT id as id, name as name, description as description, " +
             " price as price, duration as duration, create_date as create_date, " +
-            "last_update_date as last_update_date FROM gift_certificate WHERE id = ?";
-//    private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
-//    private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE id = ?))";
-//    private final static String EXISTS_BY_NAME_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE name = ?))";
-//    private final static String FIND_BY_NAME_QUERY = "SELECT id as id, name as name FROM tag WHERE name = ?";
+            " last_update_date as last_update_date FROM gift_certificate WHERE id = ?";
+    private final static String DELETE_QUERY = "DELETE FROM gift_certificate WHERE id = ?";
+    private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM gift_certificate WHERE id = ?))";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert giftCertificateJdbcInsert;
@@ -94,8 +95,6 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public List<GiftCertificateModel> findAll() {
-        //todo: replace with findByContext
-        //todo: USE IT FOR TEST
         List<GiftCertificateModel> giftCertificates = jdbcTemplate.query(FIND_ALL_QUERY, giftCertificateRowMapper);
         giftCertificates.forEach(giftCertificate -> {
             List<TagModel> tags = tagRepository.findAllByGiftCertificateId(giftCertificate.getId());
@@ -110,22 +109,83 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public void delete(long id) {
-
+        jdbcTemplate.update(DELETE_QUERY, id);
     }
 
     @Override
     public Boolean existsById(long id) {
-        return null;
+        return jdbcTemplate.queryForObject(EXISTS_BY_ID_QUERY,
+                new Object[]{id}, new int[]{Types.BIGINT},
+                Boolean.class);
     }
 
     @Override
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
-        List<GiftCertificateModel> giftCertificates = jdbcTemplate.query(FIND_ALL_QUERY, giftCertificateRowMapper);
+        //todo: refactor to make method shorter
+        List<Object> params = new ArrayList<>();
+        String joinClause = "";
+        StringBuilder whereClause = new StringBuilder();
+        if (context.getTagName() != null) {
+            Optional<TagModel> optionalTag = tagRepository.findByName(context.getTagName());
+            if (optionalTag.isEmpty()) {
+                return new ArrayList<>();
+            }
+            joinClause = " JOIN gift_certificate_tag ON gift_certificate.id = gift_certificate_tag" +
+                    ".gift_certificate_id ";
+            Long tagId = optionalTag.get().getId();
+            whereClause.append(String.format(" %s.%s = ? ", GIFT_CERTIFICATE_TAG_TABLE_NAME, TAG_ID.getColumnName()));
+            params.add(tagId);
+        }
+        if (context.getSearchValue() != null) {
+            if (whereClause.length() != 0) {
+                whereClause.append(" AND ");
+            }
+            whereClause.append(String.format(" (%s.%s ILIKE ? OR %s.%s ILIKE ?) ", GIFT_CERTIFICATE_TABLE_NAME,
+                    NAME.getColumnName(), GIFT_CERTIFICATE_TABLE_NAME, DESCRIPTION.getColumnName()));
+            String searchValueRegex = String.format("%%%s%%", context.getSearchValue());
+            params.add(searchValueRegex);
+            params.add(searchValueRegex);
+        }
+
+        String orderClause = prepareOrderClause(context.getSortBy());
+        String findAllByContextQuery = prepareFindAllByContextQuery(joinClause, new String(whereClause), orderClause);
+
+        List<GiftCertificateModel> giftCertificates = jdbcTemplate.query(findAllByContextQuery,
+                giftCertificateRowMapper, params.toArray());
         giftCertificates.forEach(giftCertificate -> {
             List<TagModel> tags = tagRepository.findAllByGiftCertificateId(giftCertificate.getId());
             giftCertificate.setTags(tags);
         });
         return giftCertificates;
+    }
+
+    private String prepareFindAllByContextQuery(String joinClause, String whereClause, String orderClause) {
+        StringBuilder findAllByContextQuery = new StringBuilder(FIND_ALL_QUERY);
+        if (!joinClause.isBlank()) {
+            findAllByContextQuery.append(" ").append(joinClause).append(" ");
+        }
+        if (!whereClause.isBlank()) {
+            findAllByContextQuery.append(" WHERE ").append(whereClause);
+        }
+        if (!orderClause.isBlank()) {
+            findAllByContextQuery.append(" ORDER BY ").append(orderClause);
+        }
+        return new String(findAllByContextQuery);
+    }
+
+    private String prepareOrderClause(Map<GiftCertificateColumn, SortDirection> orderParams) {
+        StringBuilder orderClause = new StringBuilder();
+        if (orderParams != null && !orderParams.isEmpty()) {
+            List<Map.Entry<GiftCertificateColumn, SortDirection>> orderParamEntries =
+                    new ArrayList<>(orderParams.entrySet());
+            orderClause.append(String.format(" %s %s ", orderParamEntries.get(0).getKey().getColumnName(),
+                    orderParamEntries.get(0).getValue().name()));
+            for (int i = 1; i < orderParamEntries.size(); i++) {
+                orderClause.append(String.format(", %s %s ", orderParamEntries.get(i).getKey().getColumnName(),
+                        orderParamEntries.get(i).getValue().name()));
+            }
+        }
+        return new String(orderClause);
     }
 
     private GiftCertificateModel insertGiftCertificate(GiftCertificateModel giftCertificate) {

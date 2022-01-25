@@ -1,9 +1,9 @@
 package com.epam.esm.gcs.business.converter;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
-import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
@@ -27,6 +27,9 @@ public class GiftCertificateContextConverter
     }
 
     private Map<GiftCertificateColumn, SortDirection> parseSortListToMap(List<String> sortBy) {
+        if (sortBy == null) {
+            return null;
+        }
         Map<GiftCertificateColumn, SortDirection> sortByParsed = new LinkedHashMap<>();
         sortBy.forEach(sortByParam -> {
             int delimiterIndex = sortByParam.lastIndexOf('.');
