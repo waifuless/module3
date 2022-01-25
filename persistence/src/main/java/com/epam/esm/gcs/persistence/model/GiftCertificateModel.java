@@ -23,7 +23,6 @@ public class GiftCertificateModel {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    //todo: remake to ZonedDateTime or something like that
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private List<TagModel> tags;

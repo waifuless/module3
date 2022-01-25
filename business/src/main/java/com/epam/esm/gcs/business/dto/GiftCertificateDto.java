@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.business.dto;
 
 import com.epam.esm.gcs.business.dto.group.OnCreate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class GiftCertificateDto {
 
     private final static int DEFAULT_SCALE = 2;
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
+    private final static String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     @Null(message = "{entity.field.should.be.null}")
     private Long id;
@@ -51,10 +53,11 @@ public class GiftCertificateDto {
     private Integer duration;
 
     @Null(message = "{entity.field.should.be.null}")
-    //todo: remake to ZonedDateTime or something like that
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime createDate;
 
     @Null(message = "{entity.field.should.be.null}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime lastUpdateDate;
 
     @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
