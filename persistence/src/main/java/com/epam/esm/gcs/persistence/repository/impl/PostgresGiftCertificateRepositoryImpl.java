@@ -8,6 +8,9 @@ import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -45,6 +48,8 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
             " last_update_date as last_update_date FROM gift_certificate WHERE id = ?";
     private final static String DELETE_QUERY = "DELETE FROM gift_certificate WHERE id = ?";
     private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM gift_certificate WHERE id = ?))";
+    private final static String REMOVE_ALL_GIFT_CERTIFICATE_TAG_RELATION_QUERY
+            = "DELETE FROM gift_certificate_tag WHERE gift_certificate_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert giftCertificateJdbcInsert;
@@ -104,7 +109,15 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public void updateById(long id, GiftCertificateModel model) {
+    public void updateById(long id, GiftCertificateModel giftCertificate) {
+        GeneratedQueryWithParams queryWithParams = generateUpdateQueryWithParams(id, giftCertificate);
+        jdbcTemplate.update(queryWithParams.getQuery(), queryWithParams.getParams());
+
+        List<TagModel> newTags = giftCertificate.getTags();
+        if (newTags != null && !newTags.isEmpty()) {
+            removeAllGiftCertificateTagRelation(id);
+            newTags.forEach(newTag -> insertGiftCertificateTagRelation(id, newTag.getId()));
+        }
     }
 
     @Override
@@ -121,7 +134,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
-        //todo: refactor to make method shorter
+        //todo: refactor to make method shorter (like an update)
         List<Object> params = new ArrayList<>();
         String joinClause = "";
         StringBuilder whereClause = new StringBuilder();
@@ -214,5 +227,43 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
         parameters.put(TAG_ID.getColumnName(), tagId);
 
         giftCertificateTagJdbcInsert.execute(parameters);
+    }
+
+    private void removeAllGiftCertificateTagRelation(Long giftCertificateId) {
+        jdbcTemplate.update(REMOVE_ALL_GIFT_CERTIFICATE_TAG_RELATION_QUERY, giftCertificateId);
+    }
+
+    private GeneratedQueryWithParams generateUpdateQueryWithParams(long id, GiftCertificateModel giftCertificate) {
+        List<Object> params = new ArrayList<>();
+        StringBuilder queryParamsPart = new StringBuilder();
+
+        queryParamsPart.append(LAST_UPDATE_DATE.getColumnName()).append(" = ? ");
+        params.add(LocalDateTime.now());
+
+        fillParamsAndQuery(params, queryParamsPart, giftCertificate.getName(), NAME);
+        fillParamsAndQuery(params, queryParamsPart, giftCertificate.getDescription(), DESCRIPTION);
+        fillParamsAndQuery(params, queryParamsPart, giftCertificate.getPrice(), PRICE);
+        fillParamsAndQuery(params, queryParamsPart, giftCertificate.getDuration(), DURATION);
+
+        String finalQuery = String.format("UPDATE gift_certificate SET %s WHERE id = ?", queryParamsPart);
+        params.add(id);
+        return new GeneratedQueryWithParams(finalQuery, params.toArray());
+    }
+
+    private void fillParamsAndQuery(List<Object> params, StringBuilder queryParamsPart,
+                                    Object param, GiftCertificateColumn column) {
+        if (param != null) {
+            queryParamsPart.append(" , ").append(column.getColumnName()).append(" = ? ");
+            params.add(param);
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    private static class GeneratedQueryWithParams {
+
+        private String query;
+        private Object[] params;
     }
 }

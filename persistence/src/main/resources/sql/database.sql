@@ -7,8 +7,8 @@ create table gift_certificate
     description      text           not null,
     price            numeric(20, 2) not null,
     duration         integer        not null,
-    create_date      date           not null,
-    last_update_date date           not null
+    create_date      timestamp      not null,
+    last_update_date timestamp      not null
 );
 
 create unique index gift_certificate_id_uindex
@@ -41,4 +41,3 @@ create table gift_certificate_tag
     constraint gift_certificate_tag_pk
         primary key (gift_certificate_id, tag_id)
 );
-

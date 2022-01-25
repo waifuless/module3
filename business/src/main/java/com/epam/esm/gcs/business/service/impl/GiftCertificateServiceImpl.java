@@ -63,6 +63,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void updateById(Long id, GiftCertificateDto dto) {
         GiftCertificateModel giftCertificate = modelMapper.map(dto, GiftCertificateModel.class);
+        if (!giftCertificateRepository.existsById(id)) {
+            throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(id));
+        }
         if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
             List<TagModel> tags = giftCertificate.getTags();
             tags = prepareTags(tags);
@@ -81,6 +84,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private List<TagModel> prepareTags(List<TagModel> tags) {
         return tags.stream()
+                .distinct()
                 .map(tagModel -> {
                     TagDto tag = tagService.findOrCreate(tagModel.getName());
                     return modelMapper.map(tag, TagModel.class);
