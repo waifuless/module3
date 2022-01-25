@@ -1,4 +1,4 @@
-package com.epam.esm.gcs.persistence.mapper;
+package com.epam.esm.gcs.persistence.tableproperty;
 
 import java.util.Arrays;
 import java.util.Optional;

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
 
 @Component
 public class TagRowMapperImpl implements TagRowMapper {

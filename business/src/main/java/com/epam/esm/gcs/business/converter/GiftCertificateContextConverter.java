@@ -1,8 +1,8 @@
 package com.epam.esm.gcs.business.converter;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
-import com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn;
-import com.epam.esm.gcs.persistence.mapper.SortDirection;
+import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -8,13 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.CREATE_DATE;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.DESCRIPTION;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.DURATION;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.ID;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.LAST_UPDATE_DATE;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.NAME;
-import static com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn.PRICE;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.CREATE_DATE;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.DESCRIPTION;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.DURATION;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.ID;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.LAST_UPDATE_DATE;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.NAME;
+import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.PRICE;
 
 @Component
 public class GiftCertificateRowMapperImpl implements GiftCertificateRowMapper {

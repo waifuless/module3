@@ -1,4 +1,4 @@
-package com.epam.esm.gcs.persistence.mapper;
+package com.epam.esm.gcs.persistence.tableproperty;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

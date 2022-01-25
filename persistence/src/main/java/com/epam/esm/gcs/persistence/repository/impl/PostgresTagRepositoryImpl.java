@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
 
 @Repository
 public class PostgresTagRepositoryImpl implements TagRepository {

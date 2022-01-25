@@ -1,7 +1,7 @@
 package com.epam.esm.gcs.persistence.model;
 
-import com.epam.esm.gcs.persistence.mapper.GiftCertificateColumn;
-import com.epam.esm.gcs.persistence.mapper.SortDirection;
+import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Builder;
 import lombok.Data;
 
