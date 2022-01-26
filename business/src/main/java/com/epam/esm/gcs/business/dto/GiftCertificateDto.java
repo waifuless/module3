@@ -71,7 +71,7 @@ public class GiftCertificateDto {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.price = price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.price = price == null ? null : price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
@@ -79,6 +79,6 @@ public class GiftCertificateDto {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.price = price == null ? null : price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 }

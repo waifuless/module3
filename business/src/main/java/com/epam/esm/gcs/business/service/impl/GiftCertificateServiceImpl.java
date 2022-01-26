@@ -59,6 +59,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!giftCertificateRepository.existsById(id)) {
             throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(id));
         }
+
         if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
             List<TagModel> tags = giftCertificate.getTags();
             tags = prepareTags(tags);

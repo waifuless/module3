@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,7 +105,6 @@ class TagServiceImplTest {
     @Test
     void delete_invokeTagRepositoryDelete_oneTime() {
         long id = 234L;
-        doNothing().when(tagRepository).delete(id);
 
         tagService.delete(id);
         verify(tagRepository, times(1)).delete(id);
@@ -123,5 +122,37 @@ class TagServiceImplTest {
         String validName = "someValidName";
         when(tagRepository.existsByName(validName)).thenReturn(true);
         assertTrue(tagService.existsByName(validName));
+    }
+
+    @Test
+    void findOrCreate_invokeCreate_whenTagIsNotFound() {
+        long id = 6L;
+        String name = "name";
+
+        TagModel tagPreparedForCreation = new TagModel(name);
+        TagModel createdTag = new TagModel(id, name);
+        TagDto expectedReturnedTag = new TagDto(id, name);
+
+        when(tagRepository.findByName(name)).thenReturn(Optional.empty());
+        when(tagRepository.create(tagPreparedForCreation)).thenReturn(createdTag);
+
+        assertEquals(expectedReturnedTag, tagService.findOrCreate(name));
+
+        verify(tagRepository, times(1)).create(tagPreparedForCreation);
+    }
+
+    @Test
+    void findOrCreate_notInvokeCreate_whenTagIsFound() {
+        long id = 8L;
+        String name = "name2";
+
+        TagModel foundTag = new TagModel(id, name);
+        TagDto expectedReturnedTag = new TagDto(id, name);
+
+        when(tagRepository.findByName(name)).thenReturn(Optional.of(foundTag));
+
+        assertEquals(expectedReturnedTag, tagService.findOrCreate(name));
+
+        verify(tagRepository, times(0)).create(any());
     }
 }
