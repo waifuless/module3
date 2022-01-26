@@ -115,8 +115,8 @@ class GiftCertificateServiceImplTest {
                 .build();
 
         Long certificateId = 2L;
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23, 304000);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34, 34, 60900);
+        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
+        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34, 34);
         GiftCertificateModel createdCertificate = GiftCertificateModel.builder()
                 .id(certificateId)
                 .name(name)
