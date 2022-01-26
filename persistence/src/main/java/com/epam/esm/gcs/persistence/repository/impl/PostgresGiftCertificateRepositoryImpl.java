@@ -99,16 +99,6 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public List<GiftCertificateModel> findAll() {
-        List<GiftCertificateModel> giftCertificates = jdbcTemplate.query(FIND_ALL_QUERY, giftCertificateRowMapper);
-        giftCertificates.forEach(giftCertificate -> {
-            List<TagModel> tags = tagRepository.findAllByGiftCertificateId(giftCertificate.getId());
-            giftCertificate.setTags(tags);
-        });
-        return giftCertificates;
-    }
-
-    @Override
     public void updateById(long id, GiftCertificateModel giftCertificate) {
         GeneratedQueryWithParams queryWithParams = generateUpdateQueryWithParams(id, giftCertificate);
         jdbcTemplate.update(queryWithParams.getQuery(), queryWithParams.getParams());

@@ -37,13 +37,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findAll() {
-        return giftCertificateRepository.findAll().stream()
-                .map(model -> modelMapper.map(model, GiftCertificateDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificateModel giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificateModel.class);

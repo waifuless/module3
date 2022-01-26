@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface TagRepository extends CrdRepository<TagModel> {
 
+    List<TagModel> findAll();
+
     Boolean existsByName(String name);
 
     Optional<TagModel> findByName(String name);
