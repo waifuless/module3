@@ -2,13 +2,17 @@ package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.config.ModelMapperConfig;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
+import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
+import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -18,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -200,6 +205,24 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void findAllByContext() {
+    void findAllByContext_invokeRepositoryWithValidModelContext() {
+        String tagName = "justTagName";
+        String searchValue = "simpleSearchValue";
+        List<String> sortByList = List.of("name.asc");
+        GiftCertificateDtoContext inputContext = GiftCertificateDtoContext.builder()
+                .tagName(tagName)
+                .searchValue(searchValue)
+                .sortBy(sortByList)
+                .build();
+
+        GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
+                .tagName(tagName)
+                .searchValue(searchValue)
+                .sortBy(Map.of(GiftCertificateColumn.NAME, SortDirection.ASC))
+                .build();
+
+        giftCertificateService.findAll(inputContext);
+
+        verify(giftCertificateRepository, times(1)).findAll(expectedContext);
     }
 }
