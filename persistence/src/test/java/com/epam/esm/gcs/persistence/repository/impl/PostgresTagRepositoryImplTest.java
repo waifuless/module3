@@ -5,10 +5,10 @@ import com.epam.esm.gcs.persistence.repository.TagRepository;
 import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"/test-config.xml"})
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class PostgresTagRepositoryImplTest {
 
     private final static String TAG_TABLE = "tag";
@@ -37,7 +38,6 @@ class PostgresTagRepositoryImplTest {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    @Autowired
     public PostgresTagRepositoryImplTest(JdbcTemplate jdbcTemplate, TagRepository tagRepository,
                                          TestTablesManager testTablesManager) throws SQLException {
         this.tagRepository = tagRepository;

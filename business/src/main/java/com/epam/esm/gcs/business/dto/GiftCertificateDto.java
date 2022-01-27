@@ -16,12 +16,12 @@ import java.util.List;
 @Builder
 public class GiftCertificateDto {
 
-    Long id;
-    String name;
-    String description;
-    BigDecimal price;
-    Integer duration;
-    LocalDateTime createDate;
-    LocalDateTime lastUpdateDate;
-    List<TagDto> tags;
+    private Long id;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private Integer duration;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private List<TagDto> tags;
 }

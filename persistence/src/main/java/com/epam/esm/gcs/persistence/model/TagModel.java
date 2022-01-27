@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TagModel {
 
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 
     public TagModel(String name) {
         this.name = name;
