@@ -16,4 +16,9 @@
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <context-param>
+        <param-name>profile.active</param-name>
+        <param-value>dev</param-value>
+    </context-param>
 </web-app>

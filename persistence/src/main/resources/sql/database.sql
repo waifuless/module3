@@ -14,7 +14,7 @@ create table gift_certificate
 create unique index gift_certificate_id_uindex
     on gift_certificate (id);
 
-create table tagModel
+create table tag
 (
     id   bigserial
         constraint tag_pk
@@ -23,10 +23,10 @@ create table tagModel
 );
 
 create unique index tag_name_uindex
-    on tagModel (name);
+    on tag (name);
 
 create unique index tag_id_uindex
-    on tagModel (id);
+    on tag (id);
 
 create table gift_certificate_tag
 (
@@ -36,7 +36,7 @@ create table gift_certificate_tag
             on delete cascade,
     tag_id              bigint not null
         constraint gift_certificate_tag_tag_id_fk
-            references tagModel
+            references tag
             on delete cascade,
     constraint gift_certificate_tag_pk
         primary key (gift_certificate_id, tag_id)

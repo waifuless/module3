@@ -9,7 +9,7 @@ group 'com.epam.esm'
 version '1.0-SNAPSHOT'
 
 ext {
-    springVersion = '5.3.14'
+    springVersion = '5.3.15'
 }
 
 dependencies {

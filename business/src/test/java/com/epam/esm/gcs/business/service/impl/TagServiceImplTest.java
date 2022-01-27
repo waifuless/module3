@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.business.service.impl;
 
+import com.epam.esm.gcs.business.config.ModelMapperConfig;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
@@ -9,30 +10,30 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = {"/test-config.xml"})
 class TagServiceImplTest {
 
     private final TagServiceImpl tagService;
 
     private final TagRepository tagRepository;
 
-    public TagServiceImplTest(@Autowired ModelMapper modelMapper, @Mock TagRepository tagRepository) {
-        this.tagService = new TagServiceImpl(tagRepository, modelMapper);
+    public TagServiceImplTest(@Mock TagRepository tagRepository) {
+        this.tagService = new TagServiceImpl(tagRepository, new ModelMapperConfig().modelMapper());
         this.tagRepository = tagRepository;
     }
 
