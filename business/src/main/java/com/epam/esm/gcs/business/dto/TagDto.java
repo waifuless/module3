@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class TagDto {
 
-    @Null(message = "{entity.field.null}")
+    @Null(message = "{entity.field.should.be.null}")
     private Long id;
 
     @NotBlank(message = "{entity.field.blank}")

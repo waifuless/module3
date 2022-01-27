@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.ID;
-import static com.epam.esm.gcs.persistence.mapper.TagColumn.NAME;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
 
 @Repository
 public class PostgresTagRepositoryImpl implements TagRepository {
@@ -27,6 +27,10 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
     private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE id = ?))";
     private final static String EXISTS_BY_NAME_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE name = ?))";
+    private final static String FIND_BY_NAME_QUERY = "SELECT id as id, name as name FROM tag WHERE name = ?";
+    private final static String FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY = "SELECT id as id, name as name FROM tag" +
+            " JOIN gift_certificate_tag gct on tag.id = gct.tag_id" +
+            " WHERE gct.gift_certificate_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -43,8 +47,7 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     public TagModel create(TagModel tagModel) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME.getColumnName(), tagModel.getName());
-        tagModel.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
-        return tagModel;
+        return new TagModel(jdbcInsert.executeAndReturnKey(parameters).longValue(), tagModel.getName());
     }
 
     @Override
@@ -79,5 +82,22 @@ public class PostgresTagRepositoryImpl implements TagRepository {
         return jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY,
                 new Object[]{name}, new int[]{Types.VARCHAR},
                 Boolean.class);
+    }
+
+    @Override
+    public Optional<TagModel> findByName(String name) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY,
+                    new Object[]{name}, new int[]{Types.VARCHAR}, tagRowMapper));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<TagModel> findAllByGiftCertificateId(long id) {
+        return jdbcTemplate.query(FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY,
+                new Object[]{id}, new int[]{Types.BIGINT},
+                tagRowMapper);
     }
 }

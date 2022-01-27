@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
-    private final static String PATH_VARIABLE_NOT_POSITIVE_MSG = "path.variable.not.positive";
+    private final static String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
 
     private final TagService tagService;
 

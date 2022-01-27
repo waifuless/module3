@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
+import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -31,8 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PostgresTagRepositoryImplTest {
 
     private final static String TAG_TABLE = "tag";
-    private final static String ID_COLUMN = "id";
-    private final static String NAME_COLUMN = "name";
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -43,7 +43,7 @@ class PostgresTagRepositoryImplTest {
         this.tagRepository = tagRepository;
         this.jdbcTemplate = jdbcTemplate;
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TAG_TABLE)
-                .usingGeneratedKeyColumns(ID_COLUMN).usingColumns(NAME_COLUMN);
+                .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
         testTablesManager.createOrCleanTables();
     }
 
@@ -67,8 +67,8 @@ class PostgresTagRepositoryImplTest {
         assertEquals(name, returnedModel.getName());
 
         long count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID_COLUMN, returnedModel.getId(),
-                        NAME_COLUMN, returnedModel.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), returnedModel.getId(),
+                        NAME.getColumnName(), returnedModel.getName()));
         assertEquals(1, count);
     }
 
@@ -121,8 +121,8 @@ class PostgresTagRepositoryImplTest {
         tagRepository.delete(modelInDatabase.getId());
 
         long count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID_COLUMN, modelInDatabase.getId(),
-                        NAME_COLUMN, modelInDatabase.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase.getId(),
+                        NAME.getColumnName(), modelInDatabase.getName()));
         assertEquals(0, count);
     }
 
@@ -138,13 +138,13 @@ class PostgresTagRepositoryImplTest {
         tagRepository.delete(modelInDatabase1.getId());
 
         long countExisted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID_COLUMN, modelInDatabase2.getId(),
-                        NAME_COLUMN, modelInDatabase2.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase2.getId(),
+                        NAME.getColumnName(), modelInDatabase2.getName()));
         assertEquals(1, countExisted);
 
         long countDeleted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID_COLUMN, modelInDatabase1.getId(),
-                        NAME_COLUMN, modelInDatabase1.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase1.getId(),
+                        NAME.getColumnName(), modelInDatabase1.getName()));
         assertEquals(0, countDeleted);
     }
 
@@ -157,8 +157,8 @@ class PostgresTagRepositoryImplTest {
         tagRepository.delete(modelInDatabase.getId() + 111);
 
         long countExisted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID_COLUMN, modelInDatabase.getId(),
-                        NAME_COLUMN, modelInDatabase.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase.getId(),
+                        NAME.getColumnName(), modelInDatabase.getName()));
         assertEquals(1, countExisted);
     }
 
@@ -192,7 +192,7 @@ class PostgresTagRepositoryImplTest {
 
     private Long createWithName(String name) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(NAME_COLUMN, name);
+        parameters.put(NAME.getColumnName(), name);
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 }
