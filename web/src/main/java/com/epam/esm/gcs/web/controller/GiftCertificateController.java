@@ -61,9 +61,4 @@ public class GiftCertificateController {
                        @Valid @RequestBody GiftCertificateDto giftCertificate) {
         giftCertificateService.updateById(id, giftCertificate);
     }
-
-    @GetMapping("/tagged/{tagName}")
-    public List<GiftCertificateDto> findAllTagged(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
-        return giftCertificateService.findAll(giftCertificateDtoContext);
-    }
 }
