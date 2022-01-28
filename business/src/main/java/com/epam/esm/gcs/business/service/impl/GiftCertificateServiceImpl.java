@@ -78,11 +78,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private List<TagModel> prepareTags(List<TagModel> tags) {
         return tags.stream()
-                .distinct()
                 .map(tagModel -> {
-                    TagDto tag = tagService.findOrCreate(tagModel.getName());
-                    return modelMapper.map(tag, TagModel.class);
+                    TagDto tagToFind = modelMapper.map(tagModel, TagDto.class);
+                    TagDto preparedTag = tagService.findOrCreate(tagToFind);
+                    return modelMapper.map(preparedTag, TagModel.class);
                 })
+                .distinct()
                 .collect(Collectors.toList());
     }
 }

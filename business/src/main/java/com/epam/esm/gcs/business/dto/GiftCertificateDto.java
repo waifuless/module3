@@ -1,6 +1,6 @@
 package com.epam.esm.gcs.business.dto;
 
-import com.epam.esm.gcs.business.dto.group.OnCreate;
+import com.epam.esm.gcs.business.dto.group.OnGiftCertificateCreate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,21 +34,21 @@ public class GiftCertificateDto {
     @Null(message = "{entity.field.should.be.null}")
     private Long id;
 
-    @NotBlank(groups = OnCreate.class, message = "violation.entity.field.blank")
+    @NotBlank(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.blank")
     @Length(max = 500, message = "{entity.field.length.max}")
     private String name;
 
-    @NotBlank(groups = OnCreate.class, message = "violation.entity.field.blank")
+    @NotBlank(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.blank")
     @Length(max = 20000, message = "{entity.field.length.max}")
     private String description;
 
     @Setter(AccessLevel.NONE)
-    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     @DecimalMin(value = "0.01", message = "{entity.field.min}")
     @DecimalMax(value = "999999999999999999.99", message = "{entity.field.max}")
     private BigDecimal price;
 
-    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     @Min(value = 1, message = "{entity.field.min}")
     private Integer duration;
 
@@ -60,7 +60,7 @@ public class GiftCertificateDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime lastUpdateDate;
 
-    @NotNull(groups = OnCreate.class, message = "violation.entity.field.null")
+    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     @Size(min = 1, message = "{entity.field.size.min}")
     private List<@Valid TagDto> tags;
 

@@ -2,7 +2,7 @@ package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
-import com.epam.esm.gcs.business.dto.group.OnCreate;
+import com.epam.esm.gcs.business.dto.group.OnGiftCertificateCreate;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class GiftCertificateController {
         return giftCertificateService.findAll(giftCertificateDtoContext);
     }
 
-    @Validated(OnCreate.class)
+    @Validated(OnGiftCertificateCreate.class)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public GiftCertificateDto create(@Valid @RequestBody GiftCertificateDto giftCertificate) {

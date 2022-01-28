@@ -136,7 +136,7 @@ class TagServiceImplTest {
         when(tagRepository.findByName(name)).thenReturn(Optional.empty());
         when(tagRepository.create(tagPreparedForCreation)).thenReturn(createdTag);
 
-        assertEquals(expectedReturnedTag, tagService.findOrCreate(name));
+        assertEquals(expectedReturnedTag, tagService.findOrCreate(new TagDto(null, name)));
 
         verify(tagRepository, times(1)).create(tagPreparedForCreation);
     }
@@ -151,7 +151,7 @@ class TagServiceImplTest {
 
         when(tagRepository.findByName(name)).thenReturn(Optional.of(foundTag));
 
-        assertEquals(expectedReturnedTag, tagService.findOrCreate(name));
+        assertEquals(expectedReturnedTag, tagService.findOrCreate(new TagDto(null, name)));
 
         verify(tagRepository, times(0)).create(any());
     }

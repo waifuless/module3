@@ -27,8 +27,9 @@ public interface TagService extends CrdService<TagDto> {
     /**
      * Checks the existence of TagDto by name. If it doesn't exist, creates it.
      *
-     * @param name - name for search
+     * @param tagToFind - tagDto for search (if id not null - search by id, otherwise search by name and if
+     *                  tag with that name does not exist, creates tag)
      * @return - found or created TagDto
      */
-    TagDto findOrCreate(String name);
+    TagDto findOrCreate(TagDto tagToFind);
 }

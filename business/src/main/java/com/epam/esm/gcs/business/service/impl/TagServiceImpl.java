@@ -11,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,13 +58,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto findOrCreate(String name) {
-        Optional<TagDto> optionalTag =
-                tagRepository.findByName(name)
-                        .map(tagModel -> modelMapper.map(tagModel, TagDto.class));
-        return optionalTag.orElseGet(() -> {
-            TagModel createdTag = tagRepository.create(new TagModel(name));
-            return modelMapper.map(createdTag, TagDto.class);
-        });
+    public TagDto findOrCreate(TagDto tagToFind) {
+        if (tagToFind.getId() != null) {
+            return this.findById(tagToFind.getId());
+        } else {
+            TagModel resultTag = tagRepository
+                    .findByName(tagToFind.getName())
+                    .orElseGet(() -> tagRepository.create(new TagModel(tagToFind.getName())));
+            return modelMapper.map(resultTag, TagDto.class);
+        }
     }
 }

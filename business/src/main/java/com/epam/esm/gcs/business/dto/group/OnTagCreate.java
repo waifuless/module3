@@ -1,4 +1,4 @@
 package com.epam.esm.gcs.business.dto.group;
 
-public interface OnCreate {
+public interface OnTagCreate {
 }
