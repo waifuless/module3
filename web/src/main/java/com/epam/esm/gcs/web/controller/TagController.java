@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.TagDto;
+import com.epam.esm.gcs.business.dto.group.OnTagCreate;
 import com.epam.esm.gcs.business.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class TagController {
         return tagService.findAll();
     }
 
+    @Validated(OnTagCreate.class)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public TagDto create(@Valid @RequestBody TagDto tag) {

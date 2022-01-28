@@ -146,7 +146,7 @@ class GiftCertificateServiceImplTest {
                 .tags(expectedReturnedTags)
                 .build();
 
-        when(tagService.findOrCreate(tagName)).thenReturn(new TagDto(tagId, tagName));
+        when(tagService.findOrCreate(new TagDto(null, tagName))).thenReturn(new TagDto(tagId, tagName));
         when(giftCertificateRepository.create(preparedForCreateCertificate)).thenReturn(createdCertificate);
         assertEquals(expectedReturnedCertificate, giftCertificateService.create(inputCertificate));
     }
@@ -196,8 +196,8 @@ class GiftCertificateServiceImplTest {
 
         when(giftCertificateRepository.existsById(certificateId)).thenReturn(true);
 
-        when(tagService.findOrCreate(tagName1)).thenReturn(new TagDto(tagId1, tagName1));
-        when(tagService.findOrCreate(tagName2)).thenReturn(new TagDto(tagId2, tagName2));
+        when(tagService.findOrCreate(new TagDto(null, tagName1))).thenReturn(new TagDto(tagId1, tagName1));
+        when(tagService.findOrCreate(new TagDto(null, tagName2))).thenReturn(new TagDto(tagId2, tagName2));
 
         giftCertificateService.updateById(certificateId, inputGiftCertificate);
 
