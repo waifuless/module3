@@ -21,7 +21,7 @@ public class TagDto {
     @Positive(message = "{entity.field.not.positive}")
     private Long id;
 
-    @NotBlank(message = "{entity.field.blank}")
+    @NotBlank(groups = OnTagCreate.class, message = "violation.entity.field.blank")
     @Size(max = 100, message = "{entity.field.size.max}")
     private String name;
 }
