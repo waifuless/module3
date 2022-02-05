@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:/db/application-${profile.active:test}.properties")
 @RequiredArgsConstructor
+@PropertySource("classpath:/db/application-test.properties")
 @EnableTransactionManagement
-public class DataSourceConfig {
+public class TestDataSourceConfig {
 
     private final Environment environment;
 
