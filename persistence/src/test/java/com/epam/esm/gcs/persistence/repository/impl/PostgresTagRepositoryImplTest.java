@@ -2,16 +2,17 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.testapplication.TestApplication;
 import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles(profiles = "test")
-@ContextConfiguration(locations = {"/test-config.xml"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@SpringBootTest(classes = TestApplication.class)
+@Transactional
 class PostgresTagRepositoryImplTest {
 
     private final static String TAG_TABLE = "tag";
@@ -46,7 +47,7 @@ class PostgresTagRepositoryImplTest {
         this.jdbcTemplate = jdbcTemplate;
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TAG_TABLE)
                 .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
-        testTablesManager.createOrCleanTables();
+        testTablesManager.createTables();
     }
 
     @Test

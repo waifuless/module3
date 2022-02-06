@@ -4,5 +4,5 @@ import java.sql.SQLException;
 
 public interface TestTablesManager {
 
-    void createOrCleanTables() throws SQLException;
+    void createTables() throws SQLException;
 }
