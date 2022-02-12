@@ -32,12 +32,4 @@ public interface TagRepository extends CrdRepository<TagModel> {
      * @return found Optional.Model or Optional.empty if model not found
      */
     Optional<TagModel> findByName(String name);
-
-    /**
-     * Finds all tags that have relation with some giftCertificate
-     *
-     * @param id - id of giftCertificate to find relations
-     * @return list of tags that have relation with some giftCertificate
-     */
-    List<TagModel> findAllByGiftCertificateId(long id);
 }

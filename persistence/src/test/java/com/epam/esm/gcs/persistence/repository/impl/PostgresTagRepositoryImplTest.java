@@ -3,34 +3,33 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import com.epam.esm.gcs.persistence.testapplication.TestApplication;
-import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
 import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles(profiles = "test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
 class PostgresTagRepositoryImplTest {
@@ -39,15 +38,18 @@ class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
 
-    public PostgresTagRepositoryImplTest(JdbcTemplate jdbcTemplate, TagRepository tagRepository,
-                                         TestTablesManager testTablesManager) throws SQLException {
-        this.tagRepository = tagRepository;
-        this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TAG_TABLE)
-                .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
-        testTablesManager.createTables();
+    private TagModel spaTag;
+    private TagModel relaxTag;
+    private TagModel gamingTag;
+    private TagModel lgbtTag;
+
+    @BeforeEach
+    private void prepareModels() {
+        spaTag = new TagModel(1L, "spa");
+        relaxTag = new TagModel(2L, "relax");
+        gamingTag = new TagModel(3L, "gaming");
+        lgbtTag = new TagModel(4L, "LGBT");
     }
 
     @Test
@@ -77,13 +79,9 @@ class PostgresTagRepositoryImplTest {
 
     @Test
     void findById_returnModel_ifExistInDatabase() {
-        String name = "name";
-        Long id = createWithName(name);
-        TagModel createdModel = new TagModel(id, name);
-
-        Optional<TagModel> readModel = tagRepository.findById(id);
+        Optional<TagModel> readModel = tagRepository.findById(spaTag.getId());
         assertTrue(readModel.isPresent());
-        assertEquals(createdModel, readModel.get());
+        assertEquals(spaTag, readModel.get());
     }
 
     @Test
@@ -95,21 +93,17 @@ class PostgresTagRepositoryImplTest {
 
     @Test
     void findAll_returnListOfTagsInDatabase_ifExisted() {
-        String tagName1 = "name1";
-        String tagName2 = "name2";
-        Long id1 = createWithName(tagName1);
-        Long id2 = createWithName(tagName2);
-        List<TagModel> tagsInDatabase = new ArrayList<>();
-        tagsInDatabase.add(new TagModel(id1, tagName1));
-        tagsInDatabase.add(new TagModel(id2, tagName2));
+        List<TagModel> allTags = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
 
         List<TagModel> readTags = tagRepository.findAll();
-        assertEquals(tagsInDatabase.size(), readTags.size());
-        assertIterableEquals(tagsInDatabase, readTags);
+        assertEquals(readTags.size(), allTags.size());
+        assertTrue(readTags.containsAll(allTags));
     }
 
     @Test
     void findAll_returnEmptyList_ifNoTagsExistInDatabase() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
+
         List<TagModel> readTags = tagRepository.findAll();
         assertEquals(0, readTags.size());
     }
@@ -117,85 +111,63 @@ class PostgresTagRepositoryImplTest {
 
     @Test
     void delete() {
-        String name = "name";
-        Long id = createWithName(name);
-        TagModel modelInDatabase = new TagModel(id, name);
-
-        tagRepository.delete(modelInDatabase.getId());
+        tagRepository.delete(relaxTag.getId());
 
         long count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase.getId(),
-                        NAME.getColumnName(), modelInDatabase.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), relaxTag.getId(),
+                        NAME.getColumnName(), relaxTag.getName()));
         assertEquals(0, count);
     }
 
     @Test
     void delete_shouldNotHaveSideEffects_ifDeleteExistedRow() {
-        String tagName1 = "name1";
-        String tagName2 = "name2";
-        Long id1 = createWithName(tagName1);
-        Long id2 = createWithName(tagName2);
-        TagModel modelInDatabase1 = new TagModel(id1, tagName1);
-        TagModel modelInDatabase2 = new TagModel(id2, tagName2);
-
-        tagRepository.delete(modelInDatabase1.getId());
+        tagRepository.delete(lgbtTag.getId());
 
         long countExisted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase2.getId(),
-                        NAME.getColumnName(), modelInDatabase2.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), spaTag.getId(),
+                        NAME.getColumnName(), spaTag.getName()));
         assertEquals(1, countExisted);
 
         long countDeleted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase1.getId(),
-                        NAME.getColumnName(), modelInDatabase1.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), lgbtTag.getId(),
+                        NAME.getColumnName(), lgbtTag.getName()));
         assertEquals(0, countDeleted);
     }
 
     @Test
     void delete_shouldNotHaveSideEffects_ifDeleteNotExistedRow() {
-        String tagName = "name";
-        Long id = createWithName(tagName);
-        TagModel modelInDatabase = new TagModel(id, tagName);
+        try {
+            tagRepository.delete(spaTag.getId() + 111);
 
-        tagRepository.delete(modelInDatabase.getId() + 111);
-
+        } catch (EmptyResultDataAccessException ignored) {
+        }
         long countExisted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
-                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), modelInDatabase.getId(),
-                        NAME.getColumnName(), modelInDatabase.getName()));
+                String.format("%s = %d AND %s = '%s'", ID.getColumnName(), spaTag.getId(),
+                        NAME.getColumnName(), spaTag.getName()));
         assertEquals(1, countExisted);
     }
 
     @Test
     void existsById_returnTrue_ifExistsInDatabase() {
-        String tagName = "name";
-        Long id = createWithName(tagName);
-        TagModel modelInDatabase = new TagModel(id, tagName);
-
-        assertTrue(tagRepository.existsById(modelInDatabase.getId()));
+        assertTrue(tagRepository.existsById(spaTag.getId()));
     }
 
     @Test
     void existsById_returnFalse_ifNotExistsInDatabase() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
+
         assertFalse(tagRepository.existsById(1L));
     }
 
     @Test
     void existsByName_returnTrue_ifExistsInDatabase() {
-        String tagName = "name";
-        Long id = createWithName(tagName);
-        TagModel modelInDatabase = new TagModel(id, tagName);
-
-        assertTrue(tagRepository.existsByName(modelInDatabase.getName()));
+        assertTrue(tagRepository.existsByName(spaTag.getName()));
     }
 
     @Test
     void existsByName_returnFalse_ifNotExistsInDatabase() {
-        assertFalse(tagRepository.existsByName("someName"));
-    }
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
 
-    private Long createWithName(String name) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(NAME.getColumnName(), name);
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        assertFalse(tagRepository.existsByName("notExistedName123321"));
     }
 }
