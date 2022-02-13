@@ -26,4 +26,9 @@ public class TagModel {
     public TagModel(String name) {
         this.name = name;
     }
+
+    public TagModel(TagModel model) {
+        this.id = model.id;
+        this.name = model.name;
+    }
 }

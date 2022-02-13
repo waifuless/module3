@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final EntityManager entityManager;
 
     private TagModel spaTag;
     private TagModel relaxTag;
@@ -50,6 +52,18 @@ class PostgresTagRepositoryImplTest {
         relaxTag = new TagModel(2L, "relax");
         gamingTag = new TagModel(3L, "gaming");
         lgbtTag = new TagModel(4L, "LGBT");
+    }
+
+    @Test
+    void create_shouldNotChangeInputModel() {
+        String name = "someName123321222";
+        TagModel inputTagModel = new TagModel(name);
+        TagModel inputTagModelCopy = new TagModel(inputTagModel);
+
+        tagRepository.create(inputTagModel);
+        entityManager.flush();
+
+        assertEquals(inputTagModelCopy, inputTagModel);
     }
 
     @Test
@@ -66,6 +80,7 @@ class PostgresTagRepositoryImplTest {
     void create_returnedTagModelEqualsModelInDatabase() {
         String name = "lola";
         TagModel returnedModel = tagRepository.create(new TagModel(name));
+        entityManager.flush();
 
         assertNotNull(returnedModel);
         assertNotNull(returnedModel.getId());
@@ -112,6 +127,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void delete() {
         tagRepository.delete(relaxTag.getId());
+        entityManager.flush();
 
         long count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
                 String.format("%s = %d AND %s = '%s'", ID.getColumnName(), relaxTag.getId(),
@@ -122,6 +138,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void delete_shouldNotHaveSideEffects_ifDeleteExistedRow() {
         tagRepository.delete(lgbtTag.getId());
+        entityManager.flush();
 
         long countExisted = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TAG_TABLE,
                 String.format("%s = %d AND %s = '%s'", ID.getColumnName(), spaTag.getId(),
@@ -138,6 +155,7 @@ class PostgresTagRepositoryImplTest {
     void delete_shouldNotHaveSideEffects_ifDeleteNotExistedRow() {
         try {
             tagRepository.delete(spaTag.getId() + 111);
+            entityManager.flush();
 
         } catch (EmptyResultDataAccessException ignored) {
         }

@@ -105,6 +105,29 @@ class PostgresGiftCertificateRepositoryImplTest {
     }
 
     @Test
+    void create_shouldNotChangeInputModel() {
+        String name = "name";
+        String description = "description";
+        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
+        int duration = 2;
+
+        List<TagModel> inputTags = List.of(spaTag, relaxTag);
+        GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
+                .name(name)
+                .description(description)
+                .price(price)
+                .duration(duration)
+                .tags(inputTags)
+                .build();
+        GiftCertificateModel inputGiftCertificateCopy = new GiftCertificateModel(inputGiftCertificate);
+
+        giftCertificateRepository.create(inputGiftCertificate);
+        entityManager.flush();
+
+        assertEquals(inputGiftCertificateCopy, inputGiftCertificate);
+    }
+
+    @Test
     void create_returnInputFieldsWithGeneratedFiles_shouldMakeEntityAndRelationsInDataBase() {
 
         String name = "name";
@@ -268,6 +291,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     void delete_shouldDeleteEntryInDataBase() {
 
         giftCertificateRepository.delete(shoppingGiftCertificate.getId());
+        entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +

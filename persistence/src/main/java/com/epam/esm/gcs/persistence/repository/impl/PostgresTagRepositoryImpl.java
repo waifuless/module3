@@ -25,9 +25,10 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     @Override
     @Transactional
     public TagModel create(TagModel tagModel) {
-        //todo: clone model
-        entityManager.persist(tagModel);
-        return tagModel;
+        TagModel tagModelCopy = new TagModel(tagModel);
+
+        entityManager.persist(tagModelCopy);
+        return tagModelCopy;
     }
 
     @Override

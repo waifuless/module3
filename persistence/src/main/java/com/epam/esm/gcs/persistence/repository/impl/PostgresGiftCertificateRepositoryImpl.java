@@ -37,13 +37,14 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     @Override
     @Transactional
     public GiftCertificateModel create(GiftCertificateModel giftCertificate) {
-        //todo: clone model
+        GiftCertificateModel giftCertificateCopy = new GiftCertificateModel(giftCertificate);
         LocalDateTime creationDateTime = LocalDateTime.now();
-        giftCertificate.setCreateDate(creationDateTime);
-        giftCertificate.setLastUpdateDate(creationDateTime);
 
-        entityManager.persist(giftCertificate);
-        return giftCertificate;
+        giftCertificateCopy.setCreateDate(creationDateTime);
+        giftCertificateCopy.setLastUpdateDate(creationDateTime);
+
+        entityManager.persist(giftCertificateCopy);
+        return giftCertificateCopy;
     }
 
     @Override

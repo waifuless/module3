@@ -74,6 +74,12 @@ public class GiftCertificateModel {
         this(null, name, description, price, duration, createDate, lastUpdateDate, tags);
     }
 
+    public GiftCertificateModel(GiftCertificateModel giftCertificate) {
+        this(giftCertificate.id, giftCertificate.name, giftCertificate.description, giftCertificate.price,
+                giftCertificate.duration, giftCertificate.createDate, giftCertificate.lastUpdateDate,
+                giftCertificate.tags);
+    }
+
     public void setPrice(BigDecimal price) {
         this.price = price == null ? null : price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
