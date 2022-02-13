@@ -1,5 +1,4 @@
 plugins {
-    id 'java'
     id 'com.epam.esm.gcs.common-conventions'
     id "io.freefair.lombok" version "6.3.0"
 }
@@ -9,11 +8,8 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.3'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.3'
 
     implementation 'org.modelmapper:modelmapper:3.0.0'
-//    implementation 'javax.validation:validation-api:2.0.1.Final'
-//    implementation 'org.hibernate.validator:hibernate-validator:6.0.22.Final'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1'
