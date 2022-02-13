@@ -2,16 +2,12 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
-import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import com.epam.esm.gcs.persistence.util.Pair;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,19 +77,30 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     @Override
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
 
-        //todo: refactor to make method shorter, remove hard coded JPQL
+        Pair<String, List<Pair<String, Object>>> queryWithParams = generatedQueryWithParamsForSearchByContext(context);
+
+        TypedQuery<GiftCertificateModel> query = entityManager.createQuery(queryWithParams.getFirst(),
+                GiftCertificateModel.class);
+
+        for (Pair<String, Object> param : queryWithParams.getSecond()) {
+            query.setParameter(param.getFirst(), param.getSecond());
+        }
+
+        return query.getResultList();
+    }
+
+    private Pair<String, List<Pair<String, Object>>> generatedQueryWithParamsForSearchByContext
+            (GiftCertificateModelContext context) {
+
+        //todo: remove hard coded JPQL
+
         List<Pair<String, Object>> params = new ArrayList<>();
         String joinClause = "";
         StringBuilder whereClause = new StringBuilder();
         if (context.getTagName() != null) {
-            Optional<TagModel> optionalTag = tagRepository.findByName(context.getTagName());
-            if (optionalTag.isEmpty()) {
-                return new ArrayList<>();
-            }
             joinClause = " JOIN gc.tags tag ";
-            Long tagId = optionalTag.get().getId();
-            whereClause.append(" tag.id=:tagId ");
-            params.add(Pair.of("tagId", tagId));
+            whereClause.append(" tag.name=:tagName ");
+            params.add(Pair.of("tagName", context.getTagName()));
         }
         if (context.getSearchValue() != null) {
             if (whereClause.length() != 0) {
@@ -108,14 +115,7 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
         String orderClause = prepareOrderClause(context.getSortBy());
         String findAllByContextQuery = prepareFindAllByContextQuery(joinClause, new String(whereClause), orderClause);
 
-        TypedQuery<GiftCertificateModel> query = entityManager.createQuery(findAllByContextQuery,
-                GiftCertificateModel.class);
-
-        for (Pair<String, Object> param : params) {
-            query.setParameter(param.getFirst(), param.getSecond());
-        }
-
-        return query.getResultList();
+        return Pair.of(findAllByContextQuery, params);
     }
 
     private void setNotNullFields(GiftCertificateModel source, GiftCertificateModel destination) {
@@ -163,14 +163,5 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
             }
         }
         return new String(orderClause);
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    private static class GeneratedQueryWithParams {
-
-        private String query;
-        private Object[] params;
     }
 }
