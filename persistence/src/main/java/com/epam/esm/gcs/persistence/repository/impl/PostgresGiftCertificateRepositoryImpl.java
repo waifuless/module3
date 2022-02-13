@@ -54,7 +54,6 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     @Override
     @Transactional
     public void updateById(long id, GiftCertificateModel giftCertificate) {
-        //todo: check that remove tag relation do not delete tag
         GiftCertificateModel foundGiftCertificate = entityManager.find(GiftCertificateModel.class, id);
         setNotNullFields(giftCertificate, foundGiftCertificate);
 
