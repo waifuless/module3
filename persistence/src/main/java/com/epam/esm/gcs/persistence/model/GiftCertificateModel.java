@@ -32,6 +32,7 @@ public class GiftCertificateModel {
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     @Id
+    //todo: think about batch (needs GenerationType.SEQUENCE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @With
     private Long id;
