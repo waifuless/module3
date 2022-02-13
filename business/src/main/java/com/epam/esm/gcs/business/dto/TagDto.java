@@ -5,11 +5,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 
 
 @Data
@@ -22,6 +22,6 @@ public class TagDto {
     private Long id;
 
     @NotBlank(groups = OnTagCreate.class, message = "violation.entity.field.blank")
-    @Size(max = 100, message = "{entity.field.size.max}")
+    @Length(max = 100, message = "{entity.field.length.max}")
     private String name;
 }

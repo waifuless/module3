@@ -14,14 +14,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+              "raw": "http://localhost:8080/tags",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags"
               ]
             }
@@ -32,10 +31,17 @@
           "name": "createNewTag",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ru-RU",
+                "type": "text",
+                "disabled": true
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"1223244\"\n}",
+              "raw": "{\n    \"name\": \"12222123678223\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -43,14 +49,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+              "raw": "http://localhost:8080/tags",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags"
               ]
             }
@@ -63,16 +68,15 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/11",
+              "raw": "http://localhost:8080/tags/66",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags",
-                "11"
+                "66"
               ]
             }
           },
@@ -84,16 +88,15 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/17",
+              "raw": "http://localhost:8080/tags/56",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags",
-                "17"
+                "56"
               ]
             }
           },
@@ -111,14 +114,13 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags/11",
+              "raw": "http://localhost:8080/tags/11",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags",
                 "11"
               ]
@@ -147,14 +149,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/tags",
+              "raw": "http://localhost:8080/tags",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "tags"
               ]
             }
@@ -172,51 +173,34 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates",
+              "raw": "http://localhost:8080/gift-certificates",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "gift-certificates"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "findAllGiftCertificates/tagged",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates/tagged/spa?sortBy=create_date.asc",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
-                "gift-certificates",
-                "tagged",
-                "spa"
               ],
               "query": [
                 {
-                  "key": "sortBy",
-                  "value": "name.desc",
+                  "key": "searchValue",
+                  "value": "ber",
                   "disabled": true
                 },
                 {
                   "key": "sortBy",
-                  "value": "create_date.asc"
+                  "value": "name.asc",
+                  "disabled": true
                 },
                 {
-                  "key": "searchValue",
-                  "value": "best",
+                  "key": "sortBy",
+                  "value": "create_date.asc",
+                  "disabled": true
+                },
+                {
+                  "key": "tagName",
+                  "value": "relax",
                   "disabled": true
                 }
               ]
@@ -245,14 +229,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates",
+              "raw": "http://localhost:8080/gift-certificates",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "gift-certificates"
               ]
             }
@@ -266,7 +249,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"price\": \"777.31\",\n    \"tags\":[\n        {\n            \"name\": \"luxury2\"\n        },\n        {\n            \"name\": \"spa\"\n        },\n        {\n            \"name\": \"relax\"\n        }\n    ]\n}",
+              "raw": "{\n    \"tags\": [\n            {\n                \"id\": \"57\"\n            },\n            {\n                \"id\": 13\n            },\n            {\n                \"name\": \"badrelax\"\n            }\n        ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -274,16 +257,15 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates/5",
+              "raw": "http://localhost:8080/gift-certificates/7",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "gift-certificates",
-                "5"
+                "7"
               ]
             }
           },
@@ -295,37 +277,63 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates/8",
+              "raw": "http://localhost:8080/gift-certificates/7",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "gift-certificates",
-                "8"
+                "7"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "New Request",
+          "name": "deleteOneGiftCertificate",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/Gradle___com_epam_esm___web_1_0_SNAPSHOT_war/gift-certificates/6",
+              "raw": "http://localhost:8080/gift-certificates/10",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "8080",
               "path": [
-                "Gradle___com_epam_esm___web_1_0_SNAPSHOT_war",
                 "gift-certificates",
-                "6"
+                "10"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createWithClientError",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Spa from bereza\",\n    \"description\": \"Ber spa\",\n    \"price\": \"-10020.02\",\n    \"duration\": \"-1120\",\n    \"tags\":[\n        {\n            \"name\": \"poor\"\n        },\n        {\n            \"name\": \"spa\"\n        },\n        {\n            \"name\": \"lolkekspa\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/gift-certificates",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "gift-certificates"
               ]
             }
           },

@@ -1,10 +1,13 @@
+plugins{
+    id 'java'
+}
+
 repositories {
     mavenCentral()
 }
 
 ext {
-    junitVersion = '5.8.2'
-    log4jVersion = '2.17.1'
+    springBootVersion = '2.6.3'
 }
 
 sourceCompatibility = '11'
@@ -14,18 +17,17 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+configurations {
+    implementation.exclude module: 'spring-boot-starter-logging'
+    testImplementation.exclude module: 'spring-boot-starter-logging'
+}
+
 dependencies {
-    implementation "org.slf4j:slf4j-api:1.7.32"
-    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
-    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
-    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
 
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-
-    testImplementation 'org.springframework:spring-test:5.3.15'
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.2.0'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
 }
 
 test {

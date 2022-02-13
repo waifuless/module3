@@ -1,6 +1,7 @@
 plugins {
-    id 'java'
-    id 'war'
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'application'
     id 'com.epam.esm.gcs.common-conventions'
     id "io.freefair.lombok" version "6.3.0"
 }
@@ -9,21 +10,19 @@ group 'com.epam.esm'
 version '1.0-SNAPSHOT'
 
 ext {
-    springVersion = '5.3.15'
+    springBootVersion = '2.6.3'
 }
 
 dependencies {
-    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1'
-
-    implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.hibernate.validator:hibernate-validator:6.0.22.Final'
-
-    implementation "org.springframework:spring-webmvc:${springVersion}"
-    implementation "org.springframework:spring-core:${springVersion}"
-    implementation "org.springframework:spring-context:${springVersion}"
+    implementation 'org.postgresql:postgresql:42.3.1'
 
     implementation project(':business')
+}
+
+application {
+    mainClass = 'com.epam.esm.gcs.web.application.RestApplication'
 }

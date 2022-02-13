@@ -6,15 +6,17 @@ import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.TagColumn;
+import com.epam.esm.gcs.persistence.testapplication.TestApplication;
 import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,8 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = {"/test-config.xml"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@SpringBootTest(classes = TestApplication.class)
+@Transactional
 class PostgresGiftCertificateRepositoryImplTest {
 
     private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
@@ -68,7 +71,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         this.giftCertificateTagJdbcInsert =
                 new SimpleJdbcInsert(jdbcTemplate).withTableName(GIFT_CERTIFICATE_TAG_TABLE_NAME)
                         .usingColumns(GIFT_CERTIFICATE_ID.getColumnName(), TAG_ID.getColumnName());
-        testTablesManager.createOrCleanTables();
+        testTablesManager.createTables();
     }
 
     @Test
