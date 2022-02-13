@@ -45,14 +45,10 @@ public class PostgresTagRepositoryImpl implements TagRepository {
     @Override
     @Transactional
     public void delete(long id) {
-        int numberOfDeleted = entityManager
+        entityManager
                 .createQuery(DELETE_QUERY)
                 .setParameter("id", id)
                 .executeUpdate();
-        if (numberOfDeleted > 1) {
-            //todo: think about ex
-            throw new RuntimeException();
-        }
     }
 
     @Override
