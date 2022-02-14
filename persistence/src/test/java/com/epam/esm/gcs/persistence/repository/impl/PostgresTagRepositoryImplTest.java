@@ -20,8 +20,8 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
-import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
+import static com.epam.esm.gcs.persistence.testtablepropery.TagColumn.ID;
+import static com.epam.esm.gcs.persistence.testtablepropery.TagColumn.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
