@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +41,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificateModel giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificateModel.class);
-        List<TagModel> tags = giftCertificate.getTags();
+        Set<TagModel> tags = giftCertificate.getTags();
         tags = prepareTags(tags);
         giftCertificate.setTags(tags);
         GiftCertificateModel createdGiftCertificate = giftCertificateRepository.create(giftCertificate);
@@ -61,7 +62,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
-            List<TagModel> tags = giftCertificate.getTags();
+            Set<TagModel> tags = giftCertificate.getTags();
             tags = prepareTags(tags);
             giftCertificate.setTags(tags);
         }
@@ -76,14 +77,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .collect(Collectors.toList());
     }
 
-    private List<TagModel> prepareTags(List<TagModel> tags) {
+    private Set<TagModel> prepareTags(Set<TagModel> tags) {
         return tags.stream()
                 .map(tagModel -> {
                     TagDto tagToFind = modelMapper.map(tagModel, TagDto.class);
                     TagDto preparedTag = tagService.findOrCreate(tagToFind);
                     return modelMapper.map(preparedTag, TagModel.class);
                 })
-                .distinct()
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

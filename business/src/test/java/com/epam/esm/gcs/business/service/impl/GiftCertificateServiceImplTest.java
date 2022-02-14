@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.gcs.business.converter.GiftCertificateContextConverter.FieldNameAssociation.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,7 +60,7 @@ class GiftCertificateServiceImplTest {
         LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34, 34, 60900);
         Long tagId = 3L;
         String tagName = "tagName";
-        List<TagModel> tagModels = List.of(new TagModel(tagId, tagName));
+        Set<TagModel> tagModels = Set.of(new TagModel(tagId, tagName));
         GiftCertificateModel foundModel = GiftCertificateModel.builder()
                 .id(id)
                 .name(name)
@@ -70,7 +71,7 @@ class GiftCertificateServiceImplTest {
                 .lastUpdateDate(lastUpdateDate)
                 .tags(tagModels)
                 .build();
-        List<TagDto> tagDtos = List.of(new TagDto(tagId, tagName));
+        Set<TagDto> tagDtos = Set.of(new TagDto(tagId, tagName));
         GiftCertificateDto expectedReturnedCertificate = GiftCertificateDto.builder()
                 .id(id)
                 .name(name)
@@ -100,7 +101,7 @@ class GiftCertificateServiceImplTest {
         int duration = 2;
         String tagName = "tagName";
 
-        List<TagDto> inputTags = List.of(new TagDto(null, tagName));
+        Set<TagDto> inputTags = Set.of(new TagDto(null, tagName));
         GiftCertificateDto inputCertificate = GiftCertificateDto.builder()
                 .name(name)
                 .description(description)
@@ -110,7 +111,7 @@ class GiftCertificateServiceImplTest {
                 .build();
 
         Long tagId = 3L;
-        List<TagModel> preparedTags = List.of(new TagModel(tagId, tagName));
+        Set<TagModel> preparedTags = Set.of(new TagModel(tagId, tagName));
         GiftCertificateModel preparedForCreateCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
@@ -133,7 +134,7 @@ class GiftCertificateServiceImplTest {
                 .tags(preparedTags)
                 .build();
 
-        List<TagDto> expectedReturnedTags = List.of(new TagDto(tagId, tagName));
+        Set<TagDto> expectedReturnedTags = Set.of(new TagDto(tagId, tagName));
 
         GiftCertificateDto expectedReturnedCertificate = GiftCertificateDto.builder()
                 .id(certificateId)
@@ -174,7 +175,7 @@ class GiftCertificateServiceImplTest {
         String tagName1 = "name";
         long tagId2 = 4L;
         String tagName2 = "name2";
-        List<TagDto> inputTags = List.of(new TagDto(null, tagName1), new TagDto(null, tagName2));
+        Set<TagDto> inputTags = Set.of(new TagDto(null, tagName1), new TagDto(null, tagName2));
 
         String description = "description";
         int duration = 5;
@@ -184,7 +185,7 @@ class GiftCertificateServiceImplTest {
                 .tags(inputTags)
                 .build();
 
-        List<TagModel> preparedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
+        Set<TagModel> preparedTags = Set.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
 
         GiftCertificateModel expectedGiftCertificate = GiftCertificateModel.builder()
                 .description(description)

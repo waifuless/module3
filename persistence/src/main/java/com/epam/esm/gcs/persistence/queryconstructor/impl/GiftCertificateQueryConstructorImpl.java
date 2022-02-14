@@ -45,7 +45,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
 
         if (context.getTagName() != null) {
             Join<GiftCertificateModel, TagModel> tagJoin =
-                    giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
+                    giftCertificateRoot.join(giftCertificateType.getSet("tags", TagModel.class));
             predicates.add(constructTagNamePredicate(context.getTagName(), tagJoin));
         }
 
@@ -64,7 +64,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
     private Predicate constructTagNamePredicate(String tagName, Join<GiftCertificateModel, TagModel> tagJoin) {
         return criteriaBuilder.equal(
                 tagJoin.get(
-                        tagType.getDeclaredSingularAttribute("name", String.class))
+                        tagType.getSingularAttribute("name", String.class))
                 , tagName);
     }
 
@@ -86,7 +86,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         return criteriaBuilder.like(
                 criteriaBuilder.upper(
                         giftCertificateRoot.get(
-                                giftCertificateType.getDeclaredSingularAttribute(attributeName, String.class))
+                                giftCertificateType.getSingularAttribute(attributeName, String.class))
                 ),
                 searchValueRegex);
     }

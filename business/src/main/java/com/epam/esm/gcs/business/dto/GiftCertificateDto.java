@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
@@ -62,11 +62,11 @@ public class GiftCertificateDto {
 
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     @Size(min = 1, message = "{entity.field.size.min}")
-    private List<@Valid TagDto> tags;
+    private Set<@Valid TagDto> tags;
 
     public GiftCertificateDto(Long id, String name, String description, BigDecimal price, Integer duration,
                               LocalDateTime createDate, LocalDateTime lastUpdateDate,
-                              List<TagDto> tags) {
+                              Set<TagDto> tags) {
 
         this.id = id;
         this.name = name;
