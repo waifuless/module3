@@ -45,7 +45,7 @@ public class GiftCertificateContextConverter
     }
 
     @Getter
-    private enum FieldNameAssociation {
+    public enum FieldNameAssociation {
 
         NAME("name", "name"),
         CREATE_DATE("create_date", "createDate");

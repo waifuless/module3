@@ -11,7 +11,6 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.epam.esm.gcs.business.converter.GiftCertificateContextConverter.FieldNameAssociation.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -218,7 +218,7 @@ class GiftCertificateServiceImplTest {
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
                 .tagName(tagName)
                 .searchValue(searchValue)
-                .sortBy(Map.of("name", SortDirection.ASC))
+                .sortBy(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
         giftCertificateService.findAll(inputContext);
