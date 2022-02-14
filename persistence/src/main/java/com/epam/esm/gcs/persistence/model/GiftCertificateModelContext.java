@@ -1,6 +1,5 @@
 package com.epam.esm.gcs.persistence.model;
 
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +12,5 @@ public class GiftCertificateModelContext {
 
     private String tagName;
     private String searchValue;
-    private Map<GiftCertificateColumn, SortDirection> sortBy;
+    private Map<String, SortDirection> sortBy;
 }

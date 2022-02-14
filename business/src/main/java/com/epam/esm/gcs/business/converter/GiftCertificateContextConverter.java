@@ -1,11 +1,10 @@
 package com.epam.esm.gcs.business.converter;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 
 import java.util.Arrays;
@@ -26,39 +25,54 @@ public class GiftCertificateContextConverter
                 .build();
     }
 
-    private Map<GiftCertificateColumn, SortDirection> parseSortListToMap(List<String> sortBy) {
+    private Map<String, SortDirection> parseSortListToMap(List<String> sortBy) {
         if (sortBy == null) {
             return null;
         }
-        Map<GiftCertificateColumn, SortDirection> sortByParsed = new LinkedHashMap<>();
+
+        Map<String, SortDirection> sortByParsed = new LinkedHashMap<>();
         sortBy.forEach(sortByParam -> {
             int delimiterIndex = sortByParam.lastIndexOf('.');
-            String columnAssociation = sortByParam.substring(0, delimiterIndex);
+            String fieldAssociation = sortByParam.substring(0, delimiterIndex);
             String sortDirectionAssociation = sortByParam.substring(delimiterIndex + 1);
-            ColumnAssociation.findColumnByAssociation(columnAssociation).ifPresent(column -> {
+            FieldNameAssociation.findFieldNameByAssociation(fieldAssociation).ifPresent(field -> {
                 SortDirection direction = SortDirection.valueOfIgnoreCase(sortDirectionAssociation)
                         .orElse(SortDirection.ASC);
-                sortByParsed.put(column, direction);
+                sortByParsed.put(field, direction);
             });
         });
         return sortByParsed;
     }
 
-    @RequiredArgsConstructor
     @Getter
-    private enum ColumnAssociation {
+    private enum FieldNameAssociation {
 
-        NAME("name", GiftCertificateColumn.NAME),
-        CREATE_DATE("create_date", GiftCertificateColumn.CREATE_DATE);
+        NAME("name", "name"),
+        CREATE_DATE("create_date", "createDate");
 
         private final String association;
-        private final GiftCertificateColumn column;
+        private final String fieldName;
 
-        public static Optional<GiftCertificateColumn> findColumnByAssociation(String association) {
+        FieldNameAssociation(String association, String fieldName) {
+            this.association = association;
+            try {
+                validateFieldExistence(fieldName);
+                this.fieldName = fieldName;
+            } catch (NoSuchFieldException e) {
+                throw new Error(e);
+            }
+        }
+
+        public static Optional<String> findFieldNameByAssociation(String association) {
             return Arrays.stream(values())
-                    .filter(columnAssociation -> columnAssociation.getAssociation().equalsIgnoreCase(association))
-                    .map(ColumnAssociation::getColumn)
+                    .filter(fieldNameAssociation ->
+                            fieldNameAssociation.getAssociation().equalsIgnoreCase(association))
+                    .map(FieldNameAssociation::getFieldName)
                     .findAny();
+        }
+
+        private void validateFieldExistence(String fieldName) throws NoSuchFieldException {
+            GiftCertificateModel.class.getDeclaredField(fieldName);
         }
     }
 }

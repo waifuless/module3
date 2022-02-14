@@ -5,6 +5,7 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import com.epam.esm.gcs.persistence.testapplication.TestApplication;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.CREATE_DATE;
@@ -326,7 +328,21 @@ class PostgresGiftCertificateRepositoryImplTest {
         List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(summerChillGiftCertificate,
                 shoppingGiftCertificate, abilityBoxGiftCertificate);
 
-        assertIterableEquals(expectedReturnedGiftCertificates, giftCertificateRepository.findAll(emptyContext));
+        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
+        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
+    }
+
+    @Test
+    void findAll_returnAllOrdered_whenOrderByName() {
+        GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder()
+                .sortBy(Map.of("name", SortDirection.ASC))
+                .build();
+
+        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
+                shoppingGiftCertificate, summerChillGiftCertificate);
+
+        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
+        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
     }
 
     @Test

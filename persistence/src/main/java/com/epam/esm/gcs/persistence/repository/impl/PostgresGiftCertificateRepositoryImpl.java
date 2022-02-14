@@ -2,33 +2,27 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstructor;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import com.epam.esm.gcs.persistence.repository.TagRepository;
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
-import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
-import com.epam.esm.gcs.persistence.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
 
-    private final static String FIND_ALL_QUERY = "SELECT gc FROM GiftCertificateModel gc";
     private final static String DELETE_QUERY = "DELETE FROM GiftCertificateModel gc WHERE gc.id=:id";
     private final static String EXISTS_BY_ID_QUERY = "SELECT COUNT(gc)>0 FROM GiftCertificateModel gc WHERE gc.id=:id";
 
     private final EntityManager entityManager;
-    private final TagRepository tagRepository;
+    private final GiftCertificateQueryConstructor queryConstructor;
 
     @Override
     @Transactional
@@ -76,46 +70,8 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
 
     @Override
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
-
-        Pair<String, List<Pair<String, Object>>> queryWithParams = generatedQueryWithParamsForSearchByContext(context);
-
-        TypedQuery<GiftCertificateModel> query = entityManager.createQuery(queryWithParams.getFirst(),
-                GiftCertificateModel.class);
-
-        for (Pair<String, Object> param : queryWithParams.getSecond()) {
-            query.setParameter(param.getFirst(), param.getSecond());
-        }
-
-        return query.getResultList();
-    }
-
-    private Pair<String, List<Pair<String, Object>>> generatedQueryWithParamsForSearchByContext
-            (GiftCertificateModelContext context) {
-
-        //todo: remove hard coded JPQL
-
-        List<Pair<String, Object>> params = new ArrayList<>();
-        String joinClause = "";
-        StringBuilder whereClause = new StringBuilder();
-        if (context.getTagName() != null) {
-            joinClause = " JOIN gc.tags tag ";
-            whereClause.append(" tag.name=:tagName ");
-            params.add(Pair.of("tagName", context.getTagName()));
-        }
-        if (context.getSearchValue() != null) {
-            if (whereClause.length() != 0) {
-                whereClause.append(" AND ");
-            }
-            whereClause.append(" (UPPER(gc.name) LIKE UPPER(:searchValueRegex) " +
-                    " OR UPPER(gc.description) LIKE UPPER(:searchValueRegex)) ");
-            String searchValueRegex = String.format("%%%s%%", context.getSearchValue());
-            params.add(Pair.of("searchValueRegex", searchValueRegex));
-        }
-
-        String orderClause = prepareOrderClause(context.getSortBy());
-        String findAllByContextQuery = prepareFindAllByContextQuery(joinClause, new String(whereClause), orderClause);
-
-        return Pair.of(findAllByContextQuery, params);
+        CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     private void setNotNullFields(GiftCertificateModel source, GiftCertificateModel destination) {
@@ -134,34 +90,5 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
         if (source.getTags() != null) {
             destination.setTags(source.getTags());
         }
-    }
-
-    private String prepareFindAllByContextQuery(String joinClause, String whereClause, String orderClause) {
-        StringBuilder findAllByContextQuery = new StringBuilder(FIND_ALL_QUERY);
-        if (!joinClause.isBlank()) {
-            findAllByContextQuery.append(" ").append(joinClause).append(" ");
-        }
-        if (!whereClause.isBlank()) {
-            findAllByContextQuery.append(" WHERE ").append(whereClause);
-        }
-        if (!orderClause.isBlank()) {
-            findAllByContextQuery.append(" ORDER BY ").append(orderClause);
-        }
-        return new String(findAllByContextQuery);
-    }
-
-    private String prepareOrderClause(Map<GiftCertificateColumn, SortDirection> orderParams) {
-        StringBuilder orderClause = new StringBuilder();
-        if (orderParams != null && !orderParams.isEmpty()) {
-            List<Map.Entry<GiftCertificateColumn, SortDirection>> orderParamEntries =
-                    new ArrayList<>(orderParams.entrySet());
-            orderClause.append(String.format(" gc.%s %s ", orderParamEntries.get(0).getKey().getColumnName(),
-                    orderParamEntries.get(0).getValue().name()));
-            for (int i = 1; i < orderParamEntries.size(); i++) {
-                orderClause.append(String.format(", gc.%s %s ", orderParamEntries.get(i).getKey().getColumnName(),
-                        orderParamEntries.get(i).getValue().name()));
-            }
-        }
-        return new String(orderClause);
     }
 }
