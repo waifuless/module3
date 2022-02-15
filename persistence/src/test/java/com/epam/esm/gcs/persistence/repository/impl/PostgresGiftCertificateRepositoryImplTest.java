@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.CREATE_DATE;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.DESCRIPTION;
@@ -81,7 +80,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(120)
                 .createDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
-                .tags(Set.of(spaTag, relaxTag, lgbtTag))
+                .tags(List.of(spaTag, relaxTag, lgbtTag))
                 .build();
 
         shoppingGiftCertificate = GiftCertificateModel.builder()
@@ -92,7 +91,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(90)
                 .createDate(LocalDateTime.of(2022, 1, 3, 22, 22, 21, 789 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 14, 0, 22, 123 * 1000000))
-                .tags(Set.of(relaxTag))
+                .tags(List.of(relaxTag))
                 .build();
 
         abilityBoxGiftCertificate = GiftCertificateModel.builder()
@@ -103,7 +102,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(30)
                 .createDate(LocalDateTime.of(2022, 2, 3, 22, 22, 21, 999 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 11, 0, 22, 213 * 1000000))
-                .tags(Set.of(gamingTag, lgbtTag))
+                .tags(List.of(gamingTag, lgbtTag))
                 .build();
     }
 
@@ -114,7 +113,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
         int duration = 2;
 
-        Set<TagModel> inputTags = Set.of(spaTag, relaxTag);
+        List<TagModel> inputTags = List.of(spaTag, relaxTag);
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
@@ -138,7 +137,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
         int duration = 2;
 
-        Set<TagModel> inputTags = Set.of(spaTag, relaxTag);
+        List<TagModel> inputTags = List.of(spaTag, relaxTag);
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
@@ -247,9 +246,11 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void updateById_shouldUpdateTagRelations() {
 
-        TagModel remainingTag = spaTag;
-        TagModel tagToRemoveRelation = relaxTag;
-        Set<TagModel> newTags = Set.of(remainingTag, gamingTag);
+        List<TagModel> relatedTags = summerChillGiftCertificate.getTags();
+
+        TagModel remainingTag = relatedTags.get(0);
+        TagModel tagToRemoveRelation = relatedTags.get(1);
+        List<TagModel> newTags = List.of(remainingTag, gamingTag);
 
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .id(summerChillGiftCertificate.getId())

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "gift_certificate")
@@ -55,10 +55,11 @@ public class GiftCertificateModel {
     @JoinTable(name = "gift_certificate_tag",
             joinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
-    private Set<TagModel> tags;
+    //todo: Make Set instead of list
+    private List<TagModel> tags;
 
     public GiftCertificateModel(Long id, String name, String description, BigDecimal price, Integer duration,
-                                LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<TagModel> tags) {
+                                LocalDateTime createDate, LocalDateTime lastUpdateDate, List<TagModel> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -70,7 +71,7 @@ public class GiftCertificateModel {
     }
 
     public GiftCertificateModel(String name, String description, BigDecimal price, Integer duration,
-                                LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<TagModel> tags) {
+                                LocalDateTime createDate, LocalDateTime lastUpdateDate, List<TagModel> tags) {
         this(null, name, description, price, duration, createDate, lastUpdateDate, tags);
     }
 
