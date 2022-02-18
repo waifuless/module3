@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +75,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateRepository.findAll(modelContext).stream()
                 .map(model -> modelMapper.map(model, GiftCertificateDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addCount(Long id, Integer count) {
+
+    }
+
+    @Override
+    public void reduceCount(Long id, Integer count) {
+
+    }
+
+    @Override
+    public Optional<Long> findActualId(Long id) {
+        //todo: check stackoverflow opportunity
+        return Optional.empty();
     }
 
     private List<TagModel> prepareTags(List<TagModel> tags) {

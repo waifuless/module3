@@ -90,5 +90,14 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
         if (source.getTags() != null) {
             destination.setTags(source.getTags());
         }
+        if (source.getState() != null) {
+            destination.setState(source.getState());
+        }
+        if (source.getCount() != null) {
+            destination.setCount(source.getCount());
+        }
+        if (source.getSuccessor() != null) {
+            destination.setSuccessor(source.getSuccessor());
+        }
     }
 }

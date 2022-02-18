@@ -60,13 +60,22 @@ public class GiftCertificateDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime lastUpdateDate;
 
+    //todo: add validation to state, count, successorId
+    private ActualityStateDto state;
+
+    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
+    @Min(value = 1, message = "{entity.field.min}")
+    private Integer count;
+
+    private Long successorId;
+
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     @Size(min = 1, message = "{entity.field.size.min}")
     private List<@Valid TagDto> tags;
 
     public GiftCertificateDto(Long id, String name, String description, BigDecimal price, Integer duration,
                               LocalDateTime createDate, LocalDateTime lastUpdateDate,
-                              List<TagDto> tags) {
+                              ActualityStateDto state, Integer count, Long successorId, List<TagDto> tags) {
 
         this.id = id;
         this.name = name;
@@ -75,6 +84,9 @@ public class GiftCertificateDto {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+        this.state = state;
+        this.count = count;
+        this.successorId = successorId;
         this.tags = tags;
     }
 

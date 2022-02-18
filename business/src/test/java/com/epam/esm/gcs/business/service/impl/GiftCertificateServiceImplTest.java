@@ -33,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+//todo: remake tests
 class GiftCertificateServiceImplTest {
 
     private final GiftCertificateService giftCertificateService;

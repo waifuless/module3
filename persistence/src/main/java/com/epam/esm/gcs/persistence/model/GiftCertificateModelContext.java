@@ -2,11 +2,13 @@ package com.epam.esm.gcs.persistence.model;
 
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class GiftCertificateModelContext {
 

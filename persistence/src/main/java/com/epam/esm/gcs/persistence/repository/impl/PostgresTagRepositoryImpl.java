@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,10 +72,13 @@ public class PostgresTagRepositoryImpl implements TagRepository {
 
     @Override
     public Optional<TagModel> findByName(String name) {
-        return Optional
-                .ofNullable(entityManager.createQuery(FIND_BY_NAME_QUERY,
-                                TagModel.class)
-                        .setParameter("name", name)
-                        .getSingleResult());
+        try {
+            return Optional.of(entityManager.createQuery(FIND_BY_NAME_QUERY,
+                            TagModel.class)
+                    .setParameter("name", name)
+                    .getSingleResult());
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
     }
 }

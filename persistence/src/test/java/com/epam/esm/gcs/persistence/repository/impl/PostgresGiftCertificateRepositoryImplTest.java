@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
+//todo: remake tests
 class PostgresGiftCertificateRepositoryImplTest {
 
     private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";

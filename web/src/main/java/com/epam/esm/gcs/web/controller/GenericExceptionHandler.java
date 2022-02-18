@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 //todo: make default messages
+//todo: handle EntitiesArchivedException, return urls with actual
 public class GenericExceptionHandler {
 
     private final static String INTERNAL_SERVER_ERROR = "server.error.internal";
