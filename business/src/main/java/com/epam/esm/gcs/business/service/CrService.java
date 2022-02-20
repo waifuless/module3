@@ -7,7 +7,7 @@ import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
  *
  * @param <T> - type of Dto
  */
-public interface CrdService<T> extends ReadService<T> {
+public interface CrService<T> extends ReadService<T> {
 
     /**
      * Prepares Dto for creation (if it needs) and creates Dto.
@@ -17,11 +17,4 @@ public interface CrdService<T> extends ReadService<T> {
      * @throws NotUniquePropertyException when attempting to create dto with already existed unique attribute value
      */
     T create(T dto);
-
-    /**
-     * Deletes Dto by id
-     *
-     * @param id - id of Dto to delete
-     */
-    void delete(Long id);
 }

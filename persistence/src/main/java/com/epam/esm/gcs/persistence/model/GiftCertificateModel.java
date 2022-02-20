@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -88,7 +89,8 @@ public class GiftCertificateModel {
     public GiftCertificateModel(GiftCertificateModel giftCertificate) {
         this(giftCertificate.id, giftCertificate.name, giftCertificate.description, giftCertificate.price,
                 giftCertificate.duration, giftCertificate.createDate, giftCertificate.lastUpdateDate,
-                giftCertificate.state, giftCertificate.count, giftCertificate.successor, giftCertificate.tags);
+                giftCertificate.state, giftCertificate.count, giftCertificate.successor,
+                new ArrayList<>(giftCertificate.tags));
     }
 
     public void setPrice(BigDecimal price) {

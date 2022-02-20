@@ -8,7 +8,8 @@ import java.util.List;
 /**
  * Repository interface that contains all methods for interaction with GiftCertificateModel
  */
-public interface GiftCertificateRepository extends CrudRepository<GiftCertificateModel> {
+public interface GiftCertificateRepository extends CrRepository<GiftCertificateModel>,
+        ArchiverRepository<GiftCertificateModel> {
 
     /**
      * Finds giftCertificates that fit the @param context with specified order.
@@ -18,4 +19,6 @@ public interface GiftCertificateRepository extends CrudRepository<GiftCertificat
      * @return List of found giftCertificates with some specified order
      */
     List<GiftCertificateModel> findAll(GiftCertificateModelContext context);
+
+    void updateCount(Long id, Integer newCount);
 }

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Service interface that contains all methods for interaction with TagDto
  */
-public interface TagService extends CrdService<TagDto> {
+public interface TagService extends CrService<TagDto>, DeleteService {
 
     /**
      * Finds all TagDtos

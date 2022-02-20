@@ -36,9 +36,11 @@ public class UserOrderModel {
 
     @OneToMany(mappedBy = "userOrder", cascade = CascadeType.ALL)
     List<UserOrderPositionModel> positions;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private AppUserModel user;

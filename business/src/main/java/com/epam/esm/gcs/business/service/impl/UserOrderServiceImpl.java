@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,26 +52,20 @@ public class UserOrderServiceImpl implements UserOrderService {
         AppUserModel foundAppUser = modelMapper.map(foundAppUserDto, AppUserModel.class);
         userOrder.setUser(foundAppUser);
 
-        //todo: distinct positions by gift certificate
         List<UserOrderPositionModel> positions = fulfillPositions(userOrder);
+        positions = distinctPositionsByGiftCertificateId(positions);
+
         validateStates(positions);
         userOrder.setPositions(positions);
 
         BigDecimal orderPrice = new BigDecimal(0);
         orderPrice = orderPrice.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
-        //todo: reduce count in gift certificate
+
         for (UserOrderPositionModel position : positions) {
             GiftCertificateModel giftCertificate = position.getGiftCertificate();
-            if (giftCertificate.getCount() < position.getCount()) {
-                //todo: create some exception
-                throw new RuntimeException();
-            }
-
-            //todo: separate somehow orderPrice calculation and giftCertificate reduce count
+            validateCountIsEnough(giftCertificate, position);
             orderPrice = orderPrice.add(giftCertificate.getPrice().multiply(BigDecimal.valueOf(position.getCount())));
-
             giftCertificateService.reduceCount(giftCertificate.getId(), position.getCount());
-            giftCertificate.setCount(giftCertificate.getCount() - position.getCount()); //todo: do i need this?
         }
 
         userOrder.setPrice(orderPrice);
@@ -78,9 +74,11 @@ public class UserOrderServiceImpl implements UserOrderService {
         return modelMapper.map(userOrder, UserOrderDto.class);
     }
 
-    @Override
-    public void delete(Long id) {//todo: think, do i need it
-
+    private void validateCountIsEnough(GiftCertificateModel giftCertificate, UserOrderPositionModel position) {
+        if (giftCertificate.getCount() < position.getCount()) {
+            //todo: create some exception
+            throw new RuntimeException();
+        }
     }
 
     @Override
@@ -102,6 +100,12 @@ public class UserOrderServiceImpl implements UserOrderService {
                 .collect(Collectors.toList());
     }
 
+    private List<UserOrderPositionModel> distinctPositionsByGiftCertificateId(List<UserOrderPositionModel> positions) {
+        Map<Long, UserOrderPositionModel> positionByIdMap = new LinkedHashMap<>();
+        positions.forEach(position -> positionByIdMap.put(position.getGiftCertificate().getId(), position));
+        return new ArrayList<>(positionByIdMap.values());
+    }
+
     //todo: move to validator??
     private void validateStates(List<UserOrderPositionModel> positions) {
         List<Pair<Long, Long>> archivedToActual = new ArrayList<>();
@@ -118,7 +122,7 @@ public class UserOrderServiceImpl implements UserOrderService {
                 }
             }
         }
-        if (!archivedToActual.isEmpty()) {
+        if (!archivedToActual.isEmpty() || !unavailable.isEmpty()) {
             throw new EntitiesArchivedException(GiftCertificateModel.class, archivedToActual, unavailable);
         }
     }

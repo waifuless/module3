@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Service interface that contains all methods for interaction with GiftCertificateDto
  */
-public interface GiftCertificateService extends CrudService<GiftCertificateDto> {
+public interface GiftCertificateService extends CrService<GiftCertificateDto>, ArchiverService<GiftCertificateDto> {
 
     /**
      * Finds giftCertificates that fit the @param context with specified order.
@@ -25,4 +25,6 @@ public interface GiftCertificateService extends CrudService<GiftCertificateDto> 
     void reduceCount(Long id, Integer count);
 
     Optional<Long> findActualId(Long id);
+
+
 }

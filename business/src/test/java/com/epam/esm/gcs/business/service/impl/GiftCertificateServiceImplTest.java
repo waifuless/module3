@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.business.converter.GiftCertificateContextConverter.FieldNameAssociation.NAME;
+import static com.epam.esm.gcs.business.converter.GiftCertificateContextDtoConverter.FieldNameAssociation.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;

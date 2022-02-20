@@ -2,22 +2,23 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.UserOrderModel;
 import com.epam.esm.gcs.persistence.repository.UserOrderRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class PostgresUserOrderRepositoryImpl implements UserOrderRepository {
-
-    private final static String FIND_ALL_QUERY = "SELECT uo FROM UserOrderModel uo";
+public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<UserOrderModel>
+        implements UserOrderRepository {
 
     private final EntityManager entityManager;
+
+    public PostgresUserOrderRepositoryImpl(EntityManager entityManager) {
+        super(entityManager, UserOrderModel.class);
+
+        this.entityManager = entityManager;
+    }
 
     @Override
     @Transactional
@@ -28,26 +29,5 @@ public class PostgresUserOrderRepositoryImpl implements UserOrderRepository {
 
         entityManager.persist(userOrderCopy);
         return userOrderCopy;
-    }
-
-    @Override
-    public Optional<UserOrderModel> findById(long id) {
-        return Optional.ofNullable(entityManager.find(UserOrderModel.class, id));
-    }
-
-    @Override
-    public void delete(long id) {
-
-    }
-
-    @Override
-    public Boolean existsById(long id) {
-        return null;
-    }
-
-    @Override
-    public List<UserOrderModel> findAll() {
-        return entityManager.createQuery(FIND_ALL_QUERY, UserOrderModel.class)
-                .getResultList();
     }
 }

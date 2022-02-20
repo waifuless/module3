@@ -49,27 +49,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void delete(Long id) {
-        giftCertificateRepository.delete(id);
-    }
-
-    @Override
-    @Transactional
-    public void updateById(Long id, GiftCertificateDto dto) {
-        GiftCertificateModel giftCertificate = modelMapper.map(dto, GiftCertificateModel.class);
-        if (!giftCertificateRepository.existsById(id)) {
-            throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(id));
-        }
-
-        if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
-            List<TagModel> tags = giftCertificate.getTags();
-            tags = prepareTags(tags);
-            giftCertificate.setTags(tags);
-        }
-        giftCertificateRepository.updateById(id, giftCertificate);
-    }
-
-    @Override
     public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
         GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
         return giftCertificateRepository.findAll(modelContext).stream()
@@ -78,19 +57,58 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void addCount(Long id, Integer count) {
+    public void addCount(Long id, Integer countToAdd) {
+        GiftCertificateDto foundGiftCertificateDto = findById(id);
 
+        Integer currentCount = foundGiftCertificateDto.getCount();
+        Integer newCount = currentCount + countToAdd;
+        giftCertificateRepository.updateCount(id, newCount);
     }
 
     @Override
-    public void reduceCount(Long id, Integer count) {
+    public void reduceCount(Long id, Integer countToReduce) {
+        GiftCertificateDto foundGiftCertificateDto = findById(id);
 
+        Integer currentCount = foundGiftCertificateDto.getCount();
+        //todo: move to validator with custom exception
+        if (currentCount < countToReduce) {
+            throw new RuntimeException();
+        }
+
+        Integer newCount = currentCount - countToReduce;
+        giftCertificateRepository.updateCount(id, newCount);
     }
 
     @Override
     public Optional<Long> findActualId(Long id) {
-        //todo: check stackoverflow opportunity
-        return Optional.empty();
+        return giftCertificateRepository.findActualId(id);
+    }
+
+    @Override
+    public void archive(Long id) {
+        if (!giftCertificateRepository.existsById(id)) {
+            throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(id));
+        }
+        giftCertificateRepository.archive(id);
+    }
+
+    @Override
+    @Transactional
+    public GiftCertificateDto archiveAndCreateSuccessor(Long idToArchive, GiftCertificateDto modifications) {
+        if (!giftCertificateRepository.existsById(idToArchive)) {
+            throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(idToArchive));
+        }
+        GiftCertificateModel giftCertificate = modelMapper.map(modifications, GiftCertificateModel.class);
+
+        if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
+            List<TagModel> tags = giftCertificate.getTags();
+            tags = prepareTags(tags);
+            giftCertificate.setTags(tags);
+        }
+        GiftCertificateModel successor =
+                giftCertificateRepository.archiveAndCreateSuccessor(idToArchive, giftCertificate);
+
+        return modelMapper.map(successor, GiftCertificateDto.class);
     }
 
     private List<TagModel> prepareTags(List<TagModel> tags) {
