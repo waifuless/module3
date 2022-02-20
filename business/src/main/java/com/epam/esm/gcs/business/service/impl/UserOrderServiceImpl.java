@@ -3,12 +3,11 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.AppUserDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.UserOrderDto;
-import com.epam.esm.gcs.business.exception.EntitiesArchivedException;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.AppUserService;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.UserOrderService;
-import com.epam.esm.gcs.persistence.model.ActualityStateModel;
+import com.epam.esm.gcs.business.validation.UserOrderValidator;
 import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.UserOrderModel;
@@ -16,7 +15,6 @@ import com.epam.esm.gcs.persistence.model.UserOrderPositionModel;
 import com.epam.esm.gcs.persistence.repository.UserOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +39,7 @@ public class UserOrderServiceImpl implements UserOrderService {
     private final GiftCertificateService giftCertificateService;
     private final UserOrderRepository userOrderRepository;
     private final ModelMapper modelMapper;
+    private final UserOrderValidator userOrderValidator;
 
     @Override
     @Transactional
@@ -55,7 +53,8 @@ public class UserOrderServiceImpl implements UserOrderService {
         List<UserOrderPositionModel> positions = fulfillPositions(userOrder);
         positions = distinctPositionsByGiftCertificateId(positions);
 
-        validateStates(positions);
+        userOrderValidator.validateStates(positions);
+        userOrderValidator.validateCountsAreEnough(positions);
         userOrder.setPositions(positions);
 
         BigDecimal orderPrice = new BigDecimal(0);
@@ -63,7 +62,6 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         for (UserOrderPositionModel position : positions) {
             GiftCertificateModel giftCertificate = position.getGiftCertificate();
-            validateCountIsEnough(giftCertificate, position);
             orderPrice = orderPrice.add(giftCertificate.getPrice().multiply(BigDecimal.valueOf(position.getCount())));
             giftCertificateService.reduceCount(giftCertificate.getId(), position.getCount());
         }
@@ -72,13 +70,6 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         userOrder = userOrderRepository.create(userOrder);
         return modelMapper.map(userOrder, UserOrderDto.class);
-    }
-
-    private void validateCountIsEnough(GiftCertificateModel giftCertificate, UserOrderPositionModel position) {
-        if (giftCertificate.getCount() < position.getCount()) {
-            //todo: create some exception
-            throw new RuntimeException();
-        }
     }
 
     @Override
@@ -104,27 +95,6 @@ public class UserOrderServiceImpl implements UserOrderService {
         Map<Long, UserOrderPositionModel> positionByIdMap = new LinkedHashMap<>();
         positions.forEach(position -> positionByIdMap.put(position.getGiftCertificate().getId(), position));
         return new ArrayList<>(positionByIdMap.values());
-    }
-
-    //todo: move to validator??
-    private void validateStates(List<UserOrderPositionModel> positions) {
-        List<Pair<Long, Long>> archivedToActual = new ArrayList<>();
-        List<Long> unavailable = new ArrayList<>();
-        for (UserOrderPositionModel position : positions) {
-            GiftCertificateModel giftCertificate = position.getGiftCertificate();
-            if (ActualityStateModel.ARCHIVED.equals(giftCertificate.getState())) {
-                Long archivedId = giftCertificate.getId();
-                Optional<Long> optionalActualId = giftCertificateService.findActualId(archivedId);
-                if (optionalActualId.isPresent()) {
-                    archivedToActual.add(Pair.of(archivedId, optionalActualId.get()));
-                } else {
-                    unavailable.add(archivedId);
-                }
-            }
-        }
-        if (!archivedToActual.isEmpty() || !unavailable.isEmpty()) {
-            throw new EntitiesArchivedException(GiftCertificateModel.class, archivedToActual, unavailable);
-        }
     }
 
     @Override

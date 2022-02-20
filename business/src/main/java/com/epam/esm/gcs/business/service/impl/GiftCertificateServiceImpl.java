@@ -6,6 +6,7 @@ import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
+import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -28,6 +29,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagService tagService;
     private final GiftCertificateRepository giftCertificateRepository;
     private final ModelMapper modelMapper;
+    private final GiftCertificateValidator giftCertificateValidator;
 
     @Override
     public GiftCertificateDto findById(Long id) {
@@ -68,13 +70,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public void reduceCount(Long id, Integer countToReduce) {
         GiftCertificateDto foundGiftCertificateDto = findById(id);
+        GiftCertificateModel foundGiftCertificate = modelMapper
+                .map(foundGiftCertificateDto, GiftCertificateModel.class);
 
-        Integer currentCount = foundGiftCertificateDto.getCount();
-        //todo: move to validator with custom exception
-        if (currentCount < countToReduce) {
-            throw new RuntimeException();
-        }
+        giftCertificateValidator.validateCountIsEnough(foundGiftCertificate, countToReduce);
 
+        Integer currentCount = foundGiftCertificate.getCount();
         Integer newCount = currentCount - countToReduce;
         giftCertificateRepository.updateCount(id, newCount);
     }

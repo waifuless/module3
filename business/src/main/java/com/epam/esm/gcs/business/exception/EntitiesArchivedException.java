@@ -13,6 +13,6 @@ public class EntitiesArchivedException extends RuntimeException {
     private static final long serialVersionUID = -8135216827790441856L;
 
     private final Class<?> dtoClass;
-    private List<Pair<Long, Long>> archivedToActual;
-    private List<Long> unavailable;
+    private final List<Pair<Long, Long>> archivedToActual;
+    private final List<Long> unavailable;
 }
