@@ -43,9 +43,9 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (context.getTagName() != null && !context.getTagName().isEmpty()) {
+        if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
 
-            predicates.add(constructTagNamePredicate(context.getTagName(), giftCertificateRoot));
+            predicates.add(constructTagNamePredicate(context.getTagNames(), giftCertificateRoot));
         }
 
         if (context.getSearchValue() != null) {
@@ -101,8 +101,8 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
     private List<Order> constructOrdersList(GiftCertificateModelContext context,
                                             Root<GiftCertificateModel> giftCertificateRoot) {
         List<Order> orderList = new ArrayList<>();
-        if (context.getSortBy() != null) {
-            for (Map.Entry<String, SortDirection> sortByEntry : context.getSortBy().entrySet()) {
+        if (context.getSortDirectionByFieldNameMap() != null) {
+            for (Map.Entry<String, SortDirection> sortByEntry : context.getSortDirectionByFieldNameMap().entrySet()) {
                 Expression<GiftCertificateModel> attribute = giftCertificateRoot.get(sortByEntry.getKey());
                 Order order;
                 if (sortByEntry.getValue().equals(SortDirection.ASC)) {

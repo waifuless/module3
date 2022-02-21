@@ -279,9 +279,9 @@ class GiftCertificateServiceImplTest {
                 .build();
 
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
-                .tagName(List.of(tagName))
+                .tagNames(List.of(tagName))
                 .searchValue(searchValue)
-                .sortBy(Map.of(NAME.getFieldName(), SortDirection.ASC))
+                .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
         giftCertificateService.findAll(inputContext);

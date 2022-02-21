@@ -380,7 +380,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnAllOrdered_whenOrderByName() {
         GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder()
-                .sortBy(Map.of("name", SortDirection.ASC))
+                .sortDirectionByFieldNameMap(Map.of("name", SortDirection.ASC))
                 .build();
 
         List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
@@ -402,7 +402,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnOnlySearchedEntries_byTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .tagName(List.of("relax"))
+                .tagNames(List.of("relax"))
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),

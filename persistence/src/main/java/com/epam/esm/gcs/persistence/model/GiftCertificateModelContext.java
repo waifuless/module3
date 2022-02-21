@@ -15,7 +15,7 @@ import java.util.Map;
 @Builder
 public class GiftCertificateModelContext {
 
-    private List<String> tagName;
+    private List<String> tagNames;
     private String searchValue;
-    private Map<String, SortDirection> sortBy;
+    private Map<String, SortDirection> sortDirectionByFieldNameMap;
 }
