@@ -2,6 +2,7 @@ package com.epam.esm.gcs.persistence.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @IdClass(UserOrderPositionModel.UserOrderGiftCertificatePk.class)
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserOrderPositionModel {

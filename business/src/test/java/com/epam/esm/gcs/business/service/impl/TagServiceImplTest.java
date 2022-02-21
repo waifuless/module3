@@ -1,6 +1,5 @@
 package com.epam.esm.gcs.business.service.impl;
 
-import com.epam.esm.gcs.business.config.ModelMapperConfig;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
@@ -33,7 +32,7 @@ class TagServiceImplTest {
     private final TagRepository tagRepository;
 
     public TagServiceImplTest(@Mock TagRepository tagRepository) {
-        this.tagService = new TagServiceImpl(tagRepository, new ModelMapperConfig().modelMapper());
+        this.tagService = new TagServiceImpl(tagRepository, new ModelMapperTestConfig().modelMapper());
         this.tagRepository = tagRepository;
     }
 
