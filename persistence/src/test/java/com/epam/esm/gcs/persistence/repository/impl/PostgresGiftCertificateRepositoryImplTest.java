@@ -402,7 +402,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnOnlySearchedEntries_byTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .tagName("relax")
+                .tagName(List.of("relax"))
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),

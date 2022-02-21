@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.Map;
 @Builder
 public class GiftCertificateModelContext {
 
-    private String tagName;
+    private List<String> tagName;
     private String searchValue;
     private Map<String, SortDirection> sortBy;
 }

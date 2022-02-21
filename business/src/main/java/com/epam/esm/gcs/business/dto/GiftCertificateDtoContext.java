@@ -11,8 +11,9 @@ import java.util.List;
 @Builder
 public class GiftCertificateDtoContext {
 
-    @Length(max = 100, message = "{entity.field.length.max}")
-    private String tagName;
+    private List<
+            @Length(max = 100, message = "{entity.field.length.max}")
+                    String> tagName;
 
     @Length(max = 200, message = "{entity.field.length.max}")
     private String searchValue;

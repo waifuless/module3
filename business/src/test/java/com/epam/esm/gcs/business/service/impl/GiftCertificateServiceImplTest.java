@@ -273,13 +273,13 @@ class GiftCertificateServiceImplTest {
         String searchValue = "simpleSearchValue";
         List<String> sortByList = List.of("name.asc");
         GiftCertificateDtoContext inputContext = GiftCertificateDtoContext.builder()
-                .tagName(tagName)
+                .tagName(List.of(tagName))
                 .searchValue(searchValue)
                 .sortBy(sortByList)
                 .build();
 
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
-                .tagName(tagName)
+                .tagName(List.of(tagName))
                 .searchValue(searchValue)
                 .sortBy(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
