@@ -2,19 +2,10 @@ package com.epam.esm.gcs.business.service;
 
 import com.epam.esm.gcs.business.dto.TagDto;
 
-import java.util.List;
-
 /**
  * Service interface that contains all methods for interaction with TagDto
  */
 public interface TagService extends CrService<TagDto>, DeleteService {
-
-    /**
-     * Finds all TagDtos
-     *
-     * @return List of all TagDtos
-     */
-    List<TagDto> findAll();
 
     /**
      * Checks the existence of TagDto with some name

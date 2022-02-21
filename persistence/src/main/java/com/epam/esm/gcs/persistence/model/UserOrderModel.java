@@ -35,18 +35,23 @@ public class UserOrderModel {
 
     private final static int DEFAULT_SCALE = 2;
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
-    @OneToMany(mappedBy = "userOrder", cascade = CascadeType.ALL)
-    List<UserOrderPositionModel> positions;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private AppUserModel user;
+
     @Setter(AccessLevel.NONE)
     private BigDecimal price;
+
     @Column(name = "create_date")
     private LocalDateTime createDate;
+
+    @OneToMany(mappedBy = "userOrder", cascade = CascadeType.ALL)
+    List<UserOrderPositionModel> positions;
 
     public UserOrderModel(UserOrderModel userOrder) {
         this.id = userOrder.id;

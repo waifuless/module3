@@ -1,12 +1,13 @@
 package com.epam.esm.gcs.business.service.impl;
 
-import com.epam.esm.gcs.business.config.ModelMapperConfig;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
+import com.epam.esm.gcs.business.service.testapplication.TestApplication;
+import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -15,7 +16,10 @@ import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,21 +36,25 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-//todo: remake tests
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = TestApplication.class)
 class GiftCertificateServiceImplTest {
 
     private final GiftCertificateService giftCertificateService;
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final TagService tagService;
+    private final GiftCertificateValidator giftCertificateValidator;
 
     public GiftCertificateServiceImplTest(@Mock TagService tagService,
-                                          @Mock GiftCertificateRepository giftCertificateRepository) {
+                                          @Mock GiftCertificateRepository giftCertificateRepository,
+                                          @Autowired ModelMapper modelMapper,
+                                          @Mock GiftCertificateValidator giftCertificateValidator) {
         this.giftCertificateService = new GiftCertificateServiceImpl(tagService, giftCertificateRepository,
-                new ModelMapperConfig().modelMapper());
+                modelMapper, giftCertificateValidator);
         this.giftCertificateRepository = giftCertificateRepository;
         this.tagService = tagService;
+        this.giftCertificateValidator = giftCertificateValidator;
     }
 
     @Test

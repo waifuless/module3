@@ -11,7 +11,6 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class GiftCertificateServiceImpl implements GiftCertificateService {
+public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertificateDto, GiftCertificateModel>
+        implements GiftCertificateService {
 
     private final static String ID_FIELD = "id";
 
@@ -31,12 +30,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final ModelMapper modelMapper;
     private final GiftCertificateValidator giftCertificateValidator;
 
-    @Override
-    public GiftCertificateDto findById(Long id) {
-        GiftCertificateModel giftCertificate = giftCertificateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(GiftCertificateDto.class,
-                        ID_FIELD, String.valueOf(id)));
-        return modelMapper.map(giftCertificate, GiftCertificateDto.class);
+    public GiftCertificateServiceImpl(TagService tagService, GiftCertificateRepository giftCertificateRepository,
+                                      ModelMapper modelMapper, GiftCertificateValidator giftCertificateValidator) {
+        super(giftCertificateRepository, modelMapper, GiftCertificateDto.class);
+        this.tagService = tagService;
+        this.giftCertificateRepository = giftCertificateRepository;
+        this.modelMapper = modelMapper;
+        this.giftCertificateValidator = giftCertificateValidator;
     }
 
     @Override

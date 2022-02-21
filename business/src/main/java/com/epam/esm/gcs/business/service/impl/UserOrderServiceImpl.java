@@ -3,7 +3,6 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.AppUserDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.UserOrderDto;
-import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.AppUserService;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.UserOrderService;
@@ -13,7 +12,6 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.UserOrderModel;
 import com.epam.esm.gcs.persistence.model.UserOrderPositionModel;
 import com.epam.esm.gcs.persistence.repository.UserOrderRepository;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +25,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class UserOrderServiceImpl implements UserOrderService {
-
-    private final static String ID_FIELD = "id";
+public class UserOrderServiceImpl extends AbstractReadService<UserOrderDto, UserOrderModel>
+        implements UserOrderService {
 
     private final static int DEFAULT_SCALE = 2;
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
@@ -40,6 +36,18 @@ public class UserOrderServiceImpl implements UserOrderService {
     private final UserOrderRepository userOrderRepository;
     private final ModelMapper modelMapper;
     private final UserOrderValidator userOrderValidator;
+
+    public UserOrderServiceImpl(AppUserService appUserService, GiftCertificateService giftCertificateService,
+                                UserOrderRepository userOrderRepository, ModelMapper modelMapper,
+                                UserOrderValidator userOrderValidator) {
+        super(userOrderRepository, modelMapper, UserOrderDto.class);
+
+        this.appUserService = appUserService;
+        this.giftCertificateService = giftCertificateService;
+        this.userOrderRepository = userOrderRepository;
+        this.modelMapper = modelMapper;
+        this.userOrderValidator = userOrderValidator;
+    }
 
     @Override
     @Transactional
@@ -72,13 +80,6 @@ public class UserOrderServiceImpl implements UserOrderService {
         return modelMapper.map(userOrder, UserOrderDto.class);
     }
 
-    @Override
-    public UserOrderDto findById(Long id) {
-        UserOrderModel userOrder = userOrderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(UserOrderDto.class, ID_FIELD, String.valueOf(id)));
-        return modelMapper.map(userOrder, UserOrderDto.class);
-    }
-
     private List<UserOrderPositionModel> fulfillPositions(UserOrderModel userOrder) {
         return userOrder.getPositions().stream()
                 .peek(position -> {
@@ -95,12 +96,5 @@ public class UserOrderServiceImpl implements UserOrderService {
         Map<Long, UserOrderPositionModel> positionByIdMap = new LinkedHashMap<>();
         positions.forEach(position -> positionByIdMap.put(position.getGiftCertificate().getId(), position));
         return new ArrayList<>(positionByIdMap.values());
-    }
-
-    @Override
-    public List<UserOrderDto> findAll() {
-        return userOrderRepository.findAll().stream()
-                .map(model -> modelMapper.map(model, UserOrderDto.class))
-                .collect(Collectors.toList());
     }
 }
