@@ -1,103 +1,65 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
-import com.epam.esm.gcs.persistence.mapper.TagRowMapper;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.ID;
-import static com.epam.esm.gcs.persistence.tableproperty.TagColumn.NAME;
-
 @Repository
-public class PostgresTagRepositoryImpl implements TagRepository {
+public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> implements TagRepository {
 
-    private final static String TABLE_NAME = "tag";
+    private final static String DELETE_QUERY = "DELETE FROM TagModel t WHERE t.id=:id";
+    private final static String EXISTS_BY_NAME_QUERY = "SELECT COUNT(t)>0 FROM TagModel t WHERE t.name=:name";
+    private final static String FIND_BY_NAME_QUERY = "SELECT t FROM TagModel t WHERE t.name=:name";
 
-    private final static String FIND_ALL_QUERY = "SELECT id as id, name as name FROM tag";
-    private final static String FIND_BY_ID_QUERY = "SELECT id as id, name as name FROM tag WHERE id = ?";
-    private final static String DELETE_QUERY = "DELETE FROM tag WHERE id = ?";
-    private final static String EXISTS_BY_ID_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE id = ?))";
-    private final static String EXISTS_BY_NAME_QUERY = "SELECT (EXISTS(SELECT 1 FROM tag WHERE name = ?))";
-    private final static String FIND_BY_NAME_QUERY = "SELECT id as id, name as name FROM tag WHERE name = ?";
-    private final static String FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY = "SELECT id as id, name as name FROM tag" +
-            " JOIN gift_certificate_tag gct on tag.id = gct.tag_id" +
-            " WHERE gct.gift_certificate_id = ?";
+    private final EntityManager entityManager;
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final TagRowMapper tagRowMapper;
+    public PostgresTagRepositoryImpl(EntityManager entityManager) {
+        super(entityManager, TagModel.class);
 
-    public PostgresTagRepositoryImpl(JdbcTemplate jdbcTemplate, TagRowMapper tagRowMapper) {
-        this.tagRowMapper = tagRowMapper;
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(ID.getColumnName()).usingColumns(NAME.getColumnName());
+        this.entityManager = entityManager;
     }
 
     @Override
+    @Transactional
     public TagModel create(TagModel tagModel) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(NAME.getColumnName(), tagModel.getName());
-        return new TagModel(jdbcInsert.executeAndReturnKey(parameters).longValue(), tagModel.getName());
+        TagModel tagModelCopy = new TagModel(tagModel);
+
+        entityManager.persist(tagModelCopy);
+        return tagModelCopy;
     }
 
     @Override
-    public Optional<TagModel> findById(long id) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
-                    new Object[]{id}, new int[]{Types.BIGINT}, tagRowMapper));
-        } catch (EmptyResultDataAccessException ex) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public List<TagModel> findAll() {
-        return jdbcTemplate.query(FIND_ALL_QUERY, tagRowMapper);
-    }
-
-    @Override
+    @Transactional
     public void delete(long id) {
-        jdbcTemplate.update(DELETE_QUERY, id);
-    }
-
-    @Override
-    public Boolean existsById(long id) {
-        return jdbcTemplate.queryForObject(EXISTS_BY_ID_QUERY,
-                new Object[]{id}, new int[]{Types.BIGINT},
-                Boolean.class);
+        entityManager
+                .createQuery(DELETE_QUERY)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
     public Boolean existsByName(String name) {
-        return jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY,
-                new Object[]{name}, new int[]{Types.VARCHAR},
-                Boolean.class);
+        return entityManager
+                .createQuery(EXISTS_BY_NAME_QUERY,
+                        Boolean.class)
+                .setParameter("name", name)
+                .getSingleResult();
     }
 
     @Override
     public Optional<TagModel> findByName(String name) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY,
-                    new Object[]{name}, new int[]{Types.VARCHAR}, tagRowMapper));
-        } catch (EmptyResultDataAccessException ex) {
+            return Optional.of(entityManager.createQuery(FIND_BY_NAME_QUERY,
+                            TagModel.class)
+                    .setParameter("name", name)
+                    .getSingleResult());
+        } catch (NoResultException ex) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<TagModel> findAllByGiftCertificateId(long id) {
-        return jdbcTemplate.query(FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY,
-                new Object[]{id}, new int[]{Types.BIGINT},
-                tagRowMapper);
     }
 }
