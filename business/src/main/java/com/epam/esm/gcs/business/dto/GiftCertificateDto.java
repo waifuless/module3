@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.business.dto;
 
 import com.epam.esm.gcs.business.dto.group.OnGiftCertificateCreate;
+import com.epam.esm.gcs.business.dto.group.OnUserOrderCreate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,10 +13,10 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +32,9 @@ public class GiftCertificateDto {
     private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
     private final static String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
-    @Null(message = "{entity.field.should.be.null}")
+    @Null(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.should.be.null")
+    @Positive(message = "{entity.field.not.positive}")
+    @NotNull(groups = OnUserOrderCreate.class, message = "violation.entity.field.null")
     private Long id;
 
     @NotBlank(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.blank")
@@ -49,7 +52,7 @@ public class GiftCertificateDto {
     private BigDecimal price;
 
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
-    @Min(value = 1, message = "{entity.field.min}")
+    @Positive(message = "{entity.field.not.positive}")
     private Integer duration;
 
     @Null(message = "{entity.field.should.be.null}")
@@ -60,13 +63,14 @@ public class GiftCertificateDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime lastUpdateDate;
 
-    //todo: add validation to state, count, successorId
+    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
     private ActualityStateDto state;
 
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
-    @Min(value = 1, message = "{entity.field.min}")
+    @Positive(message = "{entity.field.not.positive}")
     private Integer count;
 
+    @Positive(message = "{entity.field.not.positive}")
     private Long successorId;
 
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")

@@ -1,7 +1,7 @@
 package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.UserOrderDto;
-import com.epam.esm.gcs.business.dto.group.OnGiftCertificateCreate;
+import com.epam.esm.gcs.business.dto.group.OnUserOrderCreate;
 import com.epam.esm.gcs.business.service.UserOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,11 +34,11 @@ public class UserOrderController {
         return orderService.findAll();
     }
 
-    @Validated(OnGiftCertificateCreate.class)
+    @Validated(OnUserOrderCreate.class)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserOrderDto create(@Valid @RequestBody UserOrderDto appUserDto) {
-        return orderService.create(appUserDto);
+    public UserOrderDto create(@Valid @RequestBody UserOrderDto userOrderDto) {
+        return orderService.create(userOrderDto);
     }
 
     @GetMapping("/{id}")

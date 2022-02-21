@@ -56,7 +56,6 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
         giftCertificate.setCount(newCount);
     }
 
-    //todo: FINISH METHOD
     @Override
     public Optional<Long> findActualId(Long archivedId) {
         GiftCertificateModel archived = entityManager.find(GiftCertificateModel.class, archivedId);
@@ -66,7 +65,8 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
             visitedIds.add(archived.getId());
             if (visitedIds.contains(successor.getId())) {
                 //todo: make ex, inconsistent data
-                throw new RuntimeException("inconsistent data");
+//                throw new RuntimeException("inconsistent data");
+                return Optional.empty();
             }
 
             if (successor.getState().equals(ActualityStateModel.ACTUAL)) {

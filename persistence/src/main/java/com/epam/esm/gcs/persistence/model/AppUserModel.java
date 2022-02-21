@@ -27,7 +27,6 @@ public class AppUserModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //todo: check email max length
     private String email;
 
     @OneToMany(mappedBy = "user")

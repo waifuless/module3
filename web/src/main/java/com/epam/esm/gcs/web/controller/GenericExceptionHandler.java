@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 //todo: make default messages
-//todo: handle EntitiesArchivedException, return urls with actual
 public class GenericExceptionHandler {
 
     private final static String INTERNAL_SERVER_ERROR = "server.error.internal";
@@ -127,7 +126,8 @@ public class GenericExceptionHandler {
             Class<?> targetClass = invalidFormatEx.getPath().get(0).getFrom().getClass();
             return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
         } catch (Exception ex) {
-            return new ErrorResponse(DEFAULT_BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            String errorMessage = clientErrorMessageSource.getMessage(DEFAULT_BAD_REQUEST, null, locale);
+            return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
         }
     }
 
