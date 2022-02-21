@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -27,11 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.COUNT;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.CREATE_DATE;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.DESCRIPTION;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.DURATION;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.LAST_UPDATE_DATE;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.PRICE;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.STATE_ID;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.SUCCESSOR_ID;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateTagColumn.GIFT_CERTIFICATE_ID;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateTagColumn.TAG_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +50,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
-//todo: remake tests
 class PostgresGiftCertificateRepositoryImplTest {
 
     private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
@@ -81,6 +84,9 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(120)
                 .createDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
+                .state(ActualityStateModel.ACTUAL)
+                .count(12)
+                .successor(null)
                 .tags(List.of(spaTag, relaxTag, lgbtTag))
                 .build();
 
@@ -92,6 +98,9 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(90)
                 .createDate(LocalDateTime.of(2022, 1, 3, 22, 22, 21, 789 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 14, 0, 22, 123 * 1000000))
+                .state(ActualityStateModel.ACTUAL)
+                .count(22)
+                .successor(null)
                 .tags(List.of(relaxTag))
                 .build();
 
@@ -103,6 +112,9 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .duration(30)
                 .createDate(LocalDateTime.of(2022, 2, 3, 22, 22, 21, 999 * 1000000))
                 .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 11, 0, 22, 213 * 1000000))
+                .state(ActualityStateModel.ACTUAL)
+                .count(32)
+                .successor(null)
                 .tags(List.of(gamingTag, lgbtTag))
                 .build();
     }
@@ -114,12 +126,19 @@ class PostgresGiftCertificateRepositoryImplTest {
         BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
         int duration = 2;
 
+        ActualityStateModel state = ActualityStateModel.ACTUAL;
+        Integer count = 123;
+        GiftCertificateModel successor = null;
+
         List<TagModel> inputTags = List.of(spaTag, relaxTag);
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
                 .price(price)
                 .duration(duration)
+                .state(state)
+                .count(count)
+                .successor(successor)
                 .tags(inputTags)
                 .build();
         GiftCertificateModel inputGiftCertificateCopy = new GiftCertificateModel(inputGiftCertificate);
@@ -138,12 +157,17 @@ class PostgresGiftCertificateRepositoryImplTest {
         BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
         int duration = 2;
 
+        ActualityStateModel state = ActualityStateModel.ACTUAL;
+        Integer count = 123;
+
         List<TagModel> inputTags = List.of(spaTag, relaxTag);
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
                 .price(price)
                 .duration(duration)
+                .state(state)
+                .count(count)
                 .tags(inputTags)
                 .build();
 
@@ -166,15 +190,23 @@ class PostgresGiftCertificateRepositoryImplTest {
         assertTrue(LocalDateTime.now().isAfter(returnedGiftCertificate.getCreateDate()));
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
-                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s = '%s'",
+                String.format("%s = %d AND %s = '%s' AND %s = '%s'" +
+                                " AND %s = '%s'" +
+                                " AND %s = '%s'" +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s')" +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s')" +
+                                " AND %s = %d " +
+                                " AND %s = %d AND %s IS NULL",
                         GiftCertificateColumn.ID.getColumnName(), returnedGiftCertificate.getId(),
                         GiftCertificateColumn.NAME.getColumnName(), returnedGiftCertificate.getName(),
                         DESCRIPTION.getColumnName(), returnedGiftCertificate.getDescription(),
                         PRICE.getColumnName(), returnedGiftCertificate.getPrice(),
                         DURATION.getColumnName(), returnedGiftCertificate.getDuration(),
                         CREATE_DATE.getColumnName(), returnedGiftCertificate.getCreateDate(),
-                        LAST_UPDATE_DATE.getColumnName(), returnedGiftCertificate.getLastUpdateDate()));
+                        LAST_UPDATE_DATE.getColumnName(), returnedGiftCertificate.getLastUpdateDate(),
+                        STATE_ID.getColumnName(), returnedGiftCertificate.getState().getId(),
+                        COUNT.getColumnName(), returnedGiftCertificate.getCount(),
+                        SUCCESSOR_ID.getColumnName()));
         assertEquals(1, giftCertificateCount);
 
         for (TagModel tag : returnedGiftCertificate.getTags()) {
@@ -205,7 +237,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     }
 
     @Test
-    void updateById_shouldUpdateNotNullFieldsInDataBase() {
+    void archiveAndCreateSuccessor_shouldSaveSuccessorUsedNotNullFieldsInDataBase() {
 
         String newName = summerChillGiftCertificate.getName() + "newSuffix";
         int newDuration = summerChillGiftCertificate.getDuration() + 3;
@@ -220,32 +252,37 @@ class PostgresGiftCertificateRepositoryImplTest {
 
         LocalDateTime dateTimeBeforeUpdate = LocalDateTime.now();
 
-        giftCertificateRepository.updateById(summerChillGiftCertificate.getId(), inputGiftCertificate);
+        GiftCertificateModel successor =
+                giftCertificateRepository.archiveAndCreateSuccessor(summerChillGiftCertificate.getId(),
+                        inputGiftCertificate);
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s > '%s'",
-                        GiftCertificateColumn.ID.getColumnName(), summerChillGiftCertificate.getId(),
-                        GiftCertificateColumn.NAME.getColumnName(), summerChillGiftCertificate.getName(),
-                        DESCRIPTION.getColumnName(), summerChillGiftCertificate.getDescription(),
-                        PRICE.getColumnName(), summerChillGiftCertificate.getPrice(),
-                        DURATION.getColumnName(), summerChillGiftCertificate.getDuration(),
-                        CREATE_DATE.getColumnName(), summerChillGiftCertificate.getCreateDate(),
-                        LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate));
+                                " AND %s > '%s' AND %s = %d AND %s = %d AND %s IS NULL",
+                        GiftCertificateColumn.ID.getColumnName(), successor.getId(),
+                        GiftCertificateColumn.NAME.getColumnName(), successor.getName(),
+                        DESCRIPTION.getColumnName(), successor.getDescription(),
+                        PRICE.getColumnName(), successor.getPrice(),
+                        DURATION.getColumnName(), successor.getDuration(),
+                        CREATE_DATE.getColumnName(), successor.getCreateDate(),
+                        LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate,
+                        STATE_ID.getColumnName(), successor.getState().getId(),
+                        COUNT.getColumnName(), successor.getCount(),
+                        SUCCESSOR_ID.getColumnName()));
         assertEquals(1, giftCertificateCount);
 
-        for (TagModel tag : summerChillGiftCertificate.getTags()) {
+        for (TagModel tag : successor.getTags()) {
             long giftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                     GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                            GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
+                            GIFT_CERTIFICATE_ID.getColumnName(), successor.getId(),
                             TAG_ID.getColumnName(), tag.getId()));
             assertEquals(1, giftCertificateTagRelationCount);
         }
     }
 
     @Test
-    void updateById_shouldUpdateTagRelations() {
+    void archiveAndCreateSuccessor_shouldUpdateTagRelationsForSuccessor() {
 
         List<TagModel> relatedTags = summerChillGiftCertificate.getTags();
 
@@ -260,32 +297,36 @@ class PostgresGiftCertificateRepositoryImplTest {
 
         LocalDateTime dateTimeBeforeUpdate = LocalDateTime.now();
 
-        giftCertificateRepository.updateById(summerChillGiftCertificate.getId(), inputGiftCertificate);
+        GiftCertificateModel successor = giftCertificateRepository
+                .archiveAndCreateSuccessor(summerChillGiftCertificate.getId(), inputGiftCertificate);
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s > '%s'",
-                        GiftCertificateColumn.ID.getColumnName(), summerChillGiftCertificate.getId(),
-                        GiftCertificateColumn.NAME.getColumnName(), summerChillGiftCertificate.getName(),
-                        DESCRIPTION.getColumnName(), summerChillGiftCertificate.getDescription(),
-                        PRICE.getColumnName(), summerChillGiftCertificate.getPrice(),
-                        DURATION.getColumnName(), summerChillGiftCertificate.getDuration(),
-                        CREATE_DATE.getColumnName(), summerChillGiftCertificate.getCreateDate(),
-                        LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate));
+                                " AND %s > '%s' AND %s = %d AND %s = %d AND %s IS NULL",
+                        GiftCertificateColumn.ID.getColumnName(), successor.getId(),
+                        GiftCertificateColumn.NAME.getColumnName(), successor.getName(),
+                        DESCRIPTION.getColumnName(), successor.getDescription(),
+                        PRICE.getColumnName(), successor.getPrice(),
+                        DURATION.getColumnName(), successor.getDuration(),
+                        CREATE_DATE.getColumnName(), successor.getCreateDate(),
+                        LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate,
+                        STATE_ID.getColumnName(), successor.getState().getId(),
+                        COUNT.getColumnName(), successor.getCount(),
+                        SUCCESSOR_ID.getColumnName()));
         assertEquals(1, giftCertificateCount);
 
         for (TagModel tag : newTags) {
             long giftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                     GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                            GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
+                            GIFT_CERTIFICATE_ID.getColumnName(), successor.getId(),
                             TAG_ID.getColumnName(), tag.getId()));
             assertEquals(1, giftCertificateTagRelationCount);
         }
 
         long removedGiftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                 GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                        GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
+                        GIFT_CERTIFICATE_ID.getColumnName(), successor.getId(),
                         TAG_ID.getColumnName(), tagToRemoveRelation.getId()));
         assertEquals(0, removedGiftCertificateTagRelationCount);
     }
@@ -293,20 +334,23 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void delete_shouldDeleteEntryInDataBase() {
 
-        giftCertificateRepository.delete(shoppingGiftCertificate.getId());
+        giftCertificateRepository.archive(shoppingGiftCertificate.getId());
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s = '%s'",
+                                " AND %s = '%s' AND %s = %d AND %s = %d AND %s IS NULL",
                         GiftCertificateColumn.ID.getColumnName(), shoppingGiftCertificate.getId(),
                         GiftCertificateColumn.NAME.getColumnName(), shoppingGiftCertificate.getName(),
                         DESCRIPTION.getColumnName(), shoppingGiftCertificate.getDescription(),
                         PRICE.getColumnName(), shoppingGiftCertificate.getPrice(),
                         DURATION.getColumnName(), shoppingGiftCertificate.getDuration(),
                         CREATE_DATE.getColumnName(), shoppingGiftCertificate.getCreateDate(),
-                        LAST_UPDATE_DATE.getColumnName(), shoppingGiftCertificate.getLastUpdateDate()));
-        assertEquals(0, giftCertificateCount);
+                        LAST_UPDATE_DATE.getColumnName(), shoppingGiftCertificate.getLastUpdateDate(),
+                        STATE_ID.getColumnName(), ActualityStateModel.ARCHIVED.getId(),
+                        COUNT.getColumnName(), 0,
+                        SUCCESSOR_ID.getColumnName()));
+        assertEquals(1, giftCertificateCount);
     }
 
     @Test

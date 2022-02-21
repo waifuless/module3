@@ -1,5 +1,3 @@
-create sequence gift_certificate_state_id_seq;
-
 create table tag
 (
     id   bigserial
@@ -16,13 +14,11 @@ create unique index tag_id_uindex
 
 create table actuality_state
 (
-    id   bigint default nextval('gift_certificate_state_id_seq'::regclass) not null
-        constraint gift_certificate_state_pk
+    id   bigserial
+        constraint actuality_state_pk
             primary key,
-    name varchar(50)                                                       not null
+    name varchar(50) not null
 );
-
-alter sequence gift_certificate_state_id_seq owned by actuality_state.id;
 
 create unique index gift_certificate_state_id_uindex
     on actuality_state (id);

@@ -3,7 +3,6 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.repository.ReadRepository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -27,12 +26,7 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
 
     @Override
     public Boolean existsById(long id) {
-        try {
-            entityManager.getReference(modelClass, id);
-            return true;
-        } catch (EntityNotFoundException ex) {
-            return false;
-        }
+        return entityManager.find(modelClass, id) != null;
     }
 
     @Override

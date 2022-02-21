@@ -173,6 +173,7 @@ class PostgresTagRepositoryImplTest {
     @Test
     void existsById_returnFalse_ifNotExistsInDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
+        entityManager.clear();
 
         assertFalse(tagRepository.existsById(1L));
     }
