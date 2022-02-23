@@ -51,10 +51,10 @@ class PostgresTagRepositoryImplTest {
 
     @BeforeEach
     private void prepareModels() {
-        spaTag = new TagModel(1L, "spa");
-        relaxTag = new TagModel(2L, "relax");
-        gamingTag = new TagModel(3L, "gaming");
-        lgbtTag = new TagModel(4L, "LGBT");
+        spaTag = entityManager.find(TagModel.class, 1L);
+        relaxTag = entityManager.find(TagModel.class, 2L);
+        gamingTag = entityManager.find(TagModel.class, 3L);
+        lgbtTag = entityManager.find(TagModel.class, 4L);
     }
 
     @Test
