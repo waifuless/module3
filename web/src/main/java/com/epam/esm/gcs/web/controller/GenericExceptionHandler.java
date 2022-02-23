@@ -40,17 +40,17 @@ import java.util.stream.Collectors;
 //todo: make default messages
 public class GenericExceptionHandler {
 
-    private final static String INTERNAL_SERVER_ERROR = "server.error.internal";
-    private final static String NOT_FOUND_ERROR = "not.found.error";
-    private final static String NOT_UNIQUE_PROPERTY = "not.unique.property";
-    private final static String ARGUMENT_TYPE_MISMATCH = "argument.type.mismatch";
-    private final static String DEFAULT_BAD_REQUEST = "default.bad.request";
-    private final static String NO_HANDLER_FOUND = "no.handler.found";
-    private final static String NO_METHOD_SUPPORTED = "no.method.supported";
-    private final static String METHOD_NOT_ALLOWED = "method.not.allowed";
-    private final static String MEDIA_TYPE_NOT_SUPPORTED = "media.type.not.supported";
-    private final static String ENTITIES_ARCHIVED = "entities.archived";
-    private final static String GIFT_CERTIFICATE_NOT_ENOUGH_COUNT = "gift.certificate.not.enough.count";
+    private static final String INTERNAL_SERVER_ERROR = "server.error.internal";
+    private static final String NOT_FOUND_ERROR = "not.found.error";
+    private static final String NOT_UNIQUE_PROPERTY = "not.unique.property";
+    private static final String ARGUMENT_TYPE_MISMATCH = "argument.type.mismatch";
+    private static final String DEFAULT_BAD_REQUEST = "default.bad.request";
+    private static final String NO_HANDLER_FOUND = "no.handler.found";
+    private static final String NO_METHOD_SUPPORTED = "no.method.supported";
+    private static final String METHOD_NOT_ALLOWED = "method.not.allowed";
+    private static final String MEDIA_TYPE_NOT_SUPPORTED = "media.type.not.supported";
+    private static final String ENTITIES_ARCHIVED = "entities.archived";
+    private static final String GIFT_CERTIFICATE_NOT_ENOUGH_COUNT = "gift.certificate.not.enough.count";
 
     private final MessageSource clientErrorMessageSource;
     private final MessageSource serverErrorMessageSource;

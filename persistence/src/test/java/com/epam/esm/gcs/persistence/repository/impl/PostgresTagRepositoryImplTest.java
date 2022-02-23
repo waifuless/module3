@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 class PostgresTagRepositoryImplTest {
 
-    private final static String TAG_TABLE = "tag";
+    private static final String TAG_TABLE = "tag";
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;

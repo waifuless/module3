@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 public class UserOrderServiceImpl extends AbstractReadService<UserOrderDto, UserOrderModel>
         implements UserOrderService {
 
-    private final static int DEFAULT_SCALE = 2;
-    private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
+    private static final int DEFAULT_SCALE = 2;
+    private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     private final AppUserService appUserService;
     private final GiftCertificateService giftCertificateService;

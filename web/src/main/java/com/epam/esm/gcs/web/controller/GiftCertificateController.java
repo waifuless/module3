@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GiftCertificateController {
 
-    private final static String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
+    private static final String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
 
     private final GiftCertificateService giftCertificateService;
 

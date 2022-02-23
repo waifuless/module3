@@ -34,8 +34,8 @@ import java.util.List;
 @Builder
 public class GiftCertificateModel {
 
-    private final static int DEFAULT_SCALE = 2;
-    private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
+    private static final int DEFAULT_SCALE = 2;
+    private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     @Id
     //todo: think about batch (needs GenerationType.SEQUENCE)

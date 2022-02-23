@@ -53,11 +53,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 class PostgresGiftCertificateRepositoryImplTest {
 
-    private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
-    private final static String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
-    private final static String TAG_TABLE = "tag";
-    private final static String USER_ORDER_TABLE_NAME = "user_order";
-    private final static String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
+    private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
+    private static final String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
+    private static final String TAG_TABLE = "tag";
+    private static final String USER_ORDER_TABLE_NAME = "user_order";
+    private static final String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;

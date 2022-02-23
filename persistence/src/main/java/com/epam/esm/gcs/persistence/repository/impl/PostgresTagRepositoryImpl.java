@@ -16,11 +16,11 @@ import java.util.Optional;
 @Repository
 public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> implements TagRepository {
 
-    private final static String DELETE_QUERY = "DELETE FROM TagModel t WHERE t.id=:id";
-    private final static String EXISTS_BY_NAME_QUERY = "SELECT COUNT(t)>0 FROM TagModel t WHERE t.name=:name";
-    private final static String FIND_BY_NAME_QUERY = "SELECT t FROM TagModel t WHERE t.name=:name";
+    private static final String DELETE_QUERY = "DELETE FROM TagModel t WHERE t.id=:id";
+    private static final String EXISTS_BY_NAME_QUERY = "SELECT COUNT(t)>0 FROM TagModel t WHERE t.name=:name";
+    private static final String FIND_BY_NAME_QUERY = "SELECT t FROM TagModel t WHERE t.name=:name";
 
-    private final static String FIND_USER_MOST_WIDELY_USED_TAGS =
+    private static final String FIND_USER_MOST_WIDELY_USED_TAGS =
             "SELECT tag FROM AppUserModel au " +
                     " JOIN au.orders u_order" +
                     " JOIN u_order.positions o_position" +
@@ -29,7 +29,7 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
                     " GROUP BY tag" +
                     " HAVING COUNT(o_position) =:maxCount";
 
-    private final static String FIND_USER_TAGS_USAGE_ORDERED_DESC =
+    private static final String FIND_USER_TAGS_USAGE_ORDERED_DESC =
             "SELECT COUNT(o_position) FROM AppUserModel au " +
                     " JOIN au.orders u_order" +
                     " JOIN u_order.positions o_position" +
