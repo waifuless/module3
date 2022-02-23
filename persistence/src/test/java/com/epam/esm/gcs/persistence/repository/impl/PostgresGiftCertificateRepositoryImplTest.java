@@ -55,6 +55,8 @@ class PostgresGiftCertificateRepositoryImplTest {
     private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
     private final static String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
     private final static String TAG_TABLE = "tag";
+    private final static String USER_ORDER_TABLE_NAME = "user_order";
+    private final static String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -229,7 +231,8 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void findById_returnOptionalEmpty_whenGiftCertificateDoesNotExist() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,
+                USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
 
         long giftCertificateId = 3L;
 
@@ -360,7 +363,8 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void existsById_returnFalse_whenDoesNotExist() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,
+                USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
 
         long notExistedId = 1L;
         assertFalse(giftCertificateRepository.existsById(notExistedId));

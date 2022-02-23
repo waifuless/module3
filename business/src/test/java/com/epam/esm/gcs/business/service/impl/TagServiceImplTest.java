@@ -3,6 +3,7 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
+import com.epam.esm.gcs.business.service.AppUserService;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,13 @@ class TagServiceImplTest {
     private final TagServiceImpl tagService;
 
     private final TagRepository tagRepository;
+    private final AppUserService appUserService;
 
-    public TagServiceImplTest(@Mock TagRepository tagRepository) {
-        this.tagService = new TagServiceImpl(tagRepository, new ModelMapperTestConfig().modelMapper());
+    public TagServiceImplTest(@Mock TagRepository tagRepository, @Mock AppUserService appUserService) {
+        this.tagService = new TagServiceImpl(tagRepository,
+                new ModelMapperTestConfig().modelMapper(), appUserService);
         this.tagRepository = tagRepository;
+        this.appUserService = appUserService;
     }
 
     @Test

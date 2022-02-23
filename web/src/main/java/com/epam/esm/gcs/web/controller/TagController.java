@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.TagDto;
+import com.epam.esm.gcs.business.dto.UserWithMostlyUsedTagsDto;
 import com.epam.esm.gcs.business.dto.group.OnTagCreate;
 import com.epam.esm.gcs.business.service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +52,10 @@ public class TagController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
         tagService.delete(id);
+    }
+
+    @GetMapping("/most-used-of-users-with-highest-orders-amount")
+    public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
+        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderCostAmount();
     }
 }
