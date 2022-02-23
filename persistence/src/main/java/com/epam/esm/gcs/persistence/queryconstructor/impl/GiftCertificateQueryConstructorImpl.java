@@ -44,8 +44,11 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         List<Predicate> predicates = new ArrayList<>();
 
         if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
-
-            predicates.add(constructTagNamePredicate(context.getTagNames(), giftCertificateRoot));
+            Join<GiftCertificateModel, TagModel> tagJoin =
+                    giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
+            predicates.add(constructTagNamesPredicate(context.getTagNames(), giftCertificateRoot, tagJoin));
+            criteriaQuery.groupBy(giftCertificateRoot)
+                    .having(criteriaBuilder.equal(criteriaBuilder.count(tagJoin), context.getTagNames().size()));
         }
 
         if (context.getSearchValue() != null) {
@@ -54,25 +57,24 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
 
         List<Order> ordersList = constructOrdersList(context, giftCertificateRoot);
 
-        criteriaQuery = criteriaQuery.select(giftCertificateRoot);
-        criteriaQuery = criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        criteriaQuery = criteriaQuery.orderBy(ordersList);
+        criteriaQuery.select(giftCertificateRoot)
+                .where(predicates.toArray(new Predicate[0]))
+                .orderBy(ordersList);
         return criteriaQuery;
     }
 
-    private Predicate constructTagNamePredicate(List<String> tagNames,
-                                                Root<GiftCertificateModel> giftCertificateRoot) {
+    private Predicate constructTagNamesPredicate(List<String> tagNames,
+                                                 Root<GiftCertificateModel> giftCertificateRoot,
+                                                 Join<GiftCertificateModel, TagModel> tagJoin) {
         List<Predicate> tagEqualPredicates = new ArrayList<>();
         for (String tagName : tagNames) {
-            Join<GiftCertificateModel, TagModel> tagJoin =
-                    giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
             Predicate tagEqualPredicate = criteriaBuilder.equal(
                     tagJoin.get(
                             tagType.getSingularAttribute("name", String.class))
                     , tagName);
             tagEqualPredicates.add(tagEqualPredicate);
         }
-        return criteriaBuilder.and(tagEqualPredicates.toArray(new Predicate[0]));
+        return criteriaBuilder.or(tagEqualPredicates.toArray(new Predicate[0]));
     }
 
     private Predicate constructSearchValuePredicate(String searchValue,
