@@ -20,6 +20,7 @@ import javax.persistence.metamodel.Metamodel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class GiftCertificateQueryConstructorImpl implements GiftCertificateQueryConstructor {
@@ -63,7 +64,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         return criteriaQuery;
     }
 
-    private Predicate constructTagNamesPredicate(List<String> tagNames,
+    private Predicate constructTagNamesPredicate(Set<String> tagNames,
                                                  Root<GiftCertificateModel> giftCertificateRoot,
                                                  Join<GiftCertificateModel, TagModel> tagJoin) {
         List<Predicate> tagEqualPredicates = new ArrayList<>();

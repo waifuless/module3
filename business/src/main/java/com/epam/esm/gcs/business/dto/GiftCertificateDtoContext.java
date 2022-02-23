@@ -6,12 +6,13 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Pattern;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
 public class GiftCertificateDtoContext {
 
-    private List<
+    private Set<
             @Length(max = 100, message = "{entity.field.length.max}")
                     String> tagName;
 

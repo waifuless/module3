@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.COUNT;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.CREATE_DATE;
@@ -406,7 +407,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnOnlySearchedEntries_byTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .tagNames(List.of("relax"))
+                .tagNames(Set.of(relaxTag.getName()))
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
@@ -416,7 +417,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnOnlySearchedEntries_byManyTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .tagNames(List.of(spaTag.getName(), lgbtTag.getName()))
+                .tagNames(Set.of(spaTag.getName(), lgbtTag.getName()))
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, abilityBoxGiftCertificate),
