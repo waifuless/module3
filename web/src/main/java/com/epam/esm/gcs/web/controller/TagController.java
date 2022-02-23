@@ -43,6 +43,11 @@ public class TagController {
         return tagService.create(tag);
     }
 
+    @GetMapping("/most-used-of-users-with-highest-orders-price-amount")
+    public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
+        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
+    }
+
     @GetMapping("/{id}")
     public TagDto findById(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
         return tagService.findById(id);
@@ -52,10 +57,5 @@ public class TagController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
         tagService.delete(id);
-    }
-
-    @GetMapping("/most-used-of-users-with-highest-orders-price-amount")
-    public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
-        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
     }
 }
