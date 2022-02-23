@@ -4,6 +4,7 @@ import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.repository.AppUserRepository;
 import com.epam.esm.gcs.persistence.testapplication.TestApplication;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = "test")
@@ -32,10 +35,17 @@ class PostgresAppUserRepositoryImplTest {
     private final JdbcTemplate jdbcTemplate;
     private final EntityManager entityManager;
 
-    //todo:remake tests
+    private AppUserModel vovaUser;
+    private AppUserModel tanyaUser;
+
+    @BeforeEach
+    private void prepareModels() {
+        vovaUser = entityManager.find(AppUserModel.class, 1L);
+        tanyaUser = entityManager.find(AppUserModel.class, 2L);
+    }
+
     @Test
-    void findUsersWithHighestPriceAmountOfAllOrders() {
-        List<AppUserModel> users = appUserRepository.findUsersWithHighestPriceAmountOfAllOrders();
-        System.out.println(users);
+    void findUsersWithHighestPriceAmountOfAllOrders_shouldReturnValidUser() {
+        assertIterableEquals(List.of(vovaUser), appUserRepository.findUsersWithHighestPriceAmountOfAllOrders());
     }
 }
