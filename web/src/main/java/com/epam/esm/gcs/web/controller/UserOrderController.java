@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.web.controller;
 
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.UserOrderDto;
 import com.epam.esm.gcs.business.dto.group.OnUserOrderCreate;
 import com.epam.esm.gcs.business.service.UserOrderService;
@@ -30,8 +31,8 @@ public class UserOrderController {
     private final UserOrderService orderService;
 
     @GetMapping
-    public List<UserOrderDto> findAll() {
-        return orderService.findAll();
+    public List<UserOrderDto> findAll(@Valid PageDto page) {
+        return orderService.findPage(page);
     }
 
     @Validated(OnUserOrderCreate.class)

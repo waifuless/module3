@@ -2,6 +2,7 @@ package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.group.OnGiftCertificateCreate;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,9 @@ public class GiftCertificateController {
     private final GiftCertificateService giftCertificateService;
 
     @GetMapping
-    public List<GiftCertificateDto> findAll(@Valid GiftCertificateDtoContext giftCertificateDtoContext) {
-        return giftCertificateService.findAll(giftCertificateDtoContext);
+    public List<GiftCertificateDto> findAll(@Valid GiftCertificateDtoContext giftCertificateDtoContext,
+                                            @Valid PageDto page) {
+        return giftCertificateService.findPage(giftCertificateDtoContext, page);
     }
 
     @Validated(OnGiftCertificateCreate.class)

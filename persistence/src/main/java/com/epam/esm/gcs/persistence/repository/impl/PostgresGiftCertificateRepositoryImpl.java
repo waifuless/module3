@@ -3,8 +3,10 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstructor;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +26,9 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     private final GiftCertificateQueryConstructor queryConstructor;
 
     public PostgresGiftCertificateRepositoryImpl(EntityManager entityManager,
-                                                 GiftCertificateQueryConstructor queryConstructor) {
-        super(entityManager, GiftCertificateModel.class);
+                                                 GiftCertificateQueryConstructor queryConstructor,
+                                                 Paginator paginator) {
+        super(entityManager, GiftCertificateModel.class, paginator);
 
         this.entityManager = entityManager;
         this.queryConstructor = queryConstructor;
@@ -48,6 +51,15 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
         CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
         return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public List<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageModel page) {
+        CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
+        return entityManager.createQuery(criteriaQuery)
+                .setFirstResult(paginator.findStartPosition(page))
+                .setMaxResults(page.getSize())
+                .getResultList();
     }
 
     @Override

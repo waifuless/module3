@@ -2,6 +2,7 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.UserOrderModel;
 import com.epam.esm.gcs.persistence.repository.UserOrderRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +15,8 @@ public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<User
 
     private final EntityManager entityManager;
 
-    public PostgresUserOrderRepositoryImpl(EntityManager entityManager) {
-        super(entityManager, UserOrderModel.class);
+    public PostgresUserOrderRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+        super(entityManager, UserOrderModel.class, paginator);
 
         this.entityManager = entityManager;
     }

@@ -1,5 +1,7 @@
 package com.epam.esm.gcs.persistence.repository;
 
+import com.epam.esm.gcs.persistence.model.PageModel;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +29,11 @@ public interface ReadRepository<T> {
      * @return List of all models
      */
     List<T> findAll();
+
+    /**
+     * Finds models on page
+     *
+     * @return List of models on page
+     */
+    List<T> findPage(PageModel page);
 }

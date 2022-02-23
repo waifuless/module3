@@ -2,6 +2,7 @@ package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.repository.AppUserRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -23,8 +24,8 @@ public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUse
                     " GROUP BY au" +
                     " ORDER BY SUM(u_order.price) DESC";
 
-    public PostgresAppUserRepositoryImpl(EntityManager entityManager) {
-        super(entityManager, AppUserModel.class);
+    public PostgresAppUserRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+        super(entityManager, AppUserModel.class, paginator);
     }
 
     @Override

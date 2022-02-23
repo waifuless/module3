@@ -2,6 +2,7 @@ package com.epam.esm.gcs.business.service;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,8 @@ public interface GiftCertificateService extends CrService<GiftCertificateDto>, A
      * @return List of found giftCertificates with some specified order
      */
     List<GiftCertificateDto> findAll(GiftCertificateDtoContext context);
+
+    List<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageDto pageDto);
 
     void addCount(Long id, Integer count);
 
