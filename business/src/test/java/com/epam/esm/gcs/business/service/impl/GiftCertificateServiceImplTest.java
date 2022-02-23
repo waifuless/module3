@@ -1,17 +1,18 @@
 package com.epam.esm.gcs.business.service.impl;
 
-import com.epam.esm.gcs.business.config.ModelMapperConfig;
+import com.epam.esm.gcs.business.dto.ActualityStateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
+import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +25,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.epam.esm.gcs.business.converter.GiftCertificateContextDtoConverter.FieldNameAssociation.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,13 +41,16 @@ class GiftCertificateServiceImplTest {
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final TagService tagService;
+    private final GiftCertificateValidator giftCertificateValidator;
 
     public GiftCertificateServiceImplTest(@Mock TagService tagService,
-                                          @Mock GiftCertificateRepository giftCertificateRepository) {
+                                          @Mock GiftCertificateRepository giftCertificateRepository,
+                                          @Mock GiftCertificateValidator giftCertificateValidator) {
         this.giftCertificateService = new GiftCertificateServiceImpl(tagService, giftCertificateRepository,
-                new ModelMapperConfig().modelMapper());
+                new ModelMapperTestConfig().modelMapper(), giftCertificateValidator);
         this.giftCertificateRepository = giftCertificateRepository;
         this.tagService = tagService;
+        this.giftCertificateValidator = giftCertificateValidator;
     }
 
     @Test
@@ -59,7 +64,18 @@ class GiftCertificateServiceImplTest {
         LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34, 34, 60900);
         Long tagId = 3L;
         String tagName = "tagName";
+
+        ActualityStateDto stateDto = ActualityStateDto.ARCHIVED;
+        ActualityStateModel stateModel = ActualityStateModel.ARCHIVED;
+        Integer count = 33;
+        Long successorId = 5L;
+        GiftCertificateModel successor = GiftCertificateModel.builder()
+                .id(successorId)
+                .build();
+
         List<TagModel> tagModels = List.of(new TagModel(tagId, tagName));
+        List<TagDto> tagDtos = List.of(new TagDto(tagId, tagName));
+
         GiftCertificateModel foundModel = GiftCertificateModel.builder()
                 .id(id)
                 .name(name)
@@ -68,9 +84,11 @@ class GiftCertificateServiceImplTest {
                 .duration(duration)
                 .createDate(createDate)
                 .lastUpdateDate(lastUpdateDate)
+                .state(stateModel)
+                .count(count)
+                .successor(successor)
                 .tags(tagModels)
                 .build();
-        List<TagDto> tagDtos = List.of(new TagDto(tagId, tagName));
         GiftCertificateDto expectedReturnedCertificate = GiftCertificateDto.builder()
                 .id(id)
                 .name(name)
@@ -79,8 +97,12 @@ class GiftCertificateServiceImplTest {
                 .duration(duration)
                 .createDate(createDate)
                 .lastUpdateDate(lastUpdateDate)
+                .state(stateDto)
+                .count(count)
+                .successorId(successorId)
                 .tags(tagDtos)
                 .build();
+
         when(giftCertificateRepository.findById(id)).thenReturn(Optional.of(foundModel));
         assertEquals(expectedReturnedCertificate, giftCertificateService.findById(id));
     }
@@ -100,12 +122,21 @@ class GiftCertificateServiceImplTest {
         int duration = 2;
         String tagName = "tagName";
 
+        ActualityStateDto stateDto = ActualityStateDto.ACTUAL;
+        ActualityStateModel stateModel = ActualityStateModel.ACTUAL;
+        Integer count = 33;
+        Long successorId = null;
+        GiftCertificateModel successor = null;
+
         List<TagDto> inputTags = List.of(new TagDto(null, tagName));
         GiftCertificateDto inputCertificate = GiftCertificateDto.builder()
                 .name(name)
                 .description(description)
                 .price(price)
                 .duration(duration)
+                .state(stateDto)
+                .count(count)
+                .successorId(successorId)
                 .tags(inputTags)
                 .build();
 
@@ -116,6 +147,9 @@ class GiftCertificateServiceImplTest {
                 .description(description)
                 .price(price)
                 .duration(duration)
+                .state(stateModel)
+                .count(count)
+                .successor(successor)
                 .tags(preparedTags)
                 .build();
 
@@ -130,6 +164,9 @@ class GiftCertificateServiceImplTest {
                 .duration(duration)
                 .createDate(createDate)
                 .lastUpdateDate(lastUpdateDate)
+                .state(stateModel)
+                .count(count)
+                .successor(successor)
                 .tags(preparedTags)
                 .build();
 
@@ -143,6 +180,9 @@ class GiftCertificateServiceImplTest {
                 .duration(duration)
                 .createDate(createDate)
                 .lastUpdateDate(lastUpdateDate)
+                .state(stateDto)
+                .count(count)
+                .successorId(successorId)
                 .tags(expectedReturnedTags)
                 .build();
 
@@ -152,20 +192,11 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void delete_invokeGiftCertificateRepositoryDelete_oneTime() {
-        long id = 2342L;
-        doNothing().when(giftCertificateRepository).delete(id);
-
-        giftCertificateService.delete(id);
-        verify(giftCertificateRepository, times(1)).delete(id);
-    }
-
-    @Test
     void updateById_throwEntityNotFoundException_whenEntityWithIdDoesNotExist() {
         long id = 23L;
         when(giftCertificateRepository.existsById(id)).thenReturn(false);
         assertThrows(EntityNotFoundException.class, () ->
-                giftCertificateService.updateById(id, GiftCertificateDto.builder().build()));
+                giftCertificateService.archiveAndCreateSuccessor(id, GiftCertificateDto.builder().build()));
     }
 
     @Test
@@ -185,8 +216,9 @@ class GiftCertificateServiceImplTest {
                 .build();
 
         List<TagModel> preparedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
+        List<TagDto> preparedTagsDto = List.of(new TagDto(tagId1, tagName1), new TagDto(tagId2, tagName2));
 
-        GiftCertificateModel expectedGiftCertificate = GiftCertificateModel.builder()
+        GiftCertificateModel inputGiftCertificateModel = GiftCertificateModel.builder()
                 .description(description)
                 .duration(duration)
                 .tags(preparedTags)
@@ -194,14 +226,46 @@ class GiftCertificateServiceImplTest {
 
         long certificateId = 5L;
 
+        long sId = 6L;
+        String sName = "i am successor";
+        BigDecimal price = BigDecimal.valueOf(22.22);
+        ActualityStateModel sStateModel = ActualityStateModel.ACTUAL;
+        ActualityStateDto sStateDto = ActualityStateDto.ACTUAL;
+        Integer count = 22;
+
+        GiftCertificateModel successor = GiftCertificateModel.builder()
+                .id(sId)
+                .name(sName)
+                .description(description)
+                .price(price)
+                .duration(duration)
+                .state(sStateModel)
+                .count(count)
+                .successor(null)
+                .tags(preparedTags)
+                .build();
+
+        GiftCertificateDto successorDto = GiftCertificateDto.builder()
+                .id(sId)
+                .name(sName)
+                .description(description)
+                .price(price)
+                .duration(duration)
+                .state(sStateDto)
+                .count(count)
+                .successorId(null)
+                .tags(preparedTagsDto)
+                .build();
+
         when(giftCertificateRepository.existsById(certificateId)).thenReturn(true);
 
         when(tagService.findOrCreate(new TagDto(null, tagName1))).thenReturn(new TagDto(tagId1, tagName1));
         when(tagService.findOrCreate(new TagDto(null, tagName2))).thenReturn(new TagDto(tagId2, tagName2));
+        when(giftCertificateRepository.archiveAndCreateSuccessor(certificateId, inputGiftCertificateModel))
+                .thenReturn(successor);
 
-        giftCertificateService.updateById(certificateId, inputGiftCertificate);
-
-        verify(giftCertificateRepository, times(1)).updateById(certificateId, expectedGiftCertificate);
+        assertEquals(successorDto, giftCertificateService.archiveAndCreateSuccessor(certificateId,
+                inputGiftCertificate));
     }
 
     @Test
@@ -210,15 +274,15 @@ class GiftCertificateServiceImplTest {
         String searchValue = "simpleSearchValue";
         List<String> sortByList = List.of("name.asc");
         GiftCertificateDtoContext inputContext = GiftCertificateDtoContext.builder()
-                .tagName(tagName)
+                .tagName(Set.of(tagName))
                 .searchValue(searchValue)
                 .sortBy(sortByList)
                 .build();
 
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
-                .tagName(tagName)
+                .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
-                .sortBy(Map.of(GiftCertificateColumn.NAME, SortDirection.ASC))
+                .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
         giftCertificateService.findAll(inputContext);

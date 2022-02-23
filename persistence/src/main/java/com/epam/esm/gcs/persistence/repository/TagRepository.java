@@ -1,6 +1,8 @@
 package com.epam.esm.gcs.persistence.repository;
 
+import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
+import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,14 +10,7 @@ import java.util.Optional;
 /**
  * Repository interface that contains all methods for interaction with TagModel
  */
-public interface TagRepository extends CrdRepository<TagModel> {
-
-    /**
-     * Finds all TagModels
-     *
-     * @return List of all TagModels
-     */
-    List<TagModel> findAll();
+public interface TagRepository extends CrRepository<TagModel>, DeleteRepository {
 
     /**
      * Checks the existence of TagModel with some name
@@ -33,11 +28,5 @@ public interface TagRepository extends CrdRepository<TagModel> {
      */
     Optional<TagModel> findByName(String name);
 
-    /**
-     * Finds all tags that have relation with some giftCertificate
-     *
-     * @param id - id of giftCertificate to find relations
-     * @return list of tags that have relation with some giftCertificate
-     */
-    List<TagModel> findAllByGiftCertificateId(long id);
+    List<UserWithMostlyUsedTagsModel> findMostWidelyUsedTagsOfUsersById(List<AppUserModel> users);
 }
