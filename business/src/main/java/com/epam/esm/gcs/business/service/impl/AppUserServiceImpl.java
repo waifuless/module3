@@ -24,8 +24,8 @@ public class AppUserServiceImpl extends AbstractReadService<AppUserDto, AppUserM
     }
 
     @Override
-    public List<AppUserDto> findUsersWithHighestCostOfAllOrders() {
-        return appUserRepository.findUsersWithHighestCostOfAllOrders()
+    public List<AppUserDto> findUsersWithHighestPriceAmountOfAllOrders() {
+        return appUserRepository.findUsersWithHighestPriceAmountOfAllOrders()
                 .stream()
                 .map(model -> modelMapper.map(model, AppUserDto.class))
                 .collect(Collectors.toList());

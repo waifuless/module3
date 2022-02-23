@@ -65,17 +65,18 @@ public class TagServiceImpl extends AbstractReadService<TagDto, TagModel> implem
     }
 
     @Override
-    public List<UserWithMostlyUsedTagsDto> findMostWidelyUsedTagsOfUsersWithHighestOrderCostAmount() {
-        List<AppUserModel> usersWithHighestOrderCostAmount = appUserService.findUsersWithHighestCostOfAllOrders()
-                .stream()
-                .map(dto -> modelMapper.map(dto, AppUserModel.class))
-                .collect(Collectors.toList());
+    public List<UserWithMostlyUsedTagsDto> findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount() {
+        List<AppUserModel> usersWithHighestOrderPriceAmount =
+                appUserService.findUsersWithHighestPriceAmountOfAllOrders()
+                        .stream()
+                        .map(dto -> modelMapper.map(dto, AppUserModel.class))
+                        .collect(Collectors.toList());
 
-        if (usersWithHighestOrderCostAmount.isEmpty()) {
+        if (usersWithHighestOrderPriceAmount.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return tagRepository.findMostWidelyUsedTagsOfUsersById(usersWithHighestOrderCostAmount)
+        return tagRepository.findMostWidelyUsedTagsOfUsersById(usersWithHighestOrderPriceAmount)
                 .stream()
                 .map(model -> modelMapper.map(model, UserWithMostlyUsedTagsDto.class))
                 .collect(Collectors.toList());

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AppUserService extends ReadService<AppUserDto> {
 
-    List<AppUserDto> findUsersWithHighestCostOfAllOrders();
+    List<AppUserDto> findUsersWithHighestPriceAmountOfAllOrders();
 }

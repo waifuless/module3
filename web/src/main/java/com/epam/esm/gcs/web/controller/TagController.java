@@ -54,8 +54,8 @@ public class TagController {
         tagService.delete(id);
     }
 
-    @GetMapping("/most-used-of-users-with-highest-orders-amount")
+    @GetMapping("/most-used-of-users-with-highest-orders-price-amount")
     public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
-        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderCostAmount();
+        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
     }
 }

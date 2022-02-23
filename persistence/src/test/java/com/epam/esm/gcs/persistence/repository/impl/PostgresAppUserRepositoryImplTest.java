@@ -34,8 +34,8 @@ class PostgresAppUserRepositoryImplTest {
 
     //todo:remake tests
     @Test
-    void findUsersWithHighestCostOfAllOrders() {
-        List<AppUserModel> users = appUserRepository.findUsersWithHighestCostOfAllOrders();
+    void findUsersWithHighestPriceAmountOfAllOrders() {
+        List<AppUserModel> users = appUserRepository.findUsersWithHighestPriceAmountOfAllOrders();
         System.out.println(users);
     }
 }

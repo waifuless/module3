@@ -5,18 +5,20 @@ import com.epam.esm.gcs.persistence.repository.AppUserRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUserModel> implements AppUserRepository {
 
-    private final static String FIND_USERS_WITH_HIGHEST_COST_OF_ALL_ORDERS =
+    private final static String FIND_USERS_WITH_HIGHEST_PRICE_AMOUNT_OF_ALL_ORDERS =
             "SELECT au FROM AppUserModel au JOIN au.orders u_order " +
                     " GROUP BY au" +
-                    " HAVING SUM(u_order.price) = :maxPrice";
+                    " HAVING SUM(u_order.price) = :highestPriceAmount";
 
-    private final static String FIND_HIGHEST_COST_AMOUNT_OF_ALL_ORDERS =
+    private final static String FIND_HIGHEST_PRICE_AMOUNT_OF_ALL_ORDERS =
             "SELECT SUM(u_order.price) FROM AppUserModel au JOIN au.orders u_order" +
                     " GROUP BY au" +
                     " ORDER BY SUM(u_order.price) DESC";
@@ -25,17 +27,18 @@ public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUse
         super(entityManager, AppUserModel.class);
     }
 
-    //todo: exception if no user or orders exists
-    //todo: limit one or return list?
-    //todo: rename price and cost to smth
     @Override
-    public List<AppUserModel> findUsersWithHighestCostOfAllOrders() {
-        BigDecimal highestCost = entityManager.createQuery(FIND_HIGHEST_COST_AMOUNT_OF_ALL_ORDERS,
-                        BigDecimal.class)
-                .setMaxResults(1)
-                .getSingleResult();
-        return entityManager.createQuery(FIND_USERS_WITH_HIGHEST_COST_OF_ALL_ORDERS, AppUserModel.class)
-                .setParameter("maxPrice", highestCost)
-                .getResultList();
+    public List<AppUserModel> findUsersWithHighestPriceAmountOfAllOrders() {
+        try {
+            BigDecimal highestPriceAmount = entityManager.createQuery(FIND_HIGHEST_PRICE_AMOUNT_OF_ALL_ORDERS,
+                            BigDecimal.class)
+                    .setMaxResults(1)
+                    .getSingleResult();
+            return entityManager.createQuery(FIND_USERS_WITH_HIGHEST_PRICE_AMOUNT_OF_ALL_ORDERS, AppUserModel.class)
+                    .setParameter("highestPriceAmount", highestPriceAmount)
+                    .getResultList();
+        } catch (NoResultException ex) {
+            return new ArrayList<>();
+        }
     }
 }

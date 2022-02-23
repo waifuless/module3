@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AppUserRepository extends ReadRepository<AppUserModel> {
 
-    List<AppUserModel> findUsersWithHighestCostOfAllOrders();
+    List<AppUserModel> findUsersWithHighestPriceAmountOfAllOrders();
 }

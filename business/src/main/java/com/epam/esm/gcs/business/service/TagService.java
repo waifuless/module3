@@ -27,5 +27,5 @@ public interface TagService extends CrService<TagDto>, DeleteService {
      */
     TagDto findOrCreate(TagDto tagToFind);
 
-    List<UserWithMostlyUsedTagsDto> findMostWidelyUsedTagsOfUsersWithHighestOrderCostAmount();
+    List<UserWithMostlyUsedTagsDto> findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
 }
