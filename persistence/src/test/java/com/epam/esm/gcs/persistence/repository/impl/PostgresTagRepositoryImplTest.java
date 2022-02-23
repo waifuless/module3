@@ -198,7 +198,7 @@ class PostgresTagRepositoryImplTest {
         AppUserModel vovaUser = new AppUserModel(1L, "vova@gmail.com", null);
         UserWithMostlyUsedTagsModel userWithMostlyUsedTagsModel =
                 new UserWithMostlyUsedTagsModel(vovaUser,
-                        List.of(new TagModel(4L, "LGBT")));
+                        List.of(spaTag, lgbtTag));
         List<UserWithMostlyUsedTagsModel> expectedResult = List.of(userWithMostlyUsedTagsModel);
 
         assertIterableEquals(expectedResult, tagRepository.findMostWidelyUsedTagsOfUsersById(List.of(vovaUser)));

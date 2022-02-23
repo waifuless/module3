@@ -117,7 +117,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .state(ActualityStateModel.ACTUAL)
                 .count(32)
                 .successor(null)
-                .tags(List.of(gamingTag, lgbtTag))
+                .tags(List.of(spaTag, gamingTag, lgbtTag))
                 .build();
     }
 
@@ -410,6 +410,16 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
+                giftCertificateRepository.findAll(searchContext));
+    }
+
+    @Test
+    void findAll_returnOnlySearchedEntries_byManyTagName() {
+        GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
+                .tagNames(List.of(spaTag.getName(), lgbtTag.getName()))
+                .build();
+
+        assertIterableEquals(List.of(summerChillGiftCertificate, abilityBoxGiftCertificate),
                 giftCertificateRepository.findAll(searchContext));
     }
 }
