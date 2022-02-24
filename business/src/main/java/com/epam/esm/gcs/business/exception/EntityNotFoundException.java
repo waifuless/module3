@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class EntityNotFoundException extends RuntimeException {
 
-    private final static long serialVersionUID = -7829145542271262719L;
+    private static final long serialVersionUID = -7829145542271262719L;
 
     private final Class<?> dtoClass;
     private final String field;

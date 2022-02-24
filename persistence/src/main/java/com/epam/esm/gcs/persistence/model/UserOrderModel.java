@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 @Builder
 public class UserOrderModel {
 
-    private final static int DEFAULT_SCALE = 2;
-    private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
+    private static final int DEFAULT_SCALE = 2;
+    private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractReadService<D, M> implements ReadService<D> {
 
-    private final static String ID_FIELD = "id";
+    private static final String ID_FIELD = "id";
 
     private final ReadRepository<M> readRepository;
     private final ModelMapper modelMapper;

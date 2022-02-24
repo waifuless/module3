@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertificateDto, GiftCertificateModel>
         implements GiftCertificateService {
 
-    private final static String ID_FIELD = "id";
+    private static final String ID_FIELD = "id";
 
     private final TagService tagService;
     private final GiftCertificateRepository giftCertificateRepository;

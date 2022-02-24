@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class TagServiceImpl extends AbstractReadService<TagDto, TagModel> implements TagService {
 
-    private final static String NAME_FIELD = "name";
+    private static final String NAME_FIELD = "name";
 
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;

@@ -53,11 +53,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 class PostgresGiftCertificateRepositoryImplTest {
 
-    private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
-    private final static String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
-    private final static String TAG_TABLE = "tag";
-    private final static String USER_ORDER_TABLE_NAME = "user_order";
-    private final static String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
+    private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
+    private static final String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
+    private static final String TAG_TABLE = "tag";
+    private static final String USER_ORDER_TABLE_NAME = "user_order";
+    private static final String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -74,52 +74,14 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @BeforeEach
     private void prepareModels() {
-        spaTag = new TagModel(1L, "spa");
-        relaxTag = new TagModel(2L, "relax");
-        gamingTag = new TagModel(3L, "gaming");
-        lgbtTag = new TagModel(4L, "LGBT");
+        spaTag = entityManager.find(TagModel.class, 1L);
+        relaxTag = entityManager.find(TagModel.class, 2L);
+        gamingTag = entityManager.find(TagModel.class, 3L);
+        lgbtTag = entityManager.find(TagModel.class, 4L);
 
-        summerChillGiftCertificate = GiftCertificateModel.builder()
-                .id(1L)
-                .name("Summer super chill")
-                .description("good adventure")
-                .price(BigDecimal.valueOf(220.2))
-                .duration(120)
-                .createDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
-                .lastUpdateDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
-                .state(ActualityStateModel.ACTUAL)
-                .count(12)
-                .successor(null)
-                .tags(List.of(spaTag, relaxTag, lgbtTag))
-                .build();
-
-        shoppingGiftCertificate = GiftCertificateModel.builder()
-                .id(2L)
-                .name("Shopping")
-                .description("buy anything you want for 40br")
-                .price(BigDecimal.valueOf(40))
-                .duration(90)
-                .createDate(LocalDateTime.of(2022, 1, 3, 22, 22, 21, 789 * 1000000))
-                .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 14, 0, 22, 123 * 1000000))
-                .state(ActualityStateModel.ACTUAL)
-                .count(22)
-                .successor(null)
-                .tags(List.of(relaxTag))
-                .build();
-
-        abilityBoxGiftCertificate = GiftCertificateModel.builder()
-                .id(3L)
-                .name("AbilityBox game design")
-                .description("interesting courses")
-                .price(BigDecimal.valueOf(999.99))
-                .duration(30)
-                .createDate(LocalDateTime.of(2022, 2, 3, 22, 22, 21, 999 * 1000000))
-                .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 11, 0, 22, 213 * 1000000))
-                .state(ActualityStateModel.ACTUAL)
-                .count(32)
-                .successor(null)
-                .tags(List.of(spaTag, gamingTag, lgbtTag))
-                .build();
+        summerChillGiftCertificate = entityManager.find(GiftCertificateModel.class, 1L);
+        shoppingGiftCertificate = entityManager.find(GiftCertificateModel.class, 2L);
+        abilityBoxGiftCertificate = entityManager.find(GiftCertificateModel.class, 3L);
     }
 
     @Test
@@ -234,6 +196,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     void findById_returnOptionalEmpty_whenGiftCertificateDoesNotExist() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate,
                 USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
+        entityManager.clear();
 
         long giftCertificateId = 3L;
 
@@ -262,8 +225,10 @@ class PostgresGiftCertificateRepositoryImplTest {
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
-                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s > '%s' AND %s = %d AND %s = %d AND %s IS NULL",
+                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s') " +
+                                " AND date_trunc('second', %s) >= date_trunc('second', timestamp '%s') " +
+                                " AND %s = %d AND %s = %d AND %s IS NULL",
                         GiftCertificateColumn.ID.getColumnName(), successor.getId(),
                         GiftCertificateColumn.NAME.getColumnName(), successor.getName(),
                         DESCRIPTION.getColumnName(), successor.getDescription(),
@@ -306,8 +271,10 @@ class PostgresGiftCertificateRepositoryImplTest {
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
-                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s > '%s' AND %s = %d AND %s = %d AND %s IS NULL",
+                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s') " +
+                                " AND date_trunc('second', %s) >= date_trunc('second', timestamp '%s') " +
+                                " AND %s = %d AND %s = %d AND %s IS NULL",
                         GiftCertificateColumn.ID.getColumnName(), successor.getId(),
                         GiftCertificateColumn.NAME.getColumnName(), successor.getName(),
                         DESCRIPTION.getColumnName(), successor.getDescription(),
@@ -342,8 +309,10 @@ class PostgresGiftCertificateRepositoryImplTest {
         entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
-                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
-                                " AND %s = '%s' AND %s = %d AND %s = %d AND %s IS NULL",
+                String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s') " +
+                                " AND date_trunc('second', %s) = date_trunc('second', timestamp '%s') " +
+                                " AND %s = %d AND %s = %d AND %s IS NULL",
                         GiftCertificateColumn.ID.getColumnName(), shoppingGiftCertificate.getId(),
                         GiftCertificateColumn.NAME.getColumnName(), shoppingGiftCertificate.getName(),
                         DESCRIPTION.getColumnName(), shoppingGiftCertificate.getDescription(),
@@ -366,6 +335,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     void existsById_returnFalse_whenDoesNotExist() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate,
                 USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
+        entityManager.clear();
 
         long notExistedId = 1L;
         assertFalse(giftCertificateRepository.existsById(notExistedId));

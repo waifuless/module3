@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 @Transactional
 class PostgresAppUserRepositoryImplTest {
 
-    private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
-    private final static String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
-    private final static String TAG_TABLE = "tag";
+    private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
+    private static final String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
+    private static final String TAG_TABLE = "tag";
 
     private final AppUserRepository appUserRepository;
     private final JdbcTemplate jdbcTemplate;

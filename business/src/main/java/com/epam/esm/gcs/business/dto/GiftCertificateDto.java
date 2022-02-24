@@ -28,9 +28,9 @@ import java.util.List;
 @Builder
 public class GiftCertificateDto {
 
-    private final static int DEFAULT_SCALE = 2;
-    private final static RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
-    private final static String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private static final int DEFAULT_SCALE = 2;
+    private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
+    private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     @Null(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.should.be.null")
     @Positive(message = "{entity.field.not.positive}")
