@@ -35,12 +35,6 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
     }
 
     @Override
-    public List<T> findAll() {
-        return createFindAllQuery()
-                .getResultList();
-    }
-
-    @Override
     public List<T> findPage(PageModel page) {
         return createFindAllQuery()
                 .setFirstResult(paginator.findStartPosition(page))

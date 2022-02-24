@@ -17,13 +17,6 @@ public interface ReadService<T> {
     T findById(Long id);
 
     /**
-     * Finds all dtos
-     *
-     * @return List of all dtos
-     */
-    List<T> findAll();
-
-    /**
      * Finds page of dtos
      *
      * @return List of dtos on page

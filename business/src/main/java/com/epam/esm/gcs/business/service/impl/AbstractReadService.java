@@ -36,13 +36,6 @@ public abstract class AbstractReadService<D, M> implements ReadService<D> {
     }
 
     @Override
-    public List<D> findAll() {
-        return readRepository.findAll().stream()
-                .map(model -> modelMapper.map(model, dtoClass))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<D> findPage(PageDto pageDto) {
         PageModel page = modelMapper.map(pageDto, PageModel.class);
         return readRepository.findPage(page).stream()

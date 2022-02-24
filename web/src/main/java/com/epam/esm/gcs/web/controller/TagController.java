@@ -33,7 +33,7 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping
-    public List<TagDto> findAll(@Valid PageDto page) {
+    public List<TagDto> finalPage(@Valid PageDto page) {
         return tagService.findPage(page);
     }
 

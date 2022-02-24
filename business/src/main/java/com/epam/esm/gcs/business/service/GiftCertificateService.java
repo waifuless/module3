@@ -19,7 +19,6 @@ public interface GiftCertificateService extends CrService<GiftCertificateDto>, A
      *                NOT affect the search are null
      * @return List of found giftCertificates with some specified order
      */
-    List<GiftCertificateDto> findAll(GiftCertificateDtoContext context);
 
     List<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageDto pageDto);
 

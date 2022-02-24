@@ -31,7 +31,7 @@ public class UserOrderController {
     private final UserOrderService orderService;
 
     @GetMapping
-    public List<UserOrderDto> findAll(@Valid PageDto page) {
+    public List<UserOrderDto> findPage(@Valid PageDto page) {
         return orderService.findPage(page);
     }
 

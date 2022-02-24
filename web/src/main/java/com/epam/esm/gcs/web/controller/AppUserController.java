@@ -31,7 +31,7 @@ public class AppUserController {
     }
 
     @GetMapping
-    public List<AppUserDto> findAll(@Valid PageDto page) {
+    public List<AppUserDto> findPage(@Valid PageDto page) {
         return appUserService.findPage(page);
     }
 }

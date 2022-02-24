@@ -13,14 +13,13 @@ public interface GiftCertificateRepository extends CrRepository<GiftCertificateM
         ArchiverRepository<GiftCertificateModel> {
 
     /**
-     * Finds giftCertificates that fit the @param context with specified order.
+     * Finds giftCertificates that fit the @param context with specified order of some Page.
      *
      * @param context - contains parameters for search giftCertificates with some specified order. Fields that should
      *                NOT affect the search are null
-     * @return List of found giftCertificates with some specified order
+     * @param page    - page to select items
+     * @return List of found giftCertificates with some specified order of some page
      */
-    List<GiftCertificateModel> findAll(GiftCertificateModelContext context);
-
     List<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageModel page);
 
     void updateCount(Long id, Integer newCount);

@@ -24,13 +24,6 @@ public interface ReadRepository<T> {
     Boolean existsById(long id);
 
     /**
-     * Finds all models
-     *
-     * @return List of all models
-     */
-    List<T> findAll();
-
-    /**
      * Finds models on page
      *
      * @return List of models on page

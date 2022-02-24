@@ -48,12 +48,6 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     }
 
     @Override
-    public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
-        CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
-        return entityManager.createQuery(criteriaQuery).getResultList();
-    }
-
-    @Override
     public List<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageModel page) {
         CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
         return entityManager.createQuery(criteriaQuery)

@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
@@ -110,19 +111,21 @@ class PostgresTagRepositoryImplTest {
     }
 
     @Test
-    void findAll_returnListOfTagsInDatabase_ifExisted() {
+    void findPage_returnListOfTagsInDatabase_ifExisted() {
         List<TagModel> allTags = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
+        PageModel page = new PageModel(1, 200);
 
-        List<TagModel> readTags = tagRepository.findAll();
+        List<TagModel> readTags = tagRepository.findPage(page);
         assertEquals(readTags.size(), allTags.size());
         assertTrue(readTags.containsAll(allTags));
     }
 
     @Test
-    void findAll_returnEmptyList_ifNoTagsExistInDatabase() {
+    void findPage_returnEmptyList_ifNoTagsExistInDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
+        PageModel page = new PageModel(1, 200);
 
-        List<TagModel> readTags = tagRepository.findAll();
+        List<TagModel> readTags = tagRepository.findPage(page);
         assertEquals(0, readTags.size());
     }
 

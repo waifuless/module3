@@ -53,14 +53,6 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     }
 
     @Override
-    public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
-        GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
-        return giftCertificateRepository.findAll(modelContext).stream()
-                .map(model -> modelMapper.map(model, GiftCertificateDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageDto pageDto) {
         GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
         PageModel page = modelMapper.map(pageDto, PageModel.class);

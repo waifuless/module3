@@ -3,6 +3,7 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.ActualityStateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
@@ -11,6 +12,7 @@ import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
@@ -269,7 +271,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void findAllByContext_invokeRepositoryWithValidModelContext() {
+    void findPageByContext_invokeRepositoryWithValidInput() {
         String tagName = "justTagName";
         String searchValue = "simpleSearchValue";
         List<String> sortByList = List.of("name.asc");
@@ -279,14 +281,19 @@ class GiftCertificateServiceImplTest {
                 .sortBy(sortByList)
                 .build();
 
+        Integer page = 3;
+        Integer size = 4;
+        PageDto inputPage = new PageDto(page, size);
+
+        PageModel expectedPage = new PageModel(page, size);
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
                 .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
-        giftCertificateService.findAll(inputContext);
+        giftCertificateService.findPage(inputContext, inputPage);
 
-        verify(giftCertificateRepository, times(1)).findAll(expectedContext);
+        verify(giftCertificateRepository, times(1)).findPage(expectedContext, expectedPage);
     }
 }

@@ -34,8 +34,8 @@ public class GiftCertificateController {
     private final GiftCertificateService giftCertificateService;
 
     @GetMapping
-    public List<GiftCertificateDto> findAll(@Valid GiftCertificateDtoContext giftCertificateDtoContext,
-                                            @Valid PageDto page) {
+    public List<GiftCertificateDto> finalPage(@Valid GiftCertificateDtoContext giftCertificateDtoContext,
+                                              @Valid PageDto page) {
         return giftCertificateService.findPage(giftCertificateDtoContext, page);
     }
 
