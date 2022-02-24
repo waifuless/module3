@@ -58,7 +58,8 @@ public class UserOrderModel {
     public UserOrderModel(UserOrderModel userOrder) {
         this.id = userOrder.id;
         this.user = userOrder.user;
-        this.price = userOrder.price == null ? null : userOrder.price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.price = userOrder.price == null ? null :
+                userOrder.price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
         this.createDate = userOrder.createDate;
 
         this.positions = userOrder.positions.stream()

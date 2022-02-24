@@ -1,7 +1,10 @@
 package com.epam.esm.gcs.persistence.repository;
 
+import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
+import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,4 +27,6 @@ public interface TagRepository extends CrRepository<TagModel>, DeleteRepository 
      * @return found Optional.Model or Optional.empty if model not found
      */
     Optional<TagModel> findByName(String name);
+
+    List<UserWithMostlyUsedTagsModel> findMostWidelyUsedTagsOfUsersById(List<AppUserModel> users);
 }

@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.COUNT;
 import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.CREATE_DATE;
@@ -55,6 +56,8 @@ class PostgresGiftCertificateRepositoryImplTest {
     private final static String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
     private final static String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
     private final static String TAG_TABLE = "tag";
+    private final static String USER_ORDER_TABLE_NAME = "user_order";
+    private final static String USER_ORDER_POSITION_TABLE_NAME = "user_order_position";
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -115,7 +118,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .state(ActualityStateModel.ACTUAL)
                 .count(32)
                 .successor(null)
-                .tags(List.of(gamingTag, lgbtTag))
+                .tags(List.of(spaTag, gamingTag, lgbtTag))
                 .build();
     }
 
@@ -229,7 +232,8 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void findById_returnOptionalEmpty_whenGiftCertificateDoesNotExist() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,
+                USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
 
         long giftCertificateId = 3L;
 
@@ -360,7 +364,8 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void existsById_returnFalse_whenDoesNotExist() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,
+                USER_ORDER_POSITION_TABLE_NAME, USER_ORDER_TABLE_NAME, GIFT_CERTIFICATE_TABLE_NAME);
 
         long notExistedId = 1L;
         assertFalse(giftCertificateRepository.existsById(notExistedId));
@@ -380,7 +385,7 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnAllOrdered_whenOrderByName() {
         GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder()
-                .sortBy(Map.of("name", SortDirection.ASC))
+                .sortDirectionByFieldNameMap(Map.of("name", SortDirection.ASC))
                 .build();
 
         List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
@@ -402,10 +407,20 @@ class PostgresGiftCertificateRepositoryImplTest {
     @Test
     void findAll_returnOnlySearchedEntries_byTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .tagName("relax")
+                .tagNames(Set.of(relaxTag.getName()))
                 .build();
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
+                giftCertificateRepository.findAll(searchContext));
+    }
+
+    @Test
+    void findAll_returnOnlySearchedEntries_byManyTagName() {
+        GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
+                .tagNames(Set.of(spaTag.getName(), lgbtTag.getName()))
+                .build();
+
+        assertIterableEquals(List.of(summerChillGiftCertificate, abilityBoxGiftCertificate),
                 giftCertificateRepository.findAll(searchContext));
     }
 }

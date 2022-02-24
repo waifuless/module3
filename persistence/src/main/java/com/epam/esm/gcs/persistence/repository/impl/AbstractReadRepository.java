@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
 
-    private final EntityManager entityManager;
-    private final Class<T> modelClass;
+    protected final EntityManager entityManager;
+    protected final Class<T> modelClass;
 
     public AbstractReadRepository(EntityManager entityManager, Class<T> modelClass) {
         this.entityManager = entityManager;

@@ -21,9 +21,9 @@ public class GiftCertificateContextDtoConverter
     @Override
     protected GiftCertificateModelContext convert(GiftCertificateDtoContext source) {
         return GiftCertificateModelContext.builder()
-                .tagName(source.getTagName())
+                .tagNames(source.getTagName())
                 .searchValue(source.getSearchValue())
-                .sortBy(parseSortListToMap(source.getSortBy()))
+                .sortDirectionByFieldNameMap(parseSortListToMap(source.getSortBy()))
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.TagDto;
+import com.epam.esm.gcs.business.dto.UserWithMostlyUsedTagsDto;
 import com.epam.esm.gcs.business.dto.group.OnTagCreate;
 import com.epam.esm.gcs.business.service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,11 @@ public class TagController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public TagDto create(@Valid @RequestBody TagDto tag) {
         return tagService.create(tag);
+    }
+
+    @GetMapping("/most-used-of-users-with-highest-orders-price-amount")
+    public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
+        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
     }
 
     @GetMapping("/{id}")

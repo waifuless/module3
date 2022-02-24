@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.gcs.business.converter.GiftCertificateContextDtoConverter.FieldNameAssociation.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -273,15 +274,15 @@ class GiftCertificateServiceImplTest {
         String searchValue = "simpleSearchValue";
         List<String> sortByList = List.of("name.asc");
         GiftCertificateDtoContext inputContext = GiftCertificateDtoContext.builder()
-                .tagName(tagName)
+                .tagName(Set.of(tagName))
                 .searchValue(searchValue)
                 .sortBy(sortByList)
                 .build();
 
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
-                .tagName(tagName)
+                .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
-                .sortBy(Map.of(NAME.getFieldName(), SortDirection.ASC))
+                .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
         giftCertificateService.findAll(inputContext);

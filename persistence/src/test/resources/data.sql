@@ -22,5 +22,19 @@ VALUES (1, 1),
        (1, 2),
        (1, 4),
        (2, 2),
+       (3, 1),
        (3, 3),
        (3, 4);
+
+INSERT INTO app_user(email)
+VALUES ('vova@gmail.com'),
+       ('tanya@gmail.com');
+
+INSERT INTO user_order(user_id, price, create_date)
+VALUES (1, 100200, '2022-02-04 22:22:21.999'),
+       (2, 220.2, '2022-01-03 14:00:22.123');
+
+INSERT INTO user_order_position(user_order_id, gift_certificate_id, count)
+VALUES (1, 3, 12),
+       (1, 1, 1),
+       (2, 1, 22);

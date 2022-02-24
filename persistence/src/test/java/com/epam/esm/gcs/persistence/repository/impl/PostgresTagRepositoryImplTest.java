@@ -1,6 +1,8 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
+import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import com.epam.esm.gcs.persistence.testapplication.TestApplication;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import static com.epam.esm.gcs.persistence.testtablepropery.TagColumn.ID;
 import static com.epam.esm.gcs.persistence.testtablepropery.TagColumn.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -188,5 +191,16 @@ class PostgresTagRepositoryImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
 
         assertFalse(tagRepository.existsByName("notExistedName123321"));
+    }
+
+    @Test
+    void findMostWidelyUsedTagsOfUsersById_shouldReturnValidUserAndTags() {
+        AppUserModel vovaUser = new AppUserModel(1L, "vova@gmail.com", null);
+        UserWithMostlyUsedTagsModel userWithMostlyUsedTagsModel =
+                new UserWithMostlyUsedTagsModel(vovaUser,
+                        List.of(spaTag, lgbtTag));
+        List<UserWithMostlyUsedTagsModel> expectedResult = List.of(userWithMostlyUsedTagsModel);
+
+        assertIterableEquals(expectedResult, tagRepository.findMostWidelyUsedTagsOfUsersById(List.of(vovaUser)));
     }
 }

@@ -20,6 +20,7 @@ import javax.persistence.metamodel.Metamodel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class GiftCertificateQueryConstructorImpl implements GiftCertificateQueryConstructor {
@@ -43,10 +44,12 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (context.getTagName() != null) {
+        if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
             Join<GiftCertificateModel, TagModel> tagJoin =
                     giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
-            predicates.add(constructTagNamePredicate(context.getTagName(), tagJoin));
+            predicates.add(constructTagNamesPredicate(context.getTagNames(), giftCertificateRoot, tagJoin));
+            criteriaQuery.groupBy(giftCertificateRoot)
+                    .having(criteriaBuilder.equal(criteriaBuilder.count(tagJoin), context.getTagNames().size()));
         }
 
         if (context.getSearchValue() != null) {
@@ -55,17 +58,24 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
 
         List<Order> ordersList = constructOrdersList(context, giftCertificateRoot);
 
-        criteriaQuery = criteriaQuery.select(giftCertificateRoot);
-        criteriaQuery = criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        criteriaQuery = criteriaQuery.orderBy(ordersList);
+        criteriaQuery.select(giftCertificateRoot)
+                .where(predicates.toArray(new Predicate[0]))
+                .orderBy(ordersList);
         return criteriaQuery;
     }
 
-    private Predicate constructTagNamePredicate(String tagName, Join<GiftCertificateModel, TagModel> tagJoin) {
-        return criteriaBuilder.equal(
-                tagJoin.get(
-                        tagType.getSingularAttribute("name", String.class))
-                , tagName);
+    private Predicate constructTagNamesPredicate(Set<String> tagNames,
+                                                 Root<GiftCertificateModel> giftCertificateRoot,
+                                                 Join<GiftCertificateModel, TagModel> tagJoin) {
+        List<Predicate> tagEqualPredicates = new ArrayList<>();
+        for (String tagName : tagNames) {
+            Predicate tagEqualPredicate = criteriaBuilder.equal(
+                    tagJoin.get(
+                            tagType.getSingularAttribute("name", String.class))
+                    , tagName);
+            tagEqualPredicates.add(tagEqualPredicate);
+        }
+        return criteriaBuilder.or(tagEqualPredicates.toArray(new Predicate[0]));
     }
 
     private Predicate constructSearchValuePredicate(String searchValue,
@@ -94,8 +104,8 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
     private List<Order> constructOrdersList(GiftCertificateModelContext context,
                                             Root<GiftCertificateModel> giftCertificateRoot) {
         List<Order> orderList = new ArrayList<>();
-        if (context.getSortBy() != null) {
-            for (Map.Entry<String, SortDirection> sortByEntry : context.getSortBy().entrySet()) {
+        if (context.getSortDirectionByFieldNameMap() != null) {
+            for (Map.Entry<String, SortDirection> sortByEntry : context.getSortDirectionByFieldNameMap().entrySet()) {
                 Expression<GiftCertificateModel> attribute = giftCertificateRoot.get(sortByEntry.getKey());
                 Order order;
                 if (sortByEntry.getValue().equals(SortDirection.ASC)) {
