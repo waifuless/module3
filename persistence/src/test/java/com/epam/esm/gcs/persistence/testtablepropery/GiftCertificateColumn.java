@@ -1,4 +1,4 @@
-package com.epam.esm.gcs.persistence.tableproperty;
+package com.epam.esm.gcs.persistence.testtablepropery;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

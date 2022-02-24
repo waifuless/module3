@@ -4,36 +4,36 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn;
-import com.epam.esm.gcs.persistence.tableproperty.TagColumn;
+import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import com.epam.esm.gcs.persistence.testapplication.TestApplication;
-import com.epam.esm.gcs.persistence.testmanager.TestTablesManager;
+import com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.CREATE_DATE;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.DESCRIPTION;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.DURATION;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.LAST_UPDATE_DATE;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateColumn.PRICE;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateTagColumn.GIFT_CERTIFICATE_ID;
-import static com.epam.esm.gcs.persistence.tableproperty.GiftCertificateTagColumn.TAG_ID;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.CREATE_DATE;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.DESCRIPTION;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.DURATION;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.LAST_UPDATE_DATE;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateColumn.PRICE;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateTagColumn.GIFT_CERTIFICATE_ID;
+import static com.epam.esm.gcs.persistence.testtablepropery.GiftCertificateTagColumn.TAG_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -41,7 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles(profiles = "test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
 class PostgresGiftCertificateRepositoryImplTest {
@@ -52,26 +54,79 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert tagJdbcInsert;
-    private final SimpleJdbcInsert giftCertificateJdbcInsert;
-    private final SimpleJdbcInsert giftCertificateTagJdbcInsert;
+    private final EntityManager entityManager;
 
-    public PostgresGiftCertificateRepositoryImplTest(GiftCertificateRepository giftCertificateRepository,
-                                                     JdbcTemplate jdbcTemplate, TestTablesManager testTablesManager)
-            throws SQLException {
-        this.giftCertificateRepository = giftCertificateRepository;
-        this.jdbcTemplate = jdbcTemplate;
-        tagJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TAG_TABLE)
-                .usingGeneratedKeyColumns(TagColumn.ID.getColumnName()).usingColumns(TagColumn.NAME.getColumnName());
-        this.giftCertificateJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(GIFT_CERTIFICATE_TABLE_NAME)
-                .usingGeneratedKeyColumns(GiftCertificateColumn.ID.getColumnName())
-                .usingColumns(GiftCertificateColumn.NAME.getColumnName(),
-                        DESCRIPTION.getColumnName(), PRICE.getColumnName(),
-                        DURATION.getColumnName(), CREATE_DATE.getColumnName(), LAST_UPDATE_DATE.getColumnName());
-        this.giftCertificateTagJdbcInsert =
-                new SimpleJdbcInsert(jdbcTemplate).withTableName(GIFT_CERTIFICATE_TAG_TABLE_NAME)
-                        .usingColumns(GIFT_CERTIFICATE_ID.getColumnName(), TAG_ID.getColumnName());
-        testTablesManager.createTables();
+    private TagModel spaTag;
+    private TagModel relaxTag;
+    private TagModel gamingTag;
+    private TagModel lgbtTag;
+
+    private GiftCertificateModel summerChillGiftCertificate;
+    private GiftCertificateModel shoppingGiftCertificate;
+    private GiftCertificateModel abilityBoxGiftCertificate;
+
+    @BeforeEach
+    private void prepareModels() {
+        spaTag = new TagModel(1L, "spa");
+        relaxTag = new TagModel(2L, "relax");
+        gamingTag = new TagModel(3L, "gaming");
+        lgbtTag = new TagModel(4L, "LGBT");
+
+        summerChillGiftCertificate = GiftCertificateModel.builder()
+                .id(1L)
+                .name("Summer super chill")
+                .description("good adventure")
+                .price(BigDecimal.valueOf(220.2))
+                .duration(120)
+                .createDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
+                .lastUpdateDate(LocalDateTime.of(2022, 1, 2, 14, 0, 22, 123 * 1000000))
+                .tags(List.of(spaTag, relaxTag, lgbtTag))
+                .build();
+
+        shoppingGiftCertificate = GiftCertificateModel.builder()
+                .id(2L)
+                .name("Shopping")
+                .description("buy anything you want for 40br")
+                .price(BigDecimal.valueOf(40))
+                .duration(90)
+                .createDate(LocalDateTime.of(2022, 1, 3, 22, 22, 21, 789 * 1000000))
+                .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 14, 0, 22, 123 * 1000000))
+                .tags(List.of(relaxTag))
+                .build();
+
+        abilityBoxGiftCertificate = GiftCertificateModel.builder()
+                .id(3L)
+                .name("AbilityBox game design")
+                .description("interesting courses")
+                .price(BigDecimal.valueOf(999.99))
+                .duration(30)
+                .createDate(LocalDateTime.of(2022, 2, 3, 22, 22, 21, 999 * 1000000))
+                .lastUpdateDate(LocalDateTime.of(2022, 2, 6, 11, 0, 22, 213 * 1000000))
+                .tags(List.of(gamingTag, lgbtTag))
+                .build();
+    }
+
+    @Test
+    void create_shouldNotChangeInputModel() {
+        String name = "name";
+        String description = "description";
+        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
+        int duration = 2;
+
+        List<TagModel> inputTags = List.of(spaTag, relaxTag);
+        GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
+                .name(name)
+                .description(description)
+                .price(price)
+                .duration(duration)
+                .tags(inputTags)
+                .build();
+        GiftCertificateModel inputGiftCertificateCopy = new GiftCertificateModel(inputGiftCertificate);
+
+        giftCertificateRepository.create(inputGiftCertificate);
+        entityManager.flush();
+
+        assertEquals(inputGiftCertificateCopy, inputGiftCertificate);
     }
 
     @Test
@@ -82,13 +137,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
         int duration = 2;
 
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> inputTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
+        List<TagModel> inputTags = List.of(spaTag, relaxTag);
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
                 .name(name)
                 .description(description)
@@ -98,6 +147,7 @@ class PostgresGiftCertificateRepositoryImplTest {
                 .build();
 
         GiftCertificateModel returnedGiftCertificate = giftCertificateRepository.create(inputGiftCertificate);
+        entityManager.flush();
 
         assertNotNull(returnedGiftCertificate);
         assertNotNull(returnedGiftCertificate.getId());
@@ -137,44 +187,17 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void findById_returnGiftCertificate_whenItExists() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
-
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        GiftCertificateModel expectedReturnedGiftCertificate = giftCertificateInDataBase.withId(giftCertificateId);
-
-        Optional<GiftCertificateModel> returnedGiftCertificate = giftCertificateRepository.findById(giftCertificateId);
+        Optional<GiftCertificateModel> returnedGiftCertificate =
+                giftCertificateRepository.findById(abilityBoxGiftCertificate.getId());
 
         assertTrue(returnedGiftCertificate.isPresent());
-        assertEquals(expectedReturnedGiftCertificate, returnedGiftCertificate.get());
+        assertEquals(abilityBoxGiftCertificate, returnedGiftCertificate.get());
     }
 
     @Test
     void findById_returnOptionalEmpty_whenGiftCertificateDoesNotExist() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+
         long giftCertificateId = 3L;
 
         assertEquals(Optional.empty(), giftCertificateRepository.findById(giftCertificateId));
@@ -182,65 +205,39 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void updateById_shouldUpdateNotNullFieldsInDataBase() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
 
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        String newName = "newName";
-        int newDuration = 3;
+        String newName = summerChillGiftCertificate.getName() + "newSuffix";
+        int newDuration = summerChillGiftCertificate.getDuration() + 3;
         GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
+                .id(summerChillGiftCertificate.getId())
                 .name(newName)
                 .duration(newDuration)
                 .build();
 
-        GiftCertificateModel updatedGiftCertificate = giftCertificateInDataBase.withId(giftCertificateId);
-        updatedGiftCertificate.setName(newName);
-        updatedGiftCertificate.setDuration(newDuration);
+        summerChillGiftCertificate.setName(newName);
+        summerChillGiftCertificate.setDuration(newDuration);
 
-        LocalDateTime dateTimeBeforeUpdate = lastUpdateDate;
+        LocalDateTime dateTimeBeforeUpdate = LocalDateTime.now();
 
-        giftCertificateRepository.updateById(giftCertificateId, inputGiftCertificate);
+        giftCertificateRepository.updateById(summerChillGiftCertificate.getId(), inputGiftCertificate);
+        entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
                                 " AND %s > '%s'",
-                        GiftCertificateColumn.ID.getColumnName(), updatedGiftCertificate.getId(),
-                        GiftCertificateColumn.NAME.getColumnName(), updatedGiftCertificate.getName(),
-                        DESCRIPTION.getColumnName(), updatedGiftCertificate.getDescription(),
-                        PRICE.getColumnName(), updatedGiftCertificate.getPrice(),
-                        DURATION.getColumnName(), updatedGiftCertificate.getDuration(),
-                        CREATE_DATE.getColumnName(), updatedGiftCertificate.getCreateDate(),
+                        GiftCertificateColumn.ID.getColumnName(), summerChillGiftCertificate.getId(),
+                        GiftCertificateColumn.NAME.getColumnName(), summerChillGiftCertificate.getName(),
+                        DESCRIPTION.getColumnName(), summerChillGiftCertificate.getDescription(),
+                        PRICE.getColumnName(), summerChillGiftCertificate.getPrice(),
+                        DURATION.getColumnName(), summerChillGiftCertificate.getDuration(),
+                        CREATE_DATE.getColumnName(), summerChillGiftCertificate.getCreateDate(),
                         LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate));
         assertEquals(1, giftCertificateCount);
 
-        for (TagModel tag : updatedGiftCertificate.getTags()) {
+        for (TagModel tag : summerChillGiftCertificate.getTags()) {
             long giftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                     GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                            GIFT_CERTIFICATE_ID.getColumnName(), updatedGiftCertificate.getId(),
+                            GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
                             TAG_ID.getColumnName(), tag.getId()));
             assertEquals(1, giftCertificateTagRelationCount);
         }
@@ -248,306 +245,122 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     @Test
     void updateById_shouldUpdateTagRelations() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
 
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        giftCertificateInDataBase.setId(giftCertificateId);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
+        List<TagModel> relatedTags = summerChillGiftCertificate.getTags();
 
         TagModel remainingTag = relatedTags.get(0);
         TagModel tagToRemoveRelation = relatedTags.get(1);
-        String newTagName = "tag3";
-        long newTagId = createTagWithName(newTagName);
-        List<TagModel> newTags = List.of(remainingTag, new TagModel(newTagId, newTagName));
+        List<TagModel> newTags = List.of(remainingTag, gamingTag);
 
-        GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder().tags(newTags).build();
+        GiftCertificateModel inputGiftCertificate = GiftCertificateModel.builder()
+                .id(summerChillGiftCertificate.getId())
+                .tags(newTags)
+                .build();
 
-        LocalDateTime dateTimeBeforeUpdate = lastUpdateDate;
+        LocalDateTime dateTimeBeforeUpdate = LocalDateTime.now();
 
-        giftCertificateRepository.updateById(giftCertificateId, inputGiftCertificate);
+        giftCertificateRepository.updateById(summerChillGiftCertificate.getId(), inputGiftCertificate);
+        entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
                                 " AND %s > '%s'",
-                        GiftCertificateColumn.ID.getColumnName(), giftCertificateInDataBase.getId(),
-                        GiftCertificateColumn.NAME.getColumnName(), giftCertificateInDataBase.getName(),
-                        DESCRIPTION.getColumnName(), giftCertificateInDataBase.getDescription(),
-                        PRICE.getColumnName(), giftCertificateInDataBase.getPrice(),
-                        DURATION.getColumnName(), giftCertificateInDataBase.getDuration(),
-                        CREATE_DATE.getColumnName(), giftCertificateInDataBase.getCreateDate(),
+                        GiftCertificateColumn.ID.getColumnName(), summerChillGiftCertificate.getId(),
+                        GiftCertificateColumn.NAME.getColumnName(), summerChillGiftCertificate.getName(),
+                        DESCRIPTION.getColumnName(), summerChillGiftCertificate.getDescription(),
+                        PRICE.getColumnName(), summerChillGiftCertificate.getPrice(),
+                        DURATION.getColumnName(), summerChillGiftCertificate.getDuration(),
+                        CREATE_DATE.getColumnName(), summerChillGiftCertificate.getCreateDate(),
                         LAST_UPDATE_DATE.getColumnName(), dateTimeBeforeUpdate));
         assertEquals(1, giftCertificateCount);
 
         for (TagModel tag : newTags) {
             long giftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                     GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                            GIFT_CERTIFICATE_ID.getColumnName(), giftCertificateInDataBase.getId(),
+                            GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
                             TAG_ID.getColumnName(), tag.getId()));
             assertEquals(1, giftCertificateTagRelationCount);
         }
 
         long removedGiftCertificateTagRelationCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,
                 GIFT_CERTIFICATE_TAG_TABLE_NAME, String.format("%s = %d AND %s = %d",
-                        GIFT_CERTIFICATE_ID.getColumnName(), giftCertificateInDataBase.getId(),
+                        GIFT_CERTIFICATE_ID.getColumnName(), summerChillGiftCertificate.getId(),
                         TAG_ID.getColumnName(), tagToRemoveRelation.getId()));
         assertEquals(0, removedGiftCertificateTagRelationCount);
     }
 
     @Test
     void delete_shouldDeleteEntryInDataBase() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
 
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        giftCertificateInDataBase.setId(giftCertificateId);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        giftCertificateRepository.delete(giftCertificateId);
+        giftCertificateRepository.delete(shoppingGiftCertificate.getId());
+        entityManager.flush();
 
         long giftCertificateCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME,
                 String.format("%s = %d AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s' AND %s = '%s'" +
                                 " AND %s = '%s'",
-                        GiftCertificateColumn.ID.getColumnName(), giftCertificateInDataBase.getId(),
-                        GiftCertificateColumn.NAME.getColumnName(), giftCertificateInDataBase.getName(),
-                        DESCRIPTION.getColumnName(), giftCertificateInDataBase.getDescription(),
-                        PRICE.getColumnName(), giftCertificateInDataBase.getPrice(),
-                        DURATION.getColumnName(), giftCertificateInDataBase.getDuration(),
-                        CREATE_DATE.getColumnName(), giftCertificateInDataBase.getCreateDate(),
-                        LAST_UPDATE_DATE.getColumnName(), giftCertificateInDataBase.getLastUpdateDate()));
+                        GiftCertificateColumn.ID.getColumnName(), shoppingGiftCertificate.getId(),
+                        GiftCertificateColumn.NAME.getColumnName(), shoppingGiftCertificate.getName(),
+                        DESCRIPTION.getColumnName(), shoppingGiftCertificate.getDescription(),
+                        PRICE.getColumnName(), shoppingGiftCertificate.getPrice(),
+                        DURATION.getColumnName(), shoppingGiftCertificate.getDuration(),
+                        CREATE_DATE.getColumnName(), shoppingGiftCertificate.getCreateDate(),
+                        LAST_UPDATE_DATE.getColumnName(), shoppingGiftCertificate.getLastUpdateDate()));
         assertEquals(0, giftCertificateCount);
     }
 
     @Test
     void existsById_returnTrue_whenExists() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
-
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        giftCertificateInDataBase.setId(giftCertificateId);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        assertTrue(giftCertificateRepository.existsById(giftCertificateId));
+        assertTrue(giftCertificateRepository.existsById(abilityBoxGiftCertificate.getId()));
     }
 
     @Test
     void existsById_returnFalse_whenDoesNotExist() {
-        long notExistedId = 123L;
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, GIFT_CERTIFICATE_TABLE_NAME);
+
+        long notExistedId = 1L;
         assertFalse(giftCertificateRepository.existsById(notExistedId));
     }
 
     @Test
     void findAll_returnAll_whenContextIsEmpty() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
-        String name2 = "name2";
-        String description2 = "description2";
-        BigDecimal price2 = BigDecimal.valueOf(1053).setScale(2, RoundingMode.HALF_UP);
-        int duration2 = 2123;
-
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-        String tagName3 = "tag3";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-        long tagId3 = createTagWithName(tagName3);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        List<TagModel> relatedTags2 = List.of(new TagModel(tagId2, tagName2), new TagModel(tagId3, tagName3));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-        GiftCertificateModel giftCertificateInDataBase2 = GiftCertificateModel.builder()
-                .name(name2)
-                .description(description2)
-                .price(price2)
-                .duration(duration2)
-                .tags(relatedTags2)
-                .build();
-
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
-
-        LocalDateTime createDate2 = LocalDateTime.of(2021, 7, 11, 2, 2, 2);
-        LocalDateTime lastUpdateDate2 = LocalDateTime.of(2021, 10, 22, 11, 34);
-
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        giftCertificateInDataBase.setId(giftCertificateId);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        giftCertificateInDataBase2.setCreateDate(createDate2);
-        giftCertificateInDataBase2.setLastUpdateDate(lastUpdateDate2);
-        Long giftCertificateId2 = createGiftCertificateWithDate(giftCertificateInDataBase2);
-        giftCertificateInDataBase2.setId(giftCertificateId2);
-        relatedTags2.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId2, tag.getId()));
-
-        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(giftCertificateInDataBase,
-                giftCertificateInDataBase2);
-
         GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder().build();
 
-        assertIterableEquals(expectedReturnedGiftCertificates, giftCertificateRepository.findAll(emptyContext));
+        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(summerChillGiftCertificate,
+                shoppingGiftCertificate, abilityBoxGiftCertificate);
+
+        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
+        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
     }
 
     @Test
-    void findAll_returnOnlySearchedEntries() {
-        String name = "name";
-        String description = "description";
-        BigDecimal price = BigDecimal.valueOf(5.2).setScale(2, RoundingMode.HALF_UP);
-        int duration = 2;
-        String nameForSearch = "nameForSearch";
-        String description2 = "description2";
-        BigDecimal price2 = BigDecimal.valueOf(1053).setScale(2, RoundingMode.HALF_UP);
-        int duration2 = 2123;
-
-        String tagName1 = "tag1";
-        String tagName2 = "tag2";
-        String tagName3 = "tag3";
-
-        long tagId1 = createTagWithName(tagName1);
-        long tagId2 = createTagWithName(tagName2);
-        long tagId3 = createTagWithName(tagName3);
-
-        List<TagModel> relatedTags = List.of(new TagModel(tagId1, tagName1), new TagModel(tagId2, tagName2));
-        List<TagModel> relatedTags2 = List.of(new TagModel(tagId2, tagName2), new TagModel(tagId3, tagName3));
-        GiftCertificateModel giftCertificateInDataBase = GiftCertificateModel.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .duration(duration)
-                .tags(relatedTags)
-                .build();
-        GiftCertificateModel giftCertificateInDataBaseForSearch = GiftCertificateModel.builder()
-                .name(nameForSearch)
-                .description(description2)
-                .price(price2)
-                .duration(duration2)
-                .tags(relatedTags2)
+    void findAll_returnAllOrdered_whenOrderByName() {
+        GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder()
+                .sortBy(Map.of("name", SortDirection.ASC))
                 .build();
 
-        LocalDateTime createDate = LocalDateTime.of(2020, 7, 30, 12, 23, 23);
-        LocalDateTime lastUpdateDate = LocalDateTime.of(2020, 8, 28, 11, 34);
+        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
+                shoppingGiftCertificate, summerChillGiftCertificate);
 
-        LocalDateTime createDate2 = LocalDateTime.of(2021, 7, 11, 2, 2, 2);
-        LocalDateTime lastUpdateDate2 = LocalDateTime.of(2021, 10, 22, 11, 34);
+        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
+        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
+    }
 
-        giftCertificateInDataBase.setCreateDate(createDate);
-        giftCertificateInDataBase.setLastUpdateDate(lastUpdateDate);
-        Long giftCertificateId = createGiftCertificateWithDate(giftCertificateInDataBase);
-        giftCertificateInDataBase.setId(giftCertificateId);
-        relatedTags.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId, tag.getId()));
-
-        giftCertificateInDataBaseForSearch.setCreateDate(createDate2);
-        giftCertificateInDataBaseForSearch.setLastUpdateDate(lastUpdateDate2);
-        Long giftCertificateId2 = createGiftCertificateWithDate(giftCertificateInDataBaseForSearch);
-        giftCertificateInDataBaseForSearch.setId(giftCertificateId2);
-        relatedTags2.forEach(tag -> createGiftCertificateTagRelation(giftCertificateId2, tag.getId()));
-
-        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(giftCertificateInDataBaseForSearch);
-
+    @Test
+    void findAll_returnOnlySearchedEntries_bySearchValue() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
-                .searchValue(nameForSearch)
+                .searchValue("super")
                 .build();
 
-        assertIterableEquals(expectedReturnedGiftCertificates, giftCertificateRepository.findAll(searchContext));
+        assertIterableEquals(List.of(summerChillGiftCertificate), giftCertificateRepository.findAll(searchContext));
     }
 
-    private Long createTagWithName(String name) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(TagColumn.NAME.getColumnName(), name);
-        return tagJdbcInsert.executeAndReturnKey(parameters).longValue();
-    }
+    @Test
+    void findAll_returnOnlySearchedEntries_byTagName() {
+        GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
+                .tagName("relax")
+                .build();
 
-    private Long createGiftCertificateWithDate(GiftCertificateModel giftCertificate) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(GiftCertificateColumn.NAME.getColumnName(), giftCertificate.getName());
-        parameters.put(DESCRIPTION.getColumnName(), giftCertificate.getDescription());
-        parameters.put(PRICE.getColumnName(), giftCertificate.getPrice());
-        parameters.put(DURATION.getColumnName(), giftCertificate.getDuration());
-        parameters.put(CREATE_DATE.getColumnName(), giftCertificate.getCreateDate());
-        parameters.put(LAST_UPDATE_DATE.getColumnName(), giftCertificate.getLastUpdateDate());
-        return giftCertificateJdbcInsert.executeAndReturnKey(parameters).longValue();
-    }
-
-    private void createGiftCertificateTagRelation(Long giftCertificateId, Long tagId) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(GIFT_CERTIFICATE_ID.getColumnName(), giftCertificateId);
-        parameters.put(TAG_ID.getColumnName(), tagId);
-        giftCertificateTagJdbcInsert.execute(parameters);
+        assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
+                giftCertificateRepository.findAll(searchContext));
     }
 }
