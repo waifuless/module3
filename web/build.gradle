@@ -19,6 +19,8 @@ dependencies {
 
     implementation 'org.postgresql:postgresql:42.3.1'
 
+    implementation 'org.modelmapper:modelmapper:3.0.0'
+
     implementation project(':business')
 }
 

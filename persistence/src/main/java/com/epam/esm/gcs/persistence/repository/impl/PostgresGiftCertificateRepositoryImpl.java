@@ -1,28 +1,35 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstructor;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
-@RequiredArgsConstructor
-public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRepository {
-
-    private final static String DELETE_QUERY = "DELETE FROM GiftCertificateModel gc WHERE gc.id=:id";
-    private final static String EXISTS_BY_ID_QUERY = "SELECT COUNT(gc)>0 FROM GiftCertificateModel gc WHERE gc.id=:id";
+public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepository<GiftCertificateModel>
+        implements GiftCertificateRepository {
 
     private final EntityManager entityManager;
     private final GiftCertificateQueryConstructor queryConstructor;
+
+    public PostgresGiftCertificateRepositoryImpl(EntityManager entityManager,
+                                                 GiftCertificateQueryConstructor queryConstructor) {
+        super(entityManager, GiftCertificateModel.class);
+
+        this.entityManager = entityManager;
+        this.queryConstructor = queryConstructor;
+    }
 
     @Override
     @Transactional
@@ -38,43 +45,66 @@ public class PostgresGiftCertificateRepositoryImpl implements GiftCertificateRep
     }
 
     @Override
-    public Optional<GiftCertificateModel> findById(long id) {
-        return Optional.ofNullable(entityManager.find(GiftCertificateModel.class, id));
-    }
-
-    @Override
-    @Transactional
-    public void updateById(long id, GiftCertificateModel giftCertificate) {
-        GiftCertificateModel foundGiftCertificate = entityManager.find(GiftCertificateModel.class, id);
-        setNotNullFields(giftCertificate, foundGiftCertificate);
-
-        foundGiftCertificate.setLastUpdateDate(LocalDateTime.now());
-    }
-
-    @Override
-    public void delete(long id) {
-        entityManager
-                .createQuery(DELETE_QUERY)
-                .setParameter("id", id)
-                .executeUpdate();
-    }
-
-    @Override
-    public Boolean existsById(long id) {
-        return entityManager
-                .createQuery(EXISTS_BY_ID_QUERY,
-                        Boolean.class)
-                .setParameter("id", id)
-                .getSingleResult();
-    }
-
-    @Override
     public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
         CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    private void setNotNullFields(GiftCertificateModel source, GiftCertificateModel destination) {
+    @Override
+    public void updateCount(Long id, Integer newCount) {
+        GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
+        giftCertificate.setCount(newCount);
+    }
+
+    @Override
+    public Optional<Long> findActualId(Long archivedId) {
+        GiftCertificateModel archived = entityManager.find(GiftCertificateModel.class, archivedId);
+        GiftCertificateModel successor;
+        Set<Long> visitedIds = new HashSet<>();
+        while ((successor = archived.getSuccessor()) != null) {
+            visitedIds.add(archived.getId());
+            if (visitedIds.contains(successor.getId())) {
+                //todo: make ex, inconsistent data
+//                throw new RuntimeException("inconsistent data");
+                return Optional.empty();
+            }
+
+            if (successor.getState().equals(ActualityStateModel.ACTUAL)) {
+                return Optional.of(successor.getId());
+            }
+            archived = successor;
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public void archive(Long id) {
+        GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
+        giftCertificate.setState(ActualityStateModel.ARCHIVED);
+        giftCertificate.setCount(0);
+    }
+
+    @Override
+    @Transactional
+    public GiftCertificateModel archiveAndCreateSuccessor(Long idToArchive, GiftCertificateModel modifications) {
+        GiftCertificateModel giftCertificateToArchive = entityManager.find(GiftCertificateModel.class, idToArchive);
+        GiftCertificateModel successor = new GiftCertificateModel(giftCertificateToArchive);
+
+        successor.setId(null);
+        setNotNullFieldsAvailableForModification(successor, modifications);
+        successor.setLastUpdateDate(LocalDateTime.now());
+        successor.setState(ActualityStateModel.ACTUAL);
+
+        entityManager.persist(successor);
+
+        archive(idToArchive);
+        giftCertificateToArchive.setSuccessor(successor);
+        return successor;
+    }
+
+    private void setNotNullFieldsAvailableForModification(GiftCertificateModel destination,
+                                                          GiftCertificateModel source) {
         if (source.getName() != null) {
             destination.setName(source.getName());
         }

@@ -52,13 +52,12 @@ public class GiftCertificateController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
-        giftCertificateService.delete(id);
+        giftCertificateService.archive(id);
     }
 
-    @PatchMapping("/{id}")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id,
-                       @Valid @RequestBody GiftCertificateDto giftCertificate) {
-        giftCertificateService.updateById(id, giftCertificate);
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public GiftCertificateDto update(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id,
+                                     @Valid @RequestBody GiftCertificateDto giftCertificate) {
+        return giftCertificateService.archiveAndCreateSuccessor(id, giftCertificate);
     }
 }

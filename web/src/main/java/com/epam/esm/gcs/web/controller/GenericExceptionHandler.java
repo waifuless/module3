@@ -1,8 +1,13 @@
 package com.epam.esm.gcs.web.controller;
 
+import com.epam.esm.gcs.business.dto.UserOrderDto;
+import com.epam.esm.gcs.business.exception.EntitiesArchivedException;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
+import com.epam.esm.gcs.business.exception.GiftCertificateCountsNotEnoughException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
 import com.epam.esm.gcs.web.error.ErrorResponse;
+import com.epam.esm.gcs.web.error.ErrorResponseEntitiesArchived;
+import com.epam.esm.gcs.web.error.ErrorResponseGiftCertificateCountNotEnough;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +49,8 @@ public class GenericExceptionHandler {
     private final static String NO_METHOD_SUPPORTED = "no.method.supported";
     private final static String METHOD_NOT_ALLOWED = "method.not.allowed";
     private final static String MEDIA_TYPE_NOT_SUPPORTED = "media.type.not.supported";
+    private final static String ENTITIES_ARCHIVED = "entities.archived";
+    private final static String GIFT_CERTIFICATE_NOT_ENOUGH_COUNT = "gift.certificate.not.enough.count";
 
     private final MessageSource clientErrorMessageSource;
     private final MessageSource serverErrorMessageSource;
@@ -119,7 +126,8 @@ public class GenericExceptionHandler {
             Class<?> targetClass = invalidFormatEx.getPath().get(0).getFrom().getClass();
             return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, targetClass);
         } catch (Exception ex) {
-            return new ErrorResponse(DEFAULT_BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            String errorMessage = clientErrorMessageSource.getMessage(DEFAULT_BAD_REQUEST, null, locale);
+            return new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -153,6 +161,22 @@ public class GenericExceptionHandler {
                     .getMessage(METHOD_NOT_ALLOWED, new Object[]{ex.getMethod(), supportedMethods}, locale);
         }
         return new ErrorResponse(message, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(EntitiesArchivedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponseEntitiesArchived handleEntitiesArchived(EntitiesArchivedException ex, Locale locale) {
+        //todo: return links to actual entities instead of Ids
+        String message = clientErrorMessageSource.getMessage(ENTITIES_ARCHIVED, null, locale);
+        return new ErrorResponseEntitiesArchived(message, HttpStatus.FORBIDDEN, ex);
+    }
+
+    @ExceptionHandler(GiftCertificateCountsNotEnoughException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponseGiftCertificateCountNotEnough handleNotEnoughCount(GiftCertificateCountsNotEnoughException ex,
+                                                                           Locale locale) {
+        String message = clientErrorMessageSource.getMessage(GIFT_CERTIFICATE_NOT_ENOUGH_COUNT, null, locale);
+        return new ErrorResponseGiftCertificateCountNotEnough(message, HttpStatus.FORBIDDEN, UserOrderDto.class, ex);
     }
 
     @ExceptionHandler(Exception.class)

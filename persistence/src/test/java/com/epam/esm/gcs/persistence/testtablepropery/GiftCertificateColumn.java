@@ -13,7 +13,10 @@ public enum GiftCertificateColumn {
     PRICE("price"),
     DURATION("duration"),
     CREATE_DATE("create_date"),
-    LAST_UPDATE_DATE("last_update_date");
+    LAST_UPDATE_DATE("last_update_date"),
+    STATE_ID("state_id"),
+    COUNT("count"),
+    SUCCESSOR_ID("successor_id");
 
     private final String columnName;
 }

@@ -6,6 +6,7 @@ import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Getter;
 import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -13,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class GiftCertificateContextConverter
+@Component
+public class GiftCertificateContextDtoConverter
         extends AbstractConverter<GiftCertificateDtoContext, GiftCertificateModelContext> {
 
     @Override
