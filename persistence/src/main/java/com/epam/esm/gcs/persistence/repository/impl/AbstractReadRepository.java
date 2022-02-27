@@ -1,8 +1,11 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.repository.ReadRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -13,10 +16,12 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
 
     protected final EntityManager entityManager;
     protected final Class<T> modelClass;
+    protected final Paginator paginator;
 
-    public AbstractReadRepository(EntityManager entityManager, Class<T> modelClass) {
+    public AbstractReadRepository(EntityManager entityManager, Class<T> modelClass, Paginator paginator) {
         this.entityManager = entityManager;
         this.modelClass = modelClass;
+        this.paginator = paginator;
     }
 
     @Override
@@ -30,14 +35,19 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
     }
 
     @Override
-    public List<T> findAll() {
+    public List<T> findPage(PageModel page) {
+        return createFindAllQuery()
+                .setFirstResult(paginator.findStartPosition(page))
+                .setMaxResults(page.getSize())
+                .getResultList();
+    }
+
+    private TypedQuery<T> createFindAllQuery() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(modelClass);
 
         Root<T> modelRoot = criteriaQuery.from(modelClass);
-        criteriaQuery = criteriaQuery.select(modelRoot);
-
-        return entityManager.createQuery(criteriaQuery)
-                .getResultList();
+        criteriaQuery.select(modelRoot);
+        return entityManager.createQuery(criteriaQuery);
     }
 }

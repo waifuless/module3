@@ -2,6 +2,7 @@ package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
@@ -9,6 +10,7 @@ import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import org.modelmapper.ModelMapper;
@@ -51,9 +53,10 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     }
 
     @Override
-    public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
+    public List<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageDto pageDto) {
         GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
-        return giftCertificateRepository.findAll(modelContext).stream()
+        PageModel page = modelMapper.map(pageDto, PageModel.class);
+        return giftCertificateRepository.findPage(modelContext, page).stream()
                 .map(model -> modelMapper.map(model, GiftCertificateDto.class))
                 .collect(Collectors.toList());
     }

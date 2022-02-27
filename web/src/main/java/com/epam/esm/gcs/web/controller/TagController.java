@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.web.controller;
 
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.dto.UserWithMostlyUsedTagsDto;
 import com.epam.esm.gcs.business.dto.group.OnTagCreate;
@@ -32,8 +33,8 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping
-    public List<TagDto> findAll() {
-        return tagService.findAll();
+    public List<TagDto> finalPage(@Valid PageDto page) {
+        return tagService.findPage(page);
     }
 
     @Validated(OnTagCreate.class)

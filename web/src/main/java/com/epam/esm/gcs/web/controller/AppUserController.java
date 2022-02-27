@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.AppUserDto;
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class AppUserController {
     }
 
     @GetMapping
-    public List<AppUserDto> findAll() {
-        return appUserService.findAll();
+    public List<AppUserDto> findPage(@Valid PageDto page) {
+        return appUserService.findPage(page);
     }
 }

@@ -13,10 +13,10 @@ import java.util.Set;
 public class GiftCertificateDtoContext {
 
     private Set<
-            @Length(max = 100, message = "{entity.field.length.max}")
+            @Length(max = 100, message = "{parameter.length.max}")
                     String> tagName;
 
-    @Length(max = 200, message = "{entity.field.length.max}")
+    @Length(max = 200, message = "{parameter.length.max}")
     private String searchValue;
 
     private List<

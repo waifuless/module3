@@ -1,7 +1,9 @@
 package com.epam.esm.gcs.business.service.impl;
 
+import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.ReadService;
+import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.repository.ReadRepository;
 import org.modelmapper.ModelMapper;
 
@@ -34,8 +36,9 @@ public abstract class AbstractReadService<D, M> implements ReadService<D> {
     }
 
     @Override
-    public List<D> findAll() {
-        return readRepository.findAll().stream()
+    public List<D> findPage(PageDto pageDto) {
+        PageModel page = modelMapper.map(pageDto, PageModel.class);
+        return readRepository.findPage(page).stream()
                 .map(model -> modelMapper.map(model, dtoClass))
                 .collect(Collectors.toList());
     }
