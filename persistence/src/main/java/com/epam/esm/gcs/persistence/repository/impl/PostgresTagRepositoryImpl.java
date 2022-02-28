@@ -4,6 +4,7 @@ import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +41,8 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
 
     private final EntityManager entityManager;
 
-    public PostgresTagRepositoryImpl(EntityManager entityManager) {
-        super(entityManager, TagModel.class);
+    public PostgresTagRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+        super(entityManager, TagModel.class, paginator);
 
         this.entityManager = entityManager;
     }
