@@ -3,8 +3,11 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstructor;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +25,16 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
 
     private final EntityManager entityManager;
     private final GiftCertificateQueryConstructor queryConstructor;
+    private final Paginator paginator;
 
     public PostgresGiftCertificateRepositoryImpl(EntityManager entityManager,
-                                                 GiftCertificateQueryConstructor queryConstructor) {
-        super(entityManager, GiftCertificateModel.class);
+                                                 GiftCertificateQueryConstructor queryConstructor,
+                                                 Paginator paginator) {
+        super(entityManager, GiftCertificateModel.class, paginator);
 
         this.entityManager = entityManager;
         this.queryConstructor = queryConstructor;
+        this.paginator = paginator;
     }
 
     @Override
@@ -45,9 +51,20 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     }
 
     @Override
-    public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
+    public PageModel<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageParamsModel pageParams) {
         CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        List<GiftCertificateModel> content = entityManager.createQuery(criteriaQuery)
+                .setFirstResult(paginator.findStartPosition(pageParams))
+                .setMaxResults(pageParams.getSize())
+                .getResultList();
+        return new PageModel<>(content, pageParams, count(context));
+    }
+
+    @Override
+    public Long count(GiftCertificateModelContext context) {
+        CriteriaQuery<Long> countQuery = queryConstructor.constructCountQueryByContext(context);
+        return entityManager.createQuery(countQuery)
+                .getSingleResult();
     }
 
     @Override

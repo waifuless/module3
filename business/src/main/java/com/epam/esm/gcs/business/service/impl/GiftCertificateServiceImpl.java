@@ -2,6 +2,8 @@ package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
@@ -9,6 +11,8 @@ import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import org.modelmapper.ModelMapper;
@@ -51,11 +55,15 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     }
 
     @Override
-    public List<GiftCertificateDto> findAll(GiftCertificateDtoContext context) {
+    public PageDto<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageParamsDto pageParamsDto) {
         GiftCertificateModelContext modelContext = modelMapper.map(context, GiftCertificateModelContext.class);
-        return giftCertificateRepository.findAll(modelContext).stream()
+        PageParamsModel pageParams = modelMapper.map(pageParamsDto, PageParamsModel.class);
+
+        PageModel<GiftCertificateModel> page = giftCertificateRepository.findPage(modelContext, pageParams);
+        List<GiftCertificateDto> contentDto = page.getContent().stream()
                 .map(model -> modelMapper.map(model, GiftCertificateDto.class))
                 .collect(Collectors.toList());
+        return new PageDto<>(contentDto, pageParamsDto, page.getTotalCount());
     }
 
     @Override
@@ -96,9 +104,8 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     @Override
     @Transactional
     public GiftCertificateDto archiveAndCreateSuccessor(Long idToArchive, GiftCertificateDto modifications) {
-        if (!giftCertificateRepository.existsById(idToArchive)) {
-            throw new EntityNotFoundException(GiftCertificateDto.class, ID_FIELD, String.valueOf(idToArchive));
-        }
+        giftCertificateValidator.validateStateForArchiveAndCreateSuccessor(idToArchive);
+
         GiftCertificateModel giftCertificate = modelMapper.map(modifications, GiftCertificateModel.class);
 
         if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {

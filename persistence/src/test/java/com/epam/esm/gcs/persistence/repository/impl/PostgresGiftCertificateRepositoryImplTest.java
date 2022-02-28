@@ -3,6 +3,8 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
@@ -342,55 +344,76 @@ class PostgresGiftCertificateRepositoryImplTest {
     }
 
     @Test
-    void findAll_returnAll_whenContextIsEmpty() {
+    void findPage_returnPage_whenContextIsEmpty() {
         GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder().build();
 
-        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(summerChillGiftCertificate,
+        List<GiftCertificateModel> expectedContent = List.of(summerChillGiftCertificate,
                 shoppingGiftCertificate, abilityBoxGiftCertificate);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 3L;
+        PageModel<GiftCertificateModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
-        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
+        PageModel<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository
+                .findPage(emptyContext, pageParams);
+        assertEquals(expectedPagedModel, returnedGiftCertificates);
     }
 
     @Test
-    void findAll_returnAllOrdered_whenOrderByName() {
+    void findPage_returnPageOrdered_whenOrderByName() {
         GiftCertificateModelContext emptyContext = GiftCertificateModelContext.builder()
                 .sortDirectionByFieldNameMap(Map.of("name", SortDirection.ASC))
                 .build();
 
-        List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
+        List<GiftCertificateModel> expectedContent = List.of(abilityBoxGiftCertificate,
                 shoppingGiftCertificate, summerChillGiftCertificate);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 3L;
+        PageModel<GiftCertificateModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findAll(emptyContext);
-        assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
+        PageModel<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findPage(emptyContext,
+                pageParams);
+        assertEquals(expectedPagedModel, returnedGiftCertificates);
     }
 
     @Test
-    void findAll_returnOnlySearchedEntries_bySearchValue() {
+    void findPage_returnOnlySearchedEntries_bySearchValue() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .searchValue("super")
                 .build();
 
-        assertIterableEquals(List.of(summerChillGiftCertificate), giftCertificateRepository.findAll(searchContext));
+        List<GiftCertificateModel> expectedContent = List.of(summerChillGiftCertificate);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 1L;
+        PageModel<GiftCertificateModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
+
+        assertEquals(expectedPagedModel,
+                giftCertificateRepository.findPage(searchContext, pageParams));
     }
 
     @Test
-    void findAll_returnOnlySearchedEntries_byTagName() {
+    void findPage_returnOnlySearchedEntries_byTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(relaxTag.getName()))
                 .build();
+        List<GiftCertificateModel> expectedContent = List.of(summerChillGiftCertificate, shoppingGiftCertificate);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 2L;
+        PageModel<GiftCertificateModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
-                giftCertificateRepository.findAll(searchContext));
+        assertEquals(expectedPagedModel, giftCertificateRepository.findPage(searchContext, pageParams));
     }
 
     @Test
-    void findAll_returnOnlySearchedEntries_byManyTagName() {
+    void findPage_returnOnlySearchedEntries_byManyTagName() {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(spaTag.getName(), lgbtTag.getName()))
                 .build();
+        List<GiftCertificateModel> expectedContent = List.of(summerChillGiftCertificate, abilityBoxGiftCertificate);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 2L;
+        PageModel<GiftCertificateModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        assertIterableEquals(List.of(summerChillGiftCertificate, abilityBoxGiftCertificate),
-                giftCertificateRepository.findAll(searchContext));
+        assertEquals(expectedPagedModel,
+                giftCertificateRepository.findPage(searchContext, pageParams));
     }
 }
