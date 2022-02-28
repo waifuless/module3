@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.web.controller;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.PageDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,5 +74,12 @@ public class GiftCertificateController {
             @Valid @RequestBody GiftCertificateDto giftCertificate) {
         GiftCertificateDto successor = giftCertificateService.archiveAndCreateSuccessor(id, giftCertificate);
         return giftCertificateRepresentationAssembler.toModel(successor);
+    }
+
+    @PatchMapping(value = "/{id}/count", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateCount(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id,
+                                            @Valid @RequestBody ActionWithCountDto action) {
+        giftCertificateService.updateCount(id, action);
+        return ResponseEntity.ok().build();
     }
 }

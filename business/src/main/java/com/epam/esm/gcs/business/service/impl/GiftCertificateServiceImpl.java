@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.business.service.impl;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.PageDto;
@@ -9,6 +10,7 @@ import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
+import com.epam.esm.gcs.persistence.model.ActionWithCountModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.PageModel;
@@ -67,25 +69,17 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     }
 
     @Override
-    public void addCount(Long id, Integer countToAdd) {
-        GiftCertificateDto foundGiftCertificateDto = findById(id);
+    @Transactional
+    public void updateCount(Long id, ActionWithCountDto actionDto) {
+        if (actionDto.getMode().equals(ActionWithCountDto.Mode.REDUCE)) {
+            GiftCertificateDto foundGiftCertificateDto = findById(id);
+            GiftCertificateModel foundGiftCertificate = modelMapper
+                    .map(foundGiftCertificateDto, GiftCertificateModel.class);
 
-        Integer currentCount = foundGiftCertificateDto.getCount();
-        Integer newCount = currentCount + countToAdd;
-        giftCertificateRepository.updateCount(id, newCount);
-    }
-
-    @Override
-    public void reduceCount(Long id, Integer countToReduce) {
-        GiftCertificateDto foundGiftCertificateDto = findById(id);
-        GiftCertificateModel foundGiftCertificate = modelMapper
-                .map(foundGiftCertificateDto, GiftCertificateModel.class);
-
-        giftCertificateValidator.validateCountIsEnough(foundGiftCertificate, countToReduce);
-
-        Integer currentCount = foundGiftCertificate.getCount();
-        Integer newCount = currentCount - countToReduce;
-        giftCertificateRepository.updateCount(id, newCount);
+            giftCertificateValidator.validateCountIsEnough(foundGiftCertificate, actionDto.getCount());
+        }
+        ActionWithCountModel action = modelMapper.map(actionDto, ActionWithCountModel.class);
+        giftCertificateRepository.updateCount(id, action);
     }
 
     @Override

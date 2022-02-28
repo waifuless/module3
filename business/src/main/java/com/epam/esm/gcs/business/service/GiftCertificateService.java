@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.business.service;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.PageDto;
@@ -22,9 +23,7 @@ public interface GiftCertificateService extends CrService<GiftCertificateDto>, A
 
     PageDto<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageParamsDto pageParamsDto);
 
-    void addCount(Long id, Integer count);
-
-    void reduceCount(Long id, Integer count);
+    void updateCount(Long id, ActionWithCountDto action);
 
     Optional<Long> findActualId(Long id);
 

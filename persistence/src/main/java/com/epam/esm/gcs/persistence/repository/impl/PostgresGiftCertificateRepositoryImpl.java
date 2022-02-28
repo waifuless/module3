@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.ActionWithCountModel;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -68,8 +70,19 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     }
 
     @Override
-    public void updateCount(Long id, Integer newCount) {
+    @Transactional
+    public void updateCount(Long id, ActionWithCountModel action) {
         GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
+        //todo: read more about lock
+        entityManager.lock(giftCertificate, LockModeType.PESSIMISTIC_WRITE);
+        entityManager.refresh(giftCertificate);
+        Integer currentCount = giftCertificate.getCount();
+        int newCount;
+        if (action.getMode().equals(ActionWithCountModel.Mode.ADD)) {
+            newCount = currentCount + action.getCount();
+        } else {
+            newCount = currentCount - action.getCount();
+        }
         giftCertificate.setCount(newCount);
     }
 

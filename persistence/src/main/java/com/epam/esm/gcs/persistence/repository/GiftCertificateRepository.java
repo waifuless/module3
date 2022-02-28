@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.persistence.repository;
 
+import com.epam.esm.gcs.persistence.model.ActionWithCountModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.PageModel;
@@ -23,5 +24,5 @@ public interface GiftCertificateRepository extends CrRepository<GiftCertificateM
 
     Long count(GiftCertificateModelContext context);
 
-    void updateCount(Long id, Integer newCount);
+    void updateCount(Long id, ActionWithCountModel action);
 }

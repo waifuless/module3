@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.web.assembler.impl;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.web.assembler.GiftCertificateRepresentationAssembler;
 import com.epam.esm.gcs.web.assembler.TagRepresentationAssembler;
@@ -16,11 +17,16 @@ public class GiftCertificateRepresentationAssemblerImpl implements GiftCertifica
 
     //    private static final String ARCHIVE_AND_CREATE_SUCCESSOR_METHOD_NAME = "archiveAndCreateSuccessor";
     //    private static final String ARCHIVE_METHOD_NAME = "archive";
+    private static final String UPDATE_COUNT_METHOD_NAME = "update-count";
+
     private final TagRepresentationAssembler tagRepresentationAssembler;
 
     @Override
     public GiftCertificateDto toModel(GiftCertificateDto entity) {
         entity.getTags().forEach(tagRepresentationAssembler::toModel);
+        entity.add(linkTo(methodOn(GiftCertificateController.class).updateCount(entity.getId(),
+                new ActionWithCountDto()))
+                .withRel(UPDATE_COUNT_METHOD_NAME));
         return entity.add(linkTo(methodOn(GiftCertificateController.class)
                 .findById(entity.getId()))
                 .withSelfRel());
