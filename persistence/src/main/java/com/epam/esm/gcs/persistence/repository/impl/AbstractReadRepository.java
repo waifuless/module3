@@ -1,6 +1,7 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.repository.ReadRepository;
 import com.epam.esm.gcs.persistence.util.Paginator;
 
@@ -35,11 +36,12 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
     }
 
     @Override
-    public List<T> findPage(PageModel page) {
-        return createFindAllQuery()
-                .setFirstResult(paginator.findStartPosition(page))
-                .setMaxResults(page.getSize())
+    public PageModel<T> findPage(PageParamsModel pageParams) {
+        List<T> content = createFindAllQuery()
+                .setFirstResult(paginator.findStartPosition(pageParams))
+                .setMaxResults(pageParams.getSize())
                 .getResultList();
+        return new PageModel<>(content, pageParams, count());
     }
 
     private TypedQuery<T> createFindAllQuery() {
@@ -49,5 +51,16 @@ public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
         Root<T> modelRoot = criteriaQuery.from(modelClass);
         criteriaQuery.select(modelRoot);
         return entityManager.createQuery(criteriaQuery);
+    }
+
+    @Override
+    public Long count() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        Root<T> modelRoot = criteriaQuery.from(modelClass);
+        criteriaQuery.select(criteriaBuilder.count(modelRoot));
+        return entityManager.createQuery(criteriaQuery)
+                .getSingleResult();
     }
 }

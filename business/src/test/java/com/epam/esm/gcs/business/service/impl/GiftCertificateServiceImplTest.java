@@ -3,7 +3,6 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.ActualityStateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
-import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
@@ -12,7 +11,6 @@ import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
-import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
@@ -20,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -283,9 +283,8 @@ class GiftCertificateServiceImplTest {
 
         Integer page = 3;
         Integer size = 4;
-        PageDto inputPage = new PageDto(page, size);
+        Pageable inputPage = PageRequest.of(page, size);
 
-        PageModel expectedPage = new PageModel(page, size);
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
@@ -294,6 +293,6 @@ class GiftCertificateServiceImplTest {
 
         giftCertificateService.findPage(inputContext, inputPage);
 
-        verify(giftCertificateRepository, times(1)).findPage(expectedContext, expectedPage);
+        verify(giftCertificateRepository, times(1)).findPage(expectedContext, inputPage);
     }
 }

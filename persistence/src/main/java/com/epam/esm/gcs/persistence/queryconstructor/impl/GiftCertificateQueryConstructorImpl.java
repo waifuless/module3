@@ -42,8 +42,32 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         CriteriaQuery<GiftCertificateModel> criteriaQuery = criteriaBuilder.createQuery(GiftCertificateModel.class);
         Root<GiftCertificateModel> giftCertificateRoot = criteriaQuery.from(GiftCertificateModel.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> predicates = constructPredicates(context, criteriaQuery, giftCertificateRoot);
 
+        List<Order> ordersList = constructOrdersList(context, giftCertificateRoot);
+
+        criteriaQuery.select(giftCertificateRoot)
+                .where(predicates.toArray(new Predicate[0]))
+                .orderBy(ordersList);
+        return criteriaQuery;
+    }
+
+    @Override
+    public CriteriaQuery<Long> constructCountQueryByContext(GiftCertificateModelContext context) {
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<GiftCertificateModel> giftCertificateRoot = criteriaQuery.from(GiftCertificateModel.class);
+
+        List<Predicate> predicates = constructPredicates(context, criteriaQuery, giftCertificateRoot);
+
+        criteriaQuery.select(criteriaBuilder.count(giftCertificateRoot))
+                .where(predicates.toArray(new Predicate[0]));
+        return criteriaQuery;
+    }
+
+    private List<Predicate> constructPredicates(GiftCertificateModelContext context,
+                                                CriteriaQuery<?> criteriaQuery,
+                                                Root<GiftCertificateModel> giftCertificateRoot) {
+        List<Predicate> predicates = new ArrayList<>();
         if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
             Join<GiftCertificateModel, TagModel> tagJoin =
                     giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
@@ -55,13 +79,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         if (context.getSearchValue() != null) {
             predicates.add(constructSearchValuePredicate(context.getSearchValue(), giftCertificateRoot));
         }
-
-        List<Order> ordersList = constructOrdersList(context, giftCertificateRoot);
-
-        criteriaQuery.select(giftCertificateRoot)
-                .where(predicates.toArray(new Predicate[0]))
-                .orderBy(ordersList);
-        return criteriaQuery;
+        return predicates;
     }
 
     private Predicate constructTagNamesPredicate(Set<String> tagNames,

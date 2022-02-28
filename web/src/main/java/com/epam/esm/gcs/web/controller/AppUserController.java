@@ -2,8 +2,12 @@ package com.epam.esm.gcs.web.controller;
 
 import com.epam.esm.gcs.business.dto.AppUserDto;
 import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.service.AppUserService;
+import com.epam.esm.gcs.web.assembler.AppUserRepresentationAssembler;
+import com.epam.esm.gcs.web.assembler.PagedRepresentationAssembler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.List;
 
 @RestController
 @Validated
@@ -24,14 +27,18 @@ public class AppUserController {
     private static final String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
 
     private final AppUserService appUserService;
+    private final AppUserRepresentationAssembler appUserRepresentationAssembler;
+    private final PagedRepresentationAssembler<AppUserDto> pagedRepresentationAssembler;
 
     @GetMapping("/{id}")
     public AppUserDto findById(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
-        return appUserService.findById(id);
+        AppUserDto foundUser = appUserService.findById(id);
+        return appUserRepresentationAssembler.toModel(foundUser);
     }
 
     @GetMapping
-    public List<AppUserDto> findPage(@Valid PageDto page) {
-        return appUserService.findPage(page);
+    public PagedModel<AppUserDto> findPage(@Valid PageParamsDto pageParams) {
+        PageDto<AppUserDto> foundUsers = appUserService.findPage(pageParams);
+        return pagedRepresentationAssembler.toModel(foundUsers, appUserRepresentationAssembler);
     }
 }

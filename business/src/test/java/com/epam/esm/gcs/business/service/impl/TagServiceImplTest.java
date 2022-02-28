@@ -1,17 +1,18 @@
 package com.epam.esm.gcs.business.service.impl;
 
-import com.epam.esm.gcs.business.dto.PageDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
 import com.epam.esm.gcs.business.service.AppUserService;
-import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,10 +74,9 @@ class TagServiceImplTest {
 
         Integer page = 3;
         Integer size = 4;
-        PageDto inputPage = new PageDto(page, size);
-        PageModel expectedPage = new PageModel(page, size);
+        Pageable inputPage = PageRequest.of(page, size);
 
-        when(tagRepository.findPage(expectedPage)).thenReturn(tagModels);
+        when(tagRepository.findPage(inputPage)).thenReturn(new PageImpl<>(tagModels));
 
         assertEquals(tagDtos, tagService.findPage(inputPage));
     }
@@ -88,10 +88,9 @@ class TagServiceImplTest {
 
         Integer page = 3;
         Integer size = 4;
-        PageDto inputPage = new PageDto(page, size);
-        PageModel expectedPage = new PageModel(page, size);
+        Pageable inputPage = PageRequest.of(page, size);
 
-        when(tagRepository.findPage(expectedPage)).thenReturn(tagModels);
+        when(tagRepository.findPage(inputPage)).thenReturn(new PageImpl<>(tagModels));
 
         assertEquals(tagDtos, tagService.findPage(inputPage));
     }

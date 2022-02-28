@@ -1,9 +1,8 @@
 package com.epam.esm.gcs.business.service;
 
 import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
-
-import java.util.List;
 
 public interface ReadService<T> {
 
@@ -21,5 +20,5 @@ public interface ReadService<T> {
      *
      * @return List of dtos on page
      */
-    List<T> findPage(PageDto pageDto);
+    PageDto<T> findPage(PageParamsDto pageParamsDto);
 }

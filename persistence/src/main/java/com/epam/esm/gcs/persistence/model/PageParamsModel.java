@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageModel<T> {
+public class PageParamsModel {
 
-    private List<T> content;
-    private PageParamsModel pageParams;
-    private Long totalCount;
+    private Integer page;
+    private Integer size;
 }

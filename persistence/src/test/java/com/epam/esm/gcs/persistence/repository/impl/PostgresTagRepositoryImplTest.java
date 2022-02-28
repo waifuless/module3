@@ -1,7 +1,6 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
-import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
@@ -12,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
@@ -113,20 +115,20 @@ class PostgresTagRepositoryImplTest {
     @Test
     void findPage_returnListOfTagsInDatabase_ifExisted() {
         List<TagModel> allTags = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
-        List<TagModel> readTags = tagRepository.findPage(page);
-        assertEquals(readTags.size(), allTags.size());
-        assertTrue(readTags.containsAll(allTags));
+        Page<TagModel> readTags = tagRepository.findPage(page);
+        assertEquals(readTags.getContent().size(), allTags.size());
+        assertTrue(readTags.getContent().containsAll(allTags));
     }
 
     @Test
     void findPage_returnEmptyList_ifNoTagsExistInDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
-        List<TagModel> readTags = tagRepository.findPage(page);
-        assertEquals(0, readTags.size());
+        Page<TagModel> readTags = tagRepository.findPage(page);
+        assertEquals(0, readTags.getContent().size());
     }
 
 

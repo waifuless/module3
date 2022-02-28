@@ -3,7 +3,6 @@ package com.epam.esm.gcs.persistence.repository.impl;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
-import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
@@ -14,6 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
@@ -348,9 +350,9 @@ class PostgresGiftCertificateRepositoryImplTest {
 
         List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(summerChillGiftCertificate,
                 shoppingGiftCertificate, abilityBoxGiftCertificate);
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
-        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findPage(emptyContext, page);
+        Page<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findPage(emptyContext, page);
         assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
     }
 
@@ -362,9 +364,9 @@ class PostgresGiftCertificateRepositoryImplTest {
 
         List<GiftCertificateModel> expectedReturnedGiftCertificates = List.of(abilityBoxGiftCertificate,
                 shoppingGiftCertificate, summerChillGiftCertificate);
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
-        List<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findPage(emptyContext, page);
+        Page<GiftCertificateModel> returnedGiftCertificates = giftCertificateRepository.findPage(emptyContext, page);
         assertIterableEquals(expectedReturnedGiftCertificates, returnedGiftCertificates);
     }
 
@@ -373,7 +375,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .searchValue("super")
                 .build();
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
         assertIterableEquals(List.of(summerChillGiftCertificate),
                 giftCertificateRepository.findPage(searchContext, page));
@@ -384,7 +386,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(relaxTag.getName()))
                 .build();
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
         assertIterableEquals(List.of(summerChillGiftCertificate, shoppingGiftCertificate),
                 giftCertificateRepository.findPage(searchContext, page));
@@ -395,7 +397,7 @@ class PostgresGiftCertificateRepositoryImplTest {
         GiftCertificateModelContext searchContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(spaTag.getName(), lgbtTag.getName()))
                 .build();
-        PageModel page = new PageModel(1, 200);
+        Pageable page = PageRequest.of(1, 200);
 
         assertIterableEquals(List.of(summerChillGiftCertificate, abilityBoxGiftCertificate),
                 giftCertificateRepository.findPage(searchContext, page));
