@@ -1,6 +1,9 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
+import com.epam.esm.gcs.persistence.model.UserOrderModel;
 import com.epam.esm.gcs.persistence.repository.AppUserRepository;
 import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
@@ -18,14 +21,22 @@ public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUse
             "SELECT au FROM AppUserModel au JOIN au.orders u_order " +
                     " GROUP BY au" +
                     " HAVING SUM(u_order.price) = :highestPriceAmount";
-
     private static final String FIND_HIGHEST_PRICE_AMOUNT_OF_ALL_ORDERS =
             "SELECT SUM(u_order.price) FROM AppUserModel au JOIN au.orders u_order" +
                     " GROUP BY au" +
                     " ORDER BY SUM(u_order.price) DESC";
 
+    private static final String FIND_USER_ORDERS =
+            "SELECT uo FROM UserOrderModel uo WHERE uo.user.id=:userId";
+    private static final String FIND_USER_ORDERS_COUNT =
+            "SELECT COUNT(uo) FROM UserOrderModel uo WHERE uo.user.id=:userId";
+
+    private final Paginator paginator;
+
     public PostgresAppUserRepositoryImpl(EntityManager entityManager, Paginator paginator) {
         super(entityManager, AppUserModel.class, paginator);
+
+        this.paginator = paginator;
     }
 
     @Override
@@ -41,5 +52,22 @@ public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUse
         } catch (NoResultException ex) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public PageModel<UserOrderModel> findUserOrders(Long userId, PageParamsModel pageParams) {
+        List<UserOrderModel> content = entityManager.createQuery(FIND_USER_ORDERS, UserOrderModel.class)
+                .setParameter("userId", userId)
+                .setFirstResult(paginator.findStartPosition(pageParams))
+                .setMaxResults(pageParams.getSize())
+                .getResultList();
+        return new PageModel<>(content, pageParams, countUserOrders(userId));
+    }
+
+    @Override
+    public Long countUserOrders(Long userId) {
+        return entityManager.createQuery(FIND_USER_ORDERS_COUNT, Long.class)
+                .setParameter("userId", userId)
+                .getSingleResult();
     }
 }

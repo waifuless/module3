@@ -47,7 +47,7 @@ public class PagedRepresentationAssemblerImpl<T extends RepresentationModel<?>>
         Link selfLink = Link.of(baseUriComponentsBuilder.toUriString(), IanaLinkRelations.SELF);
         links.add(selfLink);
 
-        if (pageMetadata.getTotalPages() != 0) {
+        if (pageMetadata.getTotalPages() > 0) {
             Link firstLink = constructLink(baseUriComponentsBuilder, 1, IanaLinkRelations.FIRST);
             links.add(firstLink);
 
