@@ -1,6 +1,8 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
@@ -11,9 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
@@ -22,6 +21,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,21 +114,26 @@ class PostgresTagRepositoryImplTest {
 
     @Test
     void findPage_returnListOfTagsInDatabase_ifExisted() {
-        List<TagModel> allTags = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
-        Pageable page = PageRequest.of(1, 200);
+        List<TagModel> expectedContent = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 4L;
+        PageModel<TagModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        Page<TagModel> readTags = tagRepository.findPage(page);
-        assertEquals(readTags.getContent().size(), allTags.size());
-        assertTrue(readTags.getContent().containsAll(allTags));
+        PageModel<TagModel> returnedPageModel = tagRepository.findPage(pageParams);
+        assertEquals(expectedPagedModel.getContent().size(), returnedPageModel.getContent().size());
+        assertTrue(returnedPageModel.getContent().containsAll(expectedPagedModel.getContent()));
+        assertEquals(expectedPagedModel.getPageParams(), returnedPageModel.getPageParams());
+        assertEquals(expectedPagedModel.getTotalCount(), returnedPageModel.getTotalCount());
     }
 
     @Test
     void findPage_returnEmptyList_ifNoTagsExistInDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
-        Pageable page = PageRequest.of(1, 200);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        PageModel<TagModel> expectedPagedModel = new PageModel<>(Collections.emptyList(), pageParams, 0L);
 
-        Page<TagModel> readTags = tagRepository.findPage(page);
-        assertEquals(0, readTags.getContent().size());
+        PageModel<TagModel> returnedPagedModel = tagRepository.findPage(pageParams);
+        assertEquals(expectedPagedModel, returnedPagedModel);
     }
 
 
