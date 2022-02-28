@@ -12,7 +12,13 @@
           "name": "findAllTags",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ru-RU",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "http://localhost:8080/tags?page=1&size=4",
               "protocol": "http",
@@ -51,7 +57,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"12222123678223\"\n}",
+              "raw": "{\n    \"name\": \"12222123678223neon\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -78,7 +84,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/tags/66",
+              "raw": "http://localhost:8080/tags/11",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -86,7 +92,7 @@
               "port": "8080",
               "path": [
                 "tags",
-                "66"
+                "11"
               ]
             }
           },
@@ -124,7 +130,7 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/tags/11",
+              "raw": "http://localhost:8080/tags/12",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -132,7 +138,7 @@
               "port": "8080",
               "path": [
                 "tags",
-                "11"
+                "12"
               ]
             }
           },
@@ -178,7 +184,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/tags/most-used-of-users-with-highest-orders-amount",
+              "raw": "http://localhost:8080/tags/most-used-of-users-with-highest-orders-price-amount",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -186,7 +192,7 @@
               "port": "8080",
               "path": [
                 "tags",
-                "most-used-of-users-with-highest-orders-amount"
+                "most-used-of-users-with-highest-orders-price-amount"
               ]
             }
           },
@@ -203,7 +209,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/gift-certificates?size=4&tagName=spa&page=1",
+              "raw": "http://localhost:8080/gift-certificates?size=20&sortBy=create_date.asc&page=1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -215,7 +221,7 @@
               "query": [
                 {
                   "key": "size",
-                  "value": "4"
+                  "value": "20"
                 },
                 {
                   "key": "searchValue",
@@ -229,12 +235,12 @@
                 },
                 {
                   "key": "sortBy",
-                  "value": "create_date.asc",
-                  "disabled": true
+                  "value": "create_date.asc"
                 },
                 {
                   "key": "tagName",
-                  "value": "spa"
+                  "value": "spa",
+                  "disabled": true
                 },
                 {
                   "key": "tagName",
@@ -268,7 +274,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Some new cert\",\n    \"description\": \"Super sport\",\n    \"price\": \"20.02\",\n    \"duration\": \"360\",\n    \"state\": \"ACTUAL\",\n    \"count\": \"110\",\n    \"tags\":[\n        {\n            \"name\": \"sport\"\n        },\n        {\n            \"name\": \"bonk\"\n        },\n        {\n            \"id\": \"12\"\n        }\n    ]\n}",
+              "raw": "{\n    \"name\": \"Neo neon certificate\",\n    \"description\": \"neon\",\n    \"price\": \"280.02\",\n    \"duration\": \"36\",\n    \"state\": \"ACTUAL\",\n    \"count\": \"13\",\n    \"tags\":[\n        {\n            \"name\": \"neon\"\n        },\n        {\n            \"name\": \"bonk\"\n        },\n        {\n            \"name\": \"pank\"\n        }\n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -296,7 +302,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"tags\": [\n            {\n                \"id\": \"57\"\n            },\n            {\n                \"id\": 13\n            },\n            {\n                \"name\": \"badrelax\"\n            }\n        ]\n}",
+              "raw": "{\n    \"tags\": [\n            {\n                \"name\": \"57tag\"\n            },\n            {\n                \"id\": 13\n            },\n            {\n                \"name\": \"badrelax\"\n            }\n        ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -304,7 +310,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/gift-certificates/7",
+              "raw": "http://localhost:8080/gift-certificates/20",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -312,7 +318,7 @@
               "port": "8080",
               "path": [
                 "gift-certificates",
-                "7"
+                "20"
               ]
             }
           },
@@ -324,7 +330,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/gift-certificates/7",
+              "raw": "http://localhost:8080/gift-certificates/20",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -332,7 +338,7 @@
               "port": "8080",
               "path": [
                 "gift-certificates",
-                "7"
+                "20"
               ]
             }
           },
@@ -344,7 +350,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/gift-certificates/10",
+              "raw": "http://localhost:8080/gift-certificates/3",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -352,7 +358,7 @@
               "port": "8080",
               "path": [
                 "gift-certificates",
-                "10"
+                "3"
               ]
             }
           },
@@ -387,12 +393,21 @@
           "response": []
         },
         {
-          "name": "New Request",
+          "name": "updateCount",
           "request": {
             "method": "PATCH",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"mode\": \"ADD\",\r\n    \"count\": \"10\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "http://localhost:8080/gift-certificates/7",
+              "raw": "http://localhost:8080/gift-certificates/20/count",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -400,7 +415,8 @@
               "port": "8080",
               "path": [
                 "gift-certificates",
-                "7"
+                "20",
+                "count"
               ]
             }
           },
@@ -417,7 +433,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/users?page=2&size=1",
+              "raw": "http://localhost:8080/users?page=1&size=1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -429,7 +445,7 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "2"
+                  "value": "1"
                 },
                 {
                   "key": "size",
@@ -459,6 +475,37 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "findUserOrders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/users/1/orders?page=1&size=50",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "users",
+                "1",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -477,7 +524,7 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/orders?page=2&size=1",
+              "raw": "http://localhost:8080/orders?page=2&size=3",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -493,7 +540,7 @@
                 },
                 {
                   "key": "size",
-                  "value": "1"
+                  "value": "3"
                 }
               ]
             }
@@ -513,7 +560,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"positions\":[\r\n        {\r\n            \"giftCertificate\": {\r\n                \"id\": 12\r\n            },\r\n            \"count\": \"2\"\r\n        }\r\n    ],\r\n    \"user\":{\r\n        \"id\": 2\r\n    }\r\n}",
+              "raw": "{\r\n    \"positions\":[\r\n        {\r\n            \"giftCertificate\": {\r\n                \"id\": 12\r\n            },\r\n            \"count\": \"2\"\r\n        },\r\n        {\r\n            \"giftCertificate\": {\r\n                \"id\": 20\r\n            },\r\n            \"count\": \"20\"\r\n        }\r\n    ],\r\n    \"user\":{\r\n        \"id\": 1\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -540,7 +587,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/orders/13",
+              "raw": "http://localhost:8080/orders/38",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -548,7 +595,7 @@
               "port": "8080",
               "path": [
                 "orders",
-                "13"
+                "38"
               ]
             }
           },
