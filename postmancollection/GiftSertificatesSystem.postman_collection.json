@@ -14,7 +14,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/tags",
+              "raw": "http://localhost:8080/tags?page=1&size=4",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -22,6 +22,16 @@
               "port": "8080",
               "path": [
                 "tags"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "4"
+                }
               ]
             }
           },
@@ -161,6 +171,26 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "findMostUsedOfUsersWithHighestOrdersAmount",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/tags/most-used-of-users-with-highest-orders-amount",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "tags",
+                "most-used-of-users-with-highest-orders-amount"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -173,7 +203,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/gift-certificates",
+              "raw": "http://localhost:8080/gift-certificates?size=4&tagName=spa&page=1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -183,6 +213,10 @@
                 "gift-certificates"
               ],
               "query": [
+                {
+                  "key": "size",
+                  "value": "4"
+                },
                 {
                   "key": "searchValue",
                   "value": "ber",
@@ -200,8 +234,21 @@
                 },
                 {
                   "key": "tagName",
-                  "value": "relax",
+                  "value": "spa"
+                },
+                {
+                  "key": "tagName",
+                  "value": "poor",
                   "disabled": true
+                },
+                {
+                  "key": "tagName",
+                  "value": "bonk",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
                 }
               ]
             }
@@ -221,7 +268,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Spa from bereza\",\n    \"description\": \"Ber spa\",\n    \"price\": \"10020.02\",\n    \"duration\": \"1120\",\n    \"tags\":[\n        {\n            \"name\": \"poor\"\n        },\n        {\n            \"name\": \"spa\"\n        },\n        {\n            \"name\": \"lolkekspa\"\n        }\n    ]\n}",
+              "raw": "{\n    \"name\": \"Some new cert\",\n    \"description\": \"Super sport\",\n    \"price\": \"20.02\",\n    \"duration\": \"360\",\n    \"state\": \"ACTUAL\",\n    \"count\": \"110\",\n    \"tags\":[\n        {\n            \"name\": \"sport\"\n        },\n        {\n            \"name\": \"bonk\"\n        },\n        {\n            \"id\": \"12\"\n        }\n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -370,7 +417,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/users",
+              "raw": "http://localhost:8080/users?page=2&size=1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -378,6 +425,16 @@
               "port": "8080",
               "path": [
                 "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "size",
+                  "value": "1"
+                }
               ]
             }
           },
@@ -412,9 +469,15 @@
           "name": "findAllOrders",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ru-RU",
+                "type": "text"
+              }
+            ],
             "url": {
-              "raw": "http://localhost:8080/orders",
+              "raw": "http://localhost:8080/orders?page=2&size=1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -422,6 +485,16 @@
               "port": "8080",
               "path": [
                 "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "size",
+                  "value": "1"
+                }
               ]
             }
           },
@@ -431,10 +504,16 @@
           "name": "createOrder",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ru-RU",
+                "type": "text"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"positions\":[\r\n        {\r\n            \"giftCertificate\": {\r\n                \"id\": 7\r\n            },\r\n            \"count\": \"23\"\r\n        }\r\n    ],\r\n    \"user\":{\r\n        \"id\": 2\r\n    }\r\n}",
+              "raw": "{\r\n    \"positions\":[\r\n        {\r\n            \"giftCertificate\": {\r\n                \"id\": 12\r\n            },\r\n            \"count\": \"2\"\r\n        }\r\n    ],\r\n    \"user\":{\r\n        \"id\": 2\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -450,6 +529,26 @@
               "port": "8080",
               "path": [
                 "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "findOneOrder",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/orders/13",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "orders",
+                "13"
               ]
             }
           },
