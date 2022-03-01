@@ -22,4 +22,10 @@ public class GiftCertificateDtoContext {
     private List<
             @Pattern(regexp = "^\\w{1,100}\\.((asc)|(desc))$", message = "{sortBy.pattern.should.match}")
                     String> sortBy;
+
+    private StateForSearchDto state;
+    
+    public enum StateForSearchDto{
+        ACTUAL, ARCHIVED, ALL;
+    }
 }

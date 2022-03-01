@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.gcs.business.converter.GiftCertificateContextDtoConverter.FieldNameAssociation.NAME;
+import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -293,10 +294,11 @@ class GiftCertificateServiceImplTest {
         PageParamsDto inputPageParams = new PageParamsDto(page, size);
         PageParamsModel pageParamsModel = new PageParamsModel(page, size);
 
-        GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
+        GiftCertificateModelContext expectedContext = builder()
                 .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
                 .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
+                .state(StateForSearchModel.ACTUAL)
                 .build();
 
         when(giftCertificateRepository.findPage(expectedContext, pageParamsModel))

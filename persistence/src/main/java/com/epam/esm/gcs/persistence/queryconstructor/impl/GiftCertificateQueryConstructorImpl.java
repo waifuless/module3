@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.persistence.queryconstructor.impl;
 
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.StateForSearchModel;
 
 @Component
 public class GiftCertificateQueryConstructorImpl implements GiftCertificateQueryConstructor {
@@ -83,10 +86,29 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
                     .having(criteriaBuilder.equal(criteriaBuilder.count(tagJoin), context.getTagNames().size()));
         }
 
+        if (context.getState() != null && !context.getState().equals(StateForSearchModel.ALL)) {
+            predicates.add(constructStatePredicate(context.getState(), giftCertificateRoot));
+        }
+
         if (context.getSearchValue() != null) {
             predicates.add(constructSearchValuePredicate(context.getSearchValue(), giftCertificateRoot));
         }
         return predicates;
+    }
+
+    private Predicate constructStatePredicate(StateForSearchModel state,
+                                              Root<GiftCertificateModel> giftCertificateRoot) {
+        ActualityStateModel neededState;
+        if (state.equals(StateForSearchModel.ACTUAL)) {
+            neededState = ActualityStateModel.ACTUAL;
+        } else {
+            neededState = ActualityStateModel.ARCHIVED;
+        }
+        return criteriaBuilder
+                .equal(
+                        giftCertificateRoot.get(
+                                giftCertificateType.getSingularAttribute("state", ActualityStateModel.class)
+                        ), neededState);
     }
 
     private Predicate constructTagNamesPredicate(Set<String> tagNames,

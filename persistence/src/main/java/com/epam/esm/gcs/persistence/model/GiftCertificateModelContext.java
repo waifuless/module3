@@ -18,4 +18,9 @@ public class GiftCertificateModelContext {
     private Set<String> tagNames;
     private String searchValue;
     private Map<String, SortDirection> sortDirectionByFieldNameMap;
+    private StateForSearchModel state;
+
+    public enum StateForSearchModel{
+        ACTUAL, ARCHIVED, ALL;
+    }
 }
