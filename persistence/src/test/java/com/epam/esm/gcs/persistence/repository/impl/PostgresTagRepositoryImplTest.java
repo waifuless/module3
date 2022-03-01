@@ -21,6 +21,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,8 @@ class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     private TagModel spaTag;

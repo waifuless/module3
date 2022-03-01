@@ -6,6 +6,7 @@ import com.epam.esm.gcs.persistence.repository.ReadRepository;
 import com.epam.esm.gcs.persistence.util.Paginator;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,11 +16,14 @@ import java.util.Optional;
 
 public abstract class AbstractReadRepository<T> implements ReadRepository<T> {
 
+    @PersistenceContext
     protected final EntityManager entityManager;
+
     protected final Class<T> modelClass;
     protected final Paginator paginator;
 
-    public AbstractReadRepository(EntityManager entityManager, Class<T> modelClass, Paginator paginator) {
+    public AbstractReadRepository(EntityManager entityManager, Class<T> modelClass,
+                                  Paginator paginator) {
         this.entityManager = entityManager;
         this.modelClass = modelClass;
         this.paginator = paginator;

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -25,7 +26,9 @@ import java.util.Set;
 public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepository<GiftCertificateModel>
         implements GiftCertificateRepository {
 
+    @PersistenceContext
     private final EntityManager entityManager;
+
     private final GiftCertificateQueryConstructor queryConstructor;
     private final Paginator paginator;
 

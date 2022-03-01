@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
                     " GROUP BY tag" +
                     " ORDER BY COUNT(o_position) DESC";
 
+    @PersistenceContext
     private final EntityManager entityManager;
 
     public PostgresTagRepositoryImpl(EntityManager entityManager, Paginator paginator) {

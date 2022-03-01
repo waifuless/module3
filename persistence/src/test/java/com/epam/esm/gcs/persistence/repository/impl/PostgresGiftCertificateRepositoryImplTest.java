@@ -23,6 +23,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -63,6 +64,8 @@ class PostgresGiftCertificateRepositoryImplTest {
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     private TagModel spaTag;

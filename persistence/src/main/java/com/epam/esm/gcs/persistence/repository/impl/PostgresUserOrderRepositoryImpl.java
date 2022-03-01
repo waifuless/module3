@@ -7,12 +7,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 
 @Repository
 public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<UserOrderModel>
         implements UserOrderRepository {
 
+    @PersistenceContext
     private final EntityManager entityManager;
 
     public PostgresUserOrderRepositoryImpl(EntityManager entityManager, Paginator paginator) {
