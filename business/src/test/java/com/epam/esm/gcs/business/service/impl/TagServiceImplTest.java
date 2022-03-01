@@ -1,9 +1,13 @@
 package com.epam.esm.gcs.business.service.impl;
 
+import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
 import com.epam.esm.gcs.business.service.AppUserService;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
@@ -58,7 +62,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void findAll_returnDtos_ifModelsFound() {
+    void findPage_returnDtos_ifModelsFound() {
         List<TagModel> tagModels = new ArrayList<>();
         tagModels.add(new TagModel(1L, "1"));
         tagModels.add(new TagModel(2L, "2"));
@@ -69,19 +73,33 @@ class TagServiceImplTest {
         tagDtos.add(new TagDto(2L, "2"));
         tagDtos.add(new TagDto(3L, "3"));
 
-        when(tagRepository.findAll()).thenReturn(tagModels);
+        Integer page = 3;
+        Integer size = 4;
+        Long totalCount = 3L;
+        PageParamsDto inputPageParams = new PageParamsDto(page, size);
+        PageParamsModel pageParamsModel = new PageParamsModel(page, size);
 
-        assertEquals(tagDtos, tagService.findAll());
+        when(tagRepository.findPage(pageParamsModel))
+                .thenReturn(new PageModel<>(tagModels, pageParamsModel, totalCount));
+
+        assertEquals(new PageDto<>(tagDtos, inputPageParams, totalCount), tagService.findPage(inputPageParams));
     }
 
     @Test
-    void findAll_returnEmptyList_ifModelsNotFound() {
+    void findPage_returnEmptyList_ifModelsNotFound() {
         List<TagModel> tagModels = Collections.emptyList();
         List<TagDto> tagDtos = Collections.emptyList();
 
-        when(tagRepository.findAll()).thenReturn(tagModels);
+        Integer page = 3;
+        Integer size = 4;
+        Long totalCount = 0L;
+        PageParamsDto inputPageParams = new PageParamsDto(page, size);
+        PageParamsModel pageParamsModel = new PageParamsModel(page, size);
 
-        assertEquals(tagDtos, tagService.findAll());
+        when(tagRepository.findPage(pageParamsModel))
+                .thenReturn(new PageModel<>(tagModels, pageParamsModel, totalCount));
+
+        assertEquals(new PageDto<>(tagDtos, inputPageParams, totalCount), tagService.findPage(inputPageParams));
     }
 
     @Test

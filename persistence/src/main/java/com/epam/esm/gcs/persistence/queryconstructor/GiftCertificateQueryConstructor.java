@@ -8,4 +8,6 @@ import javax.persistence.criteria.CriteriaQuery;
 public interface GiftCertificateQueryConstructor {
 
     CriteriaQuery<GiftCertificateModel> constructFindAllQueryByContext(GiftCertificateModelContext context);
+
+    CriteriaQuery<Long> constructCountQueryByContext(GiftCertificateModelContext context);
 }
