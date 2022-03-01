@@ -3,6 +3,7 @@ package com.epam.esm.gcs.business.service.impl;
 import com.epam.esm.gcs.business.dto.ActualityStateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.exception.EntityNotFoundException;
 import com.epam.esm.gcs.business.service.GiftCertificateService;
@@ -11,6 +12,8 @@ import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
@@ -22,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -192,11 +196,16 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void updateById_throwEntityNotFoundException_whenEntityWithIdDoesNotExist() {
+    void updateById_invokeValidator() {
         long id = 23L;
-        when(giftCertificateRepository.existsById(id)).thenReturn(false);
-        assertThrows(EntityNotFoundException.class, () ->
-                giftCertificateService.archiveAndCreateSuccessor(id, GiftCertificateDto.builder().build()));
+        GiftCertificateDto modificationsDto = GiftCertificateDto.builder().build();
+        GiftCertificateModel modifications = GiftCertificateModel.builder().build();
+        when(giftCertificateRepository.archiveAndCreateSuccessor(id, modifications))
+                .thenReturn(GiftCertificateModel.builder().build());
+
+        giftCertificateService.archiveAndCreateSuccessor(id, modificationsDto);
+
+        verify(giftCertificateValidator, times(1)).validateStateIsActual(id);
     }
 
     @Test
@@ -269,7 +278,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void findAllByContext_invokeRepositoryWithValidModelContext() {
+    void findPageByContext_invokeRepositoryWithValidInput() {
         String tagName = "justTagName";
         String searchValue = "simpleSearchValue";
         List<String> sortByList = List.of("name.asc");
@@ -279,14 +288,22 @@ class GiftCertificateServiceImplTest {
                 .sortBy(sortByList)
                 .build();
 
+        Integer page = 3;
+        Integer size = 4;
+        PageParamsDto inputPageParams = new PageParamsDto(page, size);
+        PageParamsModel pageParamsModel = new PageParamsModel(page, size);
+
         GiftCertificateModelContext expectedContext = GiftCertificateModelContext.builder()
                 .tagNames(Set.of(tagName))
                 .searchValue(searchValue)
                 .sortDirectionByFieldNameMap(Map.of(NAME.getFieldName(), SortDirection.ASC))
                 .build();
 
-        giftCertificateService.findAll(inputContext);
+        when(giftCertificateRepository.findPage(expectedContext, pageParamsModel))
+                .thenReturn(new PageModel<>(new ArrayList<>(), new PageParamsModel(), 0L));
 
-        verify(giftCertificateRepository, times(1)).findAll(expectedContext);
+        giftCertificateService.findPage(inputContext, inputPageParams);
+
+        verify(giftCertificateRepository, times(1)).findPage(expectedContext, pageParamsModel);
     }
 }
