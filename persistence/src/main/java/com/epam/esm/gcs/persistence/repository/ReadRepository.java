@@ -1,8 +1,15 @@
 package com.epam.esm.gcs.persistence.repository;
 
-import java.util.List;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
+
 import java.util.Optional;
 
+/**
+ * Basic interface for Read operation on repository
+ *
+ * @param <T>
+ */
 public interface ReadRepository<T> {
 
     /**
@@ -22,9 +29,16 @@ public interface ReadRepository<T> {
     Boolean existsById(long id);
 
     /**
-     * Finds all models
+     * Finds models on page
      *
-     * @return List of all models
+     * @return List of models on page
      */
-    List<T> findAll();
+    PageModel<T> findPage(PageParamsModel pageParams);
+
+    /**
+     * Finds count of some entity
+     *
+     * @return count of some entity
+     */
+    Long count();
 }
