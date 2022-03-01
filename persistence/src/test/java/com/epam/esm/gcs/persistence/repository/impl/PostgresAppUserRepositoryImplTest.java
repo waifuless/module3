@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -33,6 +34,8 @@ class PostgresAppUserRepositoryImplTest {
 
     private final AppUserRepository appUserRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     private AppUserModel vovaUser;

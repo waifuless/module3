@@ -13,13 +13,19 @@ import java.util.Set;
 public class GiftCertificateDtoContext {
 
     private Set<
-            @Length(max = 100, message = "{entity.field.length.max}")
+            @Length(max = 100, message = "{parameter.length.max}")
                     String> tagName;
 
-    @Length(max = 200, message = "{entity.field.length.max}")
+    @Length(max = 200, message = "{parameter.length.max}")
     private String searchValue;
 
     private List<
             @Pattern(regexp = "^\\w{1,100}\\.((asc)|(desc))$", message = "{sortBy.pattern.should.match}")
                     String> sortBy;
+
+    private StateForSearchDto state;
+    
+    public enum StateForSearchDto{
+        ACTUAL, ARCHIVED, ALL;
+    }
 }
