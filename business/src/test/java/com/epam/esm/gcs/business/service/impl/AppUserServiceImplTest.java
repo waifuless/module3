@@ -2,22 +2,17 @@ package com.epam.esm.gcs.business.service.impl;
 
 import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.service.AppUserService;
-import com.epam.esm.gcs.business.service.GiftCertificateService;
-import com.epam.esm.gcs.business.validation.UserOrderValidator;
 import com.epam.esm.gcs.persistence.model.PageModel;
 import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.UserOrderModel;
 import com.epam.esm.gcs.persistence.repository.AppUserRepository;
-import com.epam.esm.gcs.persistence.repository.UserOrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

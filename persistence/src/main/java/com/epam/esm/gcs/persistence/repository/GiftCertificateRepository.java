@@ -22,7 +22,19 @@ public interface GiftCertificateRepository extends CrRepository<GiftCertificateM
      */
     PageModel<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageParamsModel pageParams);
 
+    /**
+     * Finds count of giftCertificates by Context
+     *
+     * @param context - parameters for search
+     * @return - count of giftCertificates by Context
+     */
     Long count(GiftCertificateModelContext context);
 
+    /**
+     * Update count of specified giftCertificate
+     *
+     * @param id     - id of giftCertificate
+     * @param action - action with count
+     */
     void updateCount(Long id, ActionWithCountModel action);
 }

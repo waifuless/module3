@@ -7,11 +7,32 @@ import com.epam.esm.gcs.persistence.model.UserOrderModel;
 
 import java.util.List;
 
+/**
+ * Interface for interaction with AppUser
+ */
 public interface AppUserRepository extends ReadRepository<AppUserModel> {
 
+    /**
+     * Finds the highest price amount of all orders and returns users with such
+     *
+     * @return List of users with the highest price amount of all orders
+     */
     List<AppUserModel> findUsersWithHighestPriceAmountOfAllOrders();
 
+    /**
+     * Finds page of orders by specified user
+     *
+     * @param userId     - id of user to search
+     * @param pageParams - page parameters
+     * @return page of orders by specified user
+     */
     PageModel<UserOrderModel> findUserOrders(Long userId, PageParamsModel pageParams);
 
+    /**
+     * Counts user orders
+     *
+     * @param userId - id of user to find orders
+     * @return - count of all user orders
+     */
     Long countUserOrders(Long userId);
 }

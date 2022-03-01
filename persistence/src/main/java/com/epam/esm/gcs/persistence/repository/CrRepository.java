@@ -1,7 +1,7 @@
 package com.epam.esm.gcs.persistence.repository;
 
 /**
- * Basic interface for Repositories with CRD methods (create, read, delete)
+ * Basic interface for Repositories with CR methods (create, read)
  *
  * @param <T> - type of Model
  */

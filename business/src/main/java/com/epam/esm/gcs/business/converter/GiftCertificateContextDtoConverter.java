@@ -1,9 +1,7 @@
 package com.epam.esm.gcs.business.converter;
 
-import com.epam.esm.gcs.business.dto.ActualityStateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext.StateForSearchDto;
-import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.StateForSearchModel;
@@ -51,8 +49,8 @@ public class GiftCertificateContextDtoConverter
         return sortByParsed;
     }
 
-    private StateForSearchModel parseState(StateForSearchDto state){
-        if(state==null){
+    private StateForSearchModel parseState(StateForSearchDto state) {
+        if (state == null) {
             return StateForSearchModel.ACTUAL;
         }
         return StateForSearchModel.valueOf(state.name());

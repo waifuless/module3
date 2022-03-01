@@ -5,6 +5,11 @@ import com.epam.esm.gcs.persistence.model.PageParamsModel;
 
 import java.util.Optional;
 
+/**
+ * Basic interface for Read operation on repository
+ *
+ * @param <T>
+ */
 public interface ReadRepository<T> {
 
     /**
@@ -30,5 +35,10 @@ public interface ReadRepository<T> {
      */
     PageModel<T> findPage(PageParamsModel pageParams);
 
+    /**
+     * Finds count of some entity
+     *
+     * @return count of some entity
+     */
     Long count();
 }

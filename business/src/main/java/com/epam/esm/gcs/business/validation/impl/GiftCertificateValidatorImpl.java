@@ -31,8 +31,8 @@ public class GiftCertificateValidatorImpl implements GiftCertificateValidator {
     }
 
     @Override
-    public void validateStateIsActual(Long idToArchive) {
-        GiftCertificateDto giftCertificateToArchiveDto = giftCertificateService.findById(idToArchive);
+    public void validateStateIsActual(Long id) {
+        GiftCertificateDto giftCertificateToArchiveDto = giftCertificateService.findById(id);
         GiftCertificateModel giftCertificateToArchive = modelMapper
                 .map(giftCertificateToArchiveDto, GiftCertificateModel.class);
 
@@ -40,10 +40,10 @@ public class GiftCertificateValidatorImpl implements GiftCertificateValidator {
             List<Pair<Long, Long>> archivedToActual = new ArrayList<>();
             List<Long> unavailable = new ArrayList<>();
             if (giftCertificateToArchive.getSuccessor() != null) {
-                giftCertificateService.findActualId(idToArchive)
-                        .ifPresent(actualId -> archivedToActual.add(Pair.of(idToArchive, actualId)));
+                giftCertificateService.findActualId(id)
+                        .ifPresent(actualId -> archivedToActual.add(Pair.of(id, actualId)));
             } else {
-                unavailable.add(idToArchive);
+                unavailable.add(id);
             }
             throw new EntitiesArchivedException(GiftCertificateDto.class, archivedToActual, unavailable);
         }

@@ -32,7 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.gcs.business.converter.GiftCertificateContextDtoConverter.FieldNameAssociation.NAME;
-import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.*;
+import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.StateForSearchModel;
+import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.builder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;

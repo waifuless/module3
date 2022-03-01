@@ -64,7 +64,7 @@ class GiftCertificateValidatorImplTest {
 
         when(giftCertificateService.findById(inputId)).thenReturn(foundCertificateDto);
 
-        assertDoesNotThrow(()->giftCertificateValidator.validateStateIsActual(inputId));
+        assertDoesNotThrow(() -> giftCertificateValidator.validateStateIsActual(inputId));
 
         verify(giftCertificateService, times(0)).findActualId(any());
     }
@@ -81,7 +81,7 @@ class GiftCertificateValidatorImplTest {
 
         when(giftCertificateService.findById(inputId)).thenReturn(foundCertificateDto);
 
-        assertThrows(EntitiesArchivedException.class, ()->giftCertificateValidator.validateStateIsActual(inputId));
+        assertThrows(EntitiesArchivedException.class, () -> giftCertificateValidator.validateStateIsActual(inputId));
 
         verify(giftCertificateService, times(0)).findActualId(any());
     }
@@ -99,7 +99,7 @@ class GiftCertificateValidatorImplTest {
 
         when(giftCertificateService.findById(inputId)).thenReturn(foundCertificateDto);
 
-        assertThrows(EntitiesArchivedException.class, ()->giftCertificateValidator.validateStateIsActual(inputId));
+        assertThrows(EntitiesArchivedException.class, () -> giftCertificateValidator.validateStateIsActual(inputId));
 
         verify(giftCertificateService, times(1)).findActualId(any());
     }

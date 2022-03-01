@@ -24,8 +24,8 @@ public class GiftCertificateDtoContext {
                     String> sortBy;
 
     private StateForSearchDto state;
-    
-    public enum StateForSearchDto{
+
+    public enum StateForSearchDto {
         ACTUAL, ARCHIVED, ALL;
     }
 }

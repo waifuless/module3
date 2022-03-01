@@ -20,7 +20,7 @@ public class GiftCertificateModelContext {
     private Map<String, SortDirection> sortDirectionByFieldNameMap;
     private StateForSearchModel state;
 
-    public enum StateForSearchModel{
+    public enum StateForSearchModel {
         ACTUAL, ARCHIVED, ALL;
     }
 }
