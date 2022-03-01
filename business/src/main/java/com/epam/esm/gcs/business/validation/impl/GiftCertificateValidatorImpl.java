@@ -31,7 +31,7 @@ public class GiftCertificateValidatorImpl implements GiftCertificateValidator {
     }
 
     @Override
-    public void validateStateForArchiveAndCreateSuccessor(Long idToArchive) {
+    public void validateStateIsActual(Long idToArchive) {
         GiftCertificateDto giftCertificateToArchiveDto = giftCertificateService.findById(idToArchive);
         GiftCertificateModel giftCertificateToArchive = modelMapper
                 .map(giftCertificateToArchiveDto, GiftCertificateModel.class);

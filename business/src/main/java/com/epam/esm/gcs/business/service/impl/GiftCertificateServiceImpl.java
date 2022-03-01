@@ -71,6 +71,7 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     @Override
     @Transactional
     public void updateCount(Long id, ActionWithCountDto actionDto) {
+        giftCertificateValidator.validateStateIsActual(id);
         if (actionDto.getMode().equals(ActionWithCountDto.Mode.REDUCE)) {
             GiftCertificateDto foundGiftCertificateDto = findById(id);
             GiftCertificateModel foundGiftCertificate = modelMapper
@@ -98,7 +99,7 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
     @Override
     @Transactional
     public GiftCertificateDto archiveAndCreateSuccessor(Long idToArchive, GiftCertificateDto modifications) {
-        giftCertificateValidator.validateStateForArchiveAndCreateSuccessor(idToArchive);
+        giftCertificateValidator.validateStateIsActual(idToArchive);
 
         GiftCertificateModel giftCertificate = modelMapper.map(modifications, GiftCertificateModel.class);
 

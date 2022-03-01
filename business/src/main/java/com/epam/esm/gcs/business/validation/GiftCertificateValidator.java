@@ -6,5 +6,5 @@ public interface GiftCertificateValidator {
 
     void validateCountIsEnough(GiftCertificateModel giftCertificate, Integer requestedCount);
 
-    void validateStateForArchiveAndCreateSuccessor(Long idToArchive);
+    void validateStateIsActual(Long idToArchive);
 }

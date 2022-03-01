@@ -205,7 +205,7 @@ class GiftCertificateServiceImplTest {
 
         giftCertificateService.archiveAndCreateSuccessor(id, modificationsDto);
 
-        verify(giftCertificateValidator, times(1)).validateStateForArchiveAndCreateSuccessor(id);
+        verify(giftCertificateValidator, times(1)).validateStateIsActual(id);
     }
 
     @Test
