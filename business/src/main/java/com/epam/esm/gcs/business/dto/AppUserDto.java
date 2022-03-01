@@ -2,6 +2,8 @@ package com.epam.esm.gcs.business.dto;
 
 import com.epam.esm.gcs.business.dto.group.OnUserOrderCreate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,8 @@ import javax.validation.constraints.Positive;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class AppUserDto extends RepresentationModel<AppUserDto> {
 
     @Positive(message = "{entity.field.not.positive}")
