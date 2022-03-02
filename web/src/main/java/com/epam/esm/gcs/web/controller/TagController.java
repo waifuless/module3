@@ -11,6 +11,7 @@ import com.epam.esm.gcs.web.assembler.PagedRepresentationAssembler;
 import com.epam.esm.gcs.web.assembler.TagRepresentationAssembler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,7 +35,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/tags", produces = MediaTypes.HAL_JSON_VALUE)
 public class TagController {
 
     private static final String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";

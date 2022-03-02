@@ -8,6 +8,7 @@ import com.epam.esm.gcs.business.service.UserOrderService;
 import com.epam.esm.gcs.web.assembler.PagedRepresentationAssembler;
 import com.epam.esm.gcs.web.assembler.UserOrderRepresentationAssembler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,7 +27,7 @@ import javax.validation.constraints.Positive;
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(value = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/orders", produces = MediaTypes.HAL_JSON_VALUE)
 public class UserOrderController {
 
     private static final String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";

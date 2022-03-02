@@ -10,6 +10,7 @@ import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.web.assembler.GiftCertificateRepresentationAssembler;
 import com.epam.esm.gcs.web.assembler.PagedRepresentationAssembler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +31,7 @@ import javax.validation.constraints.Positive;
 
 @RestController
 @Validated
-@RequestMapping(value = "/gift-certificates", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/gift-certificates", produces = MediaTypes.HAL_JSON_VALUE)
 @RequiredArgsConstructor
 public class GiftCertificateController {
 
