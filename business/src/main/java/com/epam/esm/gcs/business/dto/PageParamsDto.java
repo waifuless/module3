@@ -13,6 +13,8 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 public class PageParamsDto {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
     @NotNull(message = "{parameter.is.null}")
     @Positive(message = "{parameter.not.positive}")
     private Integer page;
@@ -20,5 +22,5 @@ public class PageParamsDto {
     @NotNull(message = "{parameter.is.null}")
     @Positive(message = "{parameter.not.positive}")
     @Max(value = 50, message = "{parameter.field.max}")
-    private Integer size;
+    private Integer size = DEFAULT_PAGE_SIZE;
 }
