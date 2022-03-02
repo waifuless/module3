@@ -1,8 +1,10 @@
 package com.epam.esm.gcs.business.converter;
 
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
+import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext.StateForSearchDto;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.StateForSearchModel;
 import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import lombok.Getter;
 import org.modelmapper.AbstractConverter;
@@ -24,6 +26,7 @@ public class GiftCertificateContextDtoConverter
                 .tagNames(source.getTagName())
                 .searchValue(source.getSearchValue())
                 .sortDirectionByFieldNameMap(parseSortListToMap(source.getSortBy()))
+                .state(parseState(source.getState()))
                 .build();
     }
 
@@ -44,6 +47,13 @@ public class GiftCertificateContextDtoConverter
             });
         });
         return sortByParsed;
+    }
+
+    private StateForSearchModel parseState(StateForSearchDto state) {
+        if (state == null) {
+            return StateForSearchModel.ACTUAL;
+        }
+        return StateForSearchModel.valueOf(state.name());
     }
 
     @Getter

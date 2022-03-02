@@ -1,5 +1,8 @@
 package com.epam.esm.gcs.business.service;
 
+/**
+ * Basic interface for Delete operation on service
+ */
 public interface DeleteService {
 
     /**
