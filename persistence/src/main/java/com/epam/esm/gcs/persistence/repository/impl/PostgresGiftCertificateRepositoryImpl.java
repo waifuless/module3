@@ -16,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -46,10 +45,6 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     @Transactional
     public GiftCertificateModel create(GiftCertificateModel giftCertificate) {
         GiftCertificateModel giftCertificateCopy = new GiftCertificateModel(giftCertificate);
-        LocalDateTime creationDateTime = LocalDateTime.now();
-
-        giftCertificateCopy.setCreateDate(creationDateTime);
-        giftCertificateCopy.setLastUpdateDate(creationDateTime);
 
         entityManager.persist(giftCertificateCopy);
         return giftCertificateCopy;
@@ -126,7 +121,6 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
 
         successor.setId(null);
         setNotNullFieldsAvailableForModification(successor, modifications);
-        successor.setLastUpdateDate(LocalDateTime.now());
         successor.setState(ActualityStateModel.ACTUAL);
 
         entityManager.persist(successor);

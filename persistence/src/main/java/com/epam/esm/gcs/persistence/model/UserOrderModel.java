@@ -81,7 +81,6 @@ public class UserOrderModel {
         this.price = price == null ? null : price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    @PrePersist
     @PreUpdate
     @PreRemove
     private void refreshReverseReferencesBeforeAnyAction() {
@@ -89,5 +88,11 @@ public class UserOrderModel {
                 .map(position ->
                         new UserOrderPositionModel(this, position.getGiftCertificate(), position.getCount()))
                 .collect(Collectors.toList());
+    }
+
+    @PrePersist
+    private void setCreateDate() {
+        refreshReverseReferencesBeforeAnyAction();
+        this.createDate = LocalDateTime.now();
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
 
 @Repository
 public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<UserOrderModel>
@@ -27,8 +26,6 @@ public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<User
     @Transactional
     public UserOrderModel create(UserOrderModel userOrder) {
         UserOrderModel userOrderCopy = new UserOrderModel(userOrder);
-
-        userOrderCopy.setCreateDate(LocalDateTime.now());
 
         entityManager.persist(userOrderCopy);
         return userOrderCopy;
