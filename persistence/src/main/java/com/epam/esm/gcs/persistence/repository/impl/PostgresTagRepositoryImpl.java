@@ -4,11 +4,13 @@ import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +40,11 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
                     " GROUP BY tag" +
                     " ORDER BY COUNT(o_position) DESC";
 
+    @PersistenceContext
     private final EntityManager entityManager;
 
-    public PostgresTagRepositoryImpl(EntityManager entityManager) {
-        super(entityManager, TagModel.class);
+    public PostgresTagRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+        super(entityManager, TagModel.class, paginator);
 
         this.entityManager = entityManager;
     }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -30,9 +29,9 @@ public class UserOrderValidatorImpl implements UserOrderValidator {
             GiftCertificateModel giftCertificate = position.getGiftCertificate();
             if (ActualityStateModel.ARCHIVED.equals(giftCertificate.getState())) {
                 Long archivedId = giftCertificate.getId();
-                Optional<Long> optionalActualId = giftCertificateService.findActualId(archivedId);
-                if (optionalActualId.isPresent()) {
-                    archivedToActual.add(Pair.of(archivedId, optionalActualId.get()));
+                if (giftCertificate.getSuccessor() != null) {
+                    giftCertificateService.findActualId(archivedId)
+                            .ifPresent(actualId -> archivedToActual.add(Pair.of(archivedId, actualId)));
                 } else {
                     unavailable.add(archivedId);
                 }

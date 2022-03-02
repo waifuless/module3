@@ -3,7 +3,7 @@ package com.epam.esm.gcs.business.service;
 import com.epam.esm.gcs.business.exception.NotUniquePropertyException;
 
 /**
- * Basic interface for all Services with CRD methods (create, read, delete)
+ * Basic interface for all Services with CR methods (create, read)
  *
  * @param <T> - type of Dto
  */

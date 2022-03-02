@@ -2,6 +2,8 @@ package com.epam.esm.gcs.business.dto;
 
 import com.epam.esm.gcs.business.dto.group.OnUserOrderCreate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,8 @@ import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class UserOrderPositionDto {
 
     @NotNull(groups = OnUserOrderCreate.class, message = "violation.entity.field.null")

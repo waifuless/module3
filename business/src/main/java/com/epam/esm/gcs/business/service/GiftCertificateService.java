@@ -1,10 +1,13 @@
 package com.epam.esm.gcs.business.service;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDtoContext;
-
-import java.util.List;
-import java.util.Optional;
+import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
+import com.epam.esm.gcs.business.exception.EntitiesArchivedException;
+import com.epam.esm.gcs.business.exception.EntityNotFoundException;
+import com.epam.esm.gcs.business.exception.GiftCertificateCountsNotEnoughException;
 
 /**
  * Service interface that contains all methods for interaction with GiftCertificateDto
@@ -14,17 +17,21 @@ public interface GiftCertificateService extends CrService<GiftCertificateDto>, A
     /**
      * Finds giftCertificates that fit the @param context with specified order.
      *
-     * @param context - contains parameters for search giftCertificates with some specified order. Fields that should
-     *                NOT affect the search are null
+     * @param context       - contains parameters for search giftCertificates with some specified order. Fields that should
+     *                      NOT affect the search are null
+     * @param pageParamsDto - parameters for page searching
      * @return List of found giftCertificates with some specified order
      */
-    List<GiftCertificateDto> findAll(GiftCertificateDtoContext context);
+    PageDto<GiftCertificateDto> findPage(GiftCertificateDtoContext context, PageParamsDto pageParamsDto);
 
-    void addCount(Long id, Integer count);
-
-    void reduceCount(Long id, Integer count);
-
-    Optional<Long> findActualId(Long id);
-
-
+    /**
+     * Update count of specified giftCertificate
+     *
+     * @param id     - id of giftCertificate
+     * @param action - action with count
+     * @throws EntitiesArchivedException               - if giftCertificate is archived
+     * @throws EntityNotFoundException                 - if entityToArchive not found
+     * @throws GiftCertificateCountsNotEnoughException - if trying to make giftCertificate.count < 0
+     */
+    void updateCount(Long id, ActionWithCountDto action);
 }
