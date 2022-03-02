@@ -28,5 +28,11 @@ public interface TagRepository extends CrRepository<TagModel>, DeleteRepository 
      */
     Optional<TagModel> findByName(String name);
 
+    /**
+     * Finds most widely used tags of specified users
+     *
+     * @param users - users to search tags
+     * @return - users with their mostly used tags
+     */
     List<UserWithMostlyUsedTagsModel> findMostWidelyUsedTagsOfUsersById(List<AppUserModel> users);
 }

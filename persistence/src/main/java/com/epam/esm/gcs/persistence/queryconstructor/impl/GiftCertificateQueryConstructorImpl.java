@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.persistence.queryconstructor.impl;
 
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.TagModel;
@@ -8,6 +9,7 @@ import com.epam.esm.gcs.persistence.tableproperty.SortDirection;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -15,12 +17,15 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.epam.esm.gcs.persistence.model.GiftCertificateModelContext.StateForSearchModel;
 
 @Component
 public class GiftCertificateQueryConstructorImpl implements GiftCertificateQueryConstructor {
@@ -42,19 +47,7 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
         CriteriaQuery<GiftCertificateModel> criteriaQuery = criteriaBuilder.createQuery(GiftCertificateModel.class);
         Root<GiftCertificateModel> giftCertificateRoot = criteriaQuery.from(GiftCertificateModel.class);
 
-        List<Predicate> predicates = new ArrayList<>();
-
-        if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
-            Join<GiftCertificateModel, TagModel> tagJoin =
-                    giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
-            predicates.add(constructTagNamesPredicate(context.getTagNames(), giftCertificateRoot, tagJoin));
-            criteriaQuery.groupBy(giftCertificateRoot)
-                    .having(criteriaBuilder.equal(criteriaBuilder.count(tagJoin), context.getTagNames().size()));
-        }
-
-        if (context.getSearchValue() != null) {
-            predicates.add(constructSearchValuePredicate(context.getSearchValue(), giftCertificateRoot));
-        }
+        List<Predicate> predicates = constructPredicates(context, criteriaQuery, giftCertificateRoot);
 
         List<Order> ordersList = constructOrdersList(context, giftCertificateRoot);
 
@@ -62,6 +55,60 @@ public class GiftCertificateQueryConstructorImpl implements GiftCertificateQuery
                 .where(predicates.toArray(new Predicate[0]))
                 .orderBy(ordersList);
         return criteriaQuery;
+    }
+
+    @Override
+    public CriteriaQuery<Long> constructCountQueryByContext(GiftCertificateModelContext context) {
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<GiftCertificateModel> giftCertificateRoot = criteriaQuery.from(GiftCertificateModel.class);
+        Subquery<GiftCertificateModel> subquery = criteriaQuery.subquery(GiftCertificateModel.class);
+        Root<GiftCertificateModel> giftCertificateSubqueryRoot = subquery.from(GiftCertificateModel.class);
+
+        List<Predicate> predicates = constructPredicates(context, subquery, giftCertificateSubqueryRoot);
+
+        subquery.select(giftCertificateSubqueryRoot)
+                .where(predicates.toArray(new Predicate[0]));
+
+        criteriaQuery.select(criteriaBuilder.count(giftCertificateRoot))
+                .where(giftCertificateRoot.in(subquery));
+        return criteriaQuery;
+    }
+
+    private List<Predicate> constructPredicates(GiftCertificateModelContext context,
+                                                AbstractQuery<GiftCertificateModel> abstractQuery,
+                                                Root<GiftCertificateModel> giftCertificateRoot) {
+        List<Predicate> predicates = new ArrayList<>();
+        if (context.getTagNames() != null && !context.getTagNames().isEmpty()) {
+            Join<GiftCertificateModel, TagModel> tagJoin =
+                    giftCertificateRoot.join(giftCertificateType.getList("tags", TagModel.class));
+            predicates.add(constructTagNamesPredicate(context.getTagNames(), giftCertificateRoot, tagJoin));
+            abstractQuery.groupBy(giftCertificateRoot)
+                    .having(criteriaBuilder.equal(criteriaBuilder.count(tagJoin), context.getTagNames().size()));
+        }
+
+        if (context.getState() != null && !context.getState().equals(StateForSearchModel.ALL)) {
+            predicates.add(constructStatePredicate(context.getState(), giftCertificateRoot));
+        }
+
+        if (context.getSearchValue() != null) {
+            predicates.add(constructSearchValuePredicate(context.getSearchValue(), giftCertificateRoot));
+        }
+        return predicates;
+    }
+
+    private Predicate constructStatePredicate(StateForSearchModel state,
+                                              Root<GiftCertificateModel> giftCertificateRoot) {
+        ActualityStateModel neededState;
+        if (state.equals(StateForSearchModel.ACTUAL)) {
+            neededState = ActualityStateModel.ACTUAL;
+        } else {
+            neededState = ActualityStateModel.ARCHIVED;
+        }
+        return criteriaBuilder
+                .equal(
+                        giftCertificateRoot.get(
+                                giftCertificateType.getSingularAttribute("state", ActualityStateModel.class)
+                        ), neededState);
     }
 
     private Predicate constructTagNamesPredicate(Set<String> tagNames,

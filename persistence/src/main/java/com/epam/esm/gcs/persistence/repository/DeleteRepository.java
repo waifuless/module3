@@ -1,5 +1,8 @@
 package com.epam.esm.gcs.persistence.repository;
 
+/**
+ * Basic interface for Delete operation on repository
+ */
 public interface DeleteRepository {
 
     /**
