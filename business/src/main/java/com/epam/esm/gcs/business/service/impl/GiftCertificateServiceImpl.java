@@ -11,6 +11,7 @@ import com.epam.esm.gcs.business.service.GiftCertificateService;
 import com.epam.esm.gcs.business.service.TagService;
 import com.epam.esm.gcs.business.validation.GiftCertificateValidator;
 import com.epam.esm.gcs.persistence.model.ActionWithCountModel;
+import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
 import com.epam.esm.gcs.persistence.model.PageModel;
@@ -52,6 +53,7 @@ public class GiftCertificateServiceImpl extends AbstractReadService<GiftCertific
         List<TagModel> tags = giftCertificate.getTags();
         tags = prepareTags(tags);
         giftCertificate.setTags(tags);
+        giftCertificate.setState(ActualityStateModel.ACTUAL);
         GiftCertificateModel createdGiftCertificate = giftCertificateRepository.create(giftCertificate);
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
     }

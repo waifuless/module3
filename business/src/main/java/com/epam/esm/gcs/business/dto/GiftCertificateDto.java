@@ -66,7 +66,7 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime lastUpdateDate;
 
-    @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")
+    @Null(message = "{entity.field.should.be.null}")
     private ActualityStateDto state;
 
     @NotNull(groups = OnGiftCertificateCreate.class, message = "violation.entity.field.null")

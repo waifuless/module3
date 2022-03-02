@@ -274,7 +274,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Neo neon certificate\",\n    \"description\": \"neon\",\n    \"price\": \"280.02\",\n    \"duration\": \"36\",\n    \"state\": \"ACTUAL\",\n    \"count\": \"13\",\n    \"tags\":[\n        {\n            \"name\": \"neon\"\n        },\n        {\n            \"name\": \"bonk\"\n        },\n        {\n            \"name\": \"pank\"\n        }\n    ]\n}",
+              "raw": "{\n    \"name\": \"Neo neon certificate\",\n    \"description\": \"neon\",\n    \"price\": \"280.02\",\n    \"duration\": \"36\",\n    \"count\": \"13\",\n    \"tags\":[\n        {\n            \"name\": \"supernewneon\"\n        },\n        {\n            \"name\": \"bonk\"\n        },\n        {\n            \"name\": \"pank\"\n        }\n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -407,7 +407,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/gift-certificates/20/count",
+              "raw": "http://localhost:8080/gift-certificates/25/count",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -415,7 +415,7 @@
               "port": "8080",
               "path": [
                 "gift-certificates",
-                "20",
+                "25",
                 "count"
               ]
             }
