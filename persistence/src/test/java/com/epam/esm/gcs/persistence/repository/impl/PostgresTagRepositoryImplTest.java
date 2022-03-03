@@ -1,6 +1,8 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
 import com.epam.esm.gcs.persistence.model.AppUserModel;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
@@ -19,6 +21,8 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +46,8 @@ class PostgresTagRepositoryImplTest {
 
     private final TagRepository tagRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     private TagModel spaTag;
@@ -110,20 +116,27 @@ class PostgresTagRepositoryImplTest {
     }
 
     @Test
-    void findAll_returnListOfTagsInDatabase_ifExisted() {
-        List<TagModel> allTags = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
+    void findPage_returnListOfTagsInDatabase_ifExisted() {
+        List<TagModel> expectedContent = List.of(spaTag, relaxTag, gamingTag, lgbtTag);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        Long totalCount = 4L;
+        PageModel<TagModel> expectedPagedModel = new PageModel<>(expectedContent, pageParams, totalCount);
 
-        List<TagModel> readTags = tagRepository.findAll();
-        assertEquals(readTags.size(), allTags.size());
-        assertTrue(readTags.containsAll(allTags));
+        PageModel<TagModel> returnedPageModel = tagRepository.findPage(pageParams);
+        assertEquals(expectedPagedModel.getContent().size(), returnedPageModel.getContent().size());
+        assertTrue(returnedPageModel.getContent().containsAll(expectedPagedModel.getContent()));
+        assertEquals(expectedPagedModel.getPageParams(), returnedPageModel.getPageParams());
+        assertEquals(expectedPagedModel.getTotalCount(), returnedPageModel.getTotalCount());
     }
 
     @Test
-    void findAll_returnEmptyList_ifNoTagsExistInDatabase() {
+    void findPage_returnEmptyList_ifNoTagsExistInDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TAG_TABLE);
+        PageParamsModel pageParams = new PageParamsModel(1, 200);
+        PageModel<TagModel> expectedPagedModel = new PageModel<>(Collections.emptyList(), pageParams, 0L);
 
-        List<TagModel> readTags = tagRepository.findAll();
-        assertEquals(0, readTags.size());
+        PageModel<TagModel> returnedPagedModel = tagRepository.findPage(pageParams);
+        assertEquals(expectedPagedModel, returnedPagedModel);
     }
 
 
@@ -193,14 +206,14 @@ class PostgresTagRepositoryImplTest {
         assertFalse(tagRepository.existsByName("notExistedName123321"));
     }
 
-    @Test
-    void findMostWidelyUsedTagsOfUsersById_shouldReturnValidUserAndTags() {
-        AppUserModel vovaUser = new AppUserModel(1L, "vova@gmail.com", null);
-        UserWithMostlyUsedTagsModel userWithMostlyUsedTagsModel =
-                new UserWithMostlyUsedTagsModel(vovaUser,
-                        List.of(spaTag, lgbtTag));
-        List<UserWithMostlyUsedTagsModel> expectedResult = List.of(userWithMostlyUsedTagsModel);
-
-        assertIterableEquals(expectedResult, tagRepository.findMostWidelyUsedTagsOfUsersById(List.of(vovaUser)));
-    }
+//    @Test
+//    void findMostWidelyUsedTagsOfUsersById_shouldReturnValidUserAndTags() {
+//        AppUserModel vovaUser = new AppUserModel(1L, "vova@gmail.com", null);
+//        UserWithMostlyUsedTagsModel userWithMostlyUsedTagsModel =
+//                new UserWithMostlyUsedTagsModel(vovaUser,
+//                        List.of(spaTag, lgbtTag));
+//        List<UserWithMostlyUsedTagsModel> expectedResult = List.of(userWithMostlyUsedTagsModel);
+//
+//        assertIterableEquals(expectedResult, tagRepository.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount());
+//    }
 }

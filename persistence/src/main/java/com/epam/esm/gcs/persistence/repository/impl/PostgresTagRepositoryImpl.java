@@ -4,11 +4,15 @@ import com.epam.esm.gcs.persistence.model.AppUserModel;
 import com.epam.esm.gcs.persistence.model.TagModel;
 import com.epam.esm.gcs.persistence.model.UserWithMostlyUsedTagsModel;
 import com.epam.esm.gcs.persistence.repository.TagRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,30 +24,49 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
     private static final String EXISTS_BY_NAME_QUERY = "SELECT COUNT(t)>0 FROM TagModel t WHERE t.name=:name";
     private static final String FIND_BY_NAME_QUERY = "SELECT t FROM TagModel t WHERE t.name=:name";
 
-    private static final String FIND_USER_MOST_WIDELY_USED_TAGS =
-            "SELECT tag FROM AppUserModel au " +
-                    " JOIN au.orders u_order" +
-                    " JOIN u_order.positions o_position" +
-                    " JOIN o_position.giftCertificate.tags tag" +
-                    " WHERE au.id=:userId" +
-                    " GROUP BY tag" +
-                    " HAVING COUNT(o_position) =:maxCount";
+    private static final String FIND_MOST_WIDELY_USED_TAG_OF_AND_USERS_WITH_HIGHEST_ORDER_PRICE_AMOUNT =
+            "SELECT found_user_id    as user_id,\n" +
+                    "       found_user_email as user_email,\n" +
+                    "       tag.id           as tag_id,\n" +
+                    "       tag.name         as tag_name\n" +
+                    "FROM tag\n" +
+                    "         JOIN gift_certificate_tag gct on tag.id = gct.tag_id\n" +
+                    "         JOIN user_order_position uop on gct.gift_certificate_id = uop.gift_certificate_id\n" +
+                    "         JOIN user_order uo on uop.user_order_id = uo.id\n" +
+                    "         JOIN (SELECT app_user.id as found_user_id, app_user.email as found_user_email\n" +
+                    "               FROM app_user\n" +
+                    "                        JOIN user_order uo on app_user.id = uo.user_id\n" +
+                    "               GROUP BY app_user.id, app_user.email\n" +
+                    "               HAVING SUM(uo.price) =\n" +
+                    "                      (SELECT MAX(price_sum)\n" +
+                    "                       FROM (SELECT SUM(user_order.price) as price_sum\n" +
+                    "                             FROM app_user\n" +
+                    "                                      JOIN user_order on app_user.id = user_order.user_id\n" +
+                    "                             GROUP BY app_user.id) as price_sum_table))\n" +
+                    "    as found_users on uo.user_id = found_user_id\n" +
+                    "GROUP BY found_user_id, found_user_email, tag.id, tag.name\n" +
+                    "HAVING COUNT(uop.user_order_id) =\n" +
+                    "       (SELECT MAX(usage)\n" +
+                    "        FROM (SELECT COUNT(user_order_position.user_order_id) usage\n" +
+                    "              FROM tag\n" +
+                    "                       JOIN gift_certificate_tag on tag.id = gift_certificate_tag.tag_id\n" +
+                    "                       JOIN user_order_position on gift_certificate_tag.gift_certificate_id =\n" +
+                    "                                                   user_order_position.gift_certificate_id\n" +
+                    "                       JOIN user_order on user_order_position.user_order_id = user_order.id\n" +
+                    "                       JOIN app_user on user_order.user_id = app_user.id\n" +
+                    "              WHERE app_user.id = found_user_id\n" +
+                    "              GROUP BY tag.id, app_user.id) as usage_table)";
 
-    private static final String FIND_USER_TAGS_USAGE_ORDERED_DESC =
-            "SELECT COUNT(o_position) FROM AppUserModel au " +
-                    " JOIN au.orders u_order" +
-                    " JOIN u_order.positions o_position" +
-                    " JOIN o_position.giftCertificate.tags tag" +
-                    " WHERE au.id=:userId" +
-                    " GROUP BY tag" +
-                    " ORDER BY COUNT(o_position) DESC";
-
+    @PersistenceContext
     private final EntityManager entityManager;
 
-    public PostgresTagRepositoryImpl(EntityManager entityManager) {
-        super(entityManager, TagModel.class);
+    private final JdbcTemplate jdbcTemplate;
+
+    public PostgresTagRepositoryImpl(EntityManager entityManager, Paginator paginator, JdbcTemplate jdbcTemplate) {
+        super(entityManager, TagModel.class, paginator);
 
         this.entityManager = entityManager;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -86,27 +109,37 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
     }
 
     @Override
-    public List<UserWithMostlyUsedTagsModel> findMostWidelyUsedTagsOfUsersById(List<AppUserModel> users) {
-        List<UserWithMostlyUsedTagsModel> usersWithMostlyUsedTags = new ArrayList<>();
-        for (AppUserModel user : users) {
-            try {
-                Long maxCount = findMaxUsageCountOfSomeTagByUserId(user.getId());
-                List<TagModel> mostlyUsedTags =
-                        entityManager.createQuery(FIND_USER_MOST_WIDELY_USED_TAGS, TagModel.class)
-                                .setParameter("userId", user.getId())
-                                .setParameter("maxCount", maxCount)
-                                .getResultList();
-                usersWithMostlyUsedTags.add(new UserWithMostlyUsedTagsModel(user, mostlyUsedTags));
-            } catch (NoResultException ignored) {
+    public List<UserWithMostlyUsedTagsModel> findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount() {
+        SqlRowSet sqlRowSet = jdbcTemplate
+                .queryForRowSet(FIND_MOST_WIDELY_USED_TAG_OF_AND_USERS_WITH_HIGHEST_ORDER_PRICE_AMOUNT);
+        List<UserWithMostlyUsedTagsModel> result = new ArrayList<>();
+        if (sqlRowSet.next()) {
+            AppUserModel currentUser = extractUserWithHighestOrderPriceAmount(sqlRowSet);
+            List<TagModel> currentUserTags = new ArrayList<>();
+            TagModel currentTag = extractMostWidelyUsedTag(sqlRowSet);
+            currentUserTags.add(currentTag);
+            while (sqlRowSet.next()) {
+                if (sqlRowSet.getLong("user_id") != currentUser.getId()) {
+                    result.add(new UserWithMostlyUsedTagsModel(currentUser, currentUserTags));
+                    currentUser = extractUserWithHighestOrderPriceAmount(sqlRowSet);
+                    currentUserTags.clear();
+                }
+                currentTag = extractMostWidelyUsedTag(sqlRowSet);
+                currentUserTags.add(currentTag);
             }
+            result.add(new UserWithMostlyUsedTagsModel(currentUser, currentUserTags));
         }
-        return usersWithMostlyUsedTags;
+        return result;
     }
 
-    private Long findMaxUsageCountOfSomeTagByUserId(Long userId) {
-        return entityManager.createQuery(FIND_USER_TAGS_USAGE_ORDERED_DESC, Long.class)
-                .setParameter("userId", userId)
-                .setMaxResults(1)
-                .getSingleResult();
+    private AppUserModel extractUserWithHighestOrderPriceAmount(SqlRowSet sqlRowSet) {
+        return AppUserModel.builder()
+                .id(sqlRowSet.getLong("user_id"))
+                .email(sqlRowSet.getString("user_email"))
+                .build();
+    }
+
+    private TagModel extractMostWidelyUsedTag(SqlRowSet sqlRowSet) {
+        return new TagModel(sqlRowSet.getLong("tag_id"), sqlRowSet.getString("tag_name"));
     }
 }

@@ -1,16 +1,21 @@
 package com.epam.esm.gcs.persistence.repository.impl;
 
+import com.epam.esm.gcs.persistence.model.ActionWithCountModel;
 import com.epam.esm.gcs.persistence.model.ActualityStateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModel;
 import com.epam.esm.gcs.persistence.model.GiftCertificateModelContext;
+import com.epam.esm.gcs.persistence.model.PageModel;
+import com.epam.esm.gcs.persistence.model.PageParamsModel;
 import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstructor;
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
+import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -20,39 +25,62 @@ import java.util.Set;
 public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepository<GiftCertificateModel>
         implements GiftCertificateRepository {
 
+    @PersistenceContext
     private final EntityManager entityManager;
+
     private final GiftCertificateQueryConstructor queryConstructor;
+    private final Paginator paginator;
 
     public PostgresGiftCertificateRepositoryImpl(EntityManager entityManager,
-                                                 GiftCertificateQueryConstructor queryConstructor) {
-        super(entityManager, GiftCertificateModel.class);
+                                                 GiftCertificateQueryConstructor queryConstructor,
+                                                 Paginator paginator) {
+        super(entityManager, GiftCertificateModel.class, paginator);
 
         this.entityManager = entityManager;
         this.queryConstructor = queryConstructor;
+        this.paginator = paginator;
     }
 
     @Override
     @Transactional
     public GiftCertificateModel create(GiftCertificateModel giftCertificate) {
         GiftCertificateModel giftCertificateCopy = new GiftCertificateModel(giftCertificate);
-        LocalDateTime creationDateTime = LocalDateTime.now();
-
-        giftCertificateCopy.setCreateDate(creationDateTime);
-        giftCertificateCopy.setLastUpdateDate(creationDateTime);
 
         entityManager.persist(giftCertificateCopy);
         return giftCertificateCopy;
     }
 
     @Override
-    public List<GiftCertificateModel> findAll(GiftCertificateModelContext context) {
+    public PageModel<GiftCertificateModel> findPage(GiftCertificateModelContext context, PageParamsModel pageParams) {
         CriteriaQuery<GiftCertificateModel> criteriaQuery = queryConstructor.constructFindAllQueryByContext(context);
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        List<GiftCertificateModel> content = entityManager.createQuery(criteriaQuery)
+                .setFirstResult(paginator.findStartPosition(pageParams))
+                .setMaxResults(pageParams.getSize())
+                .getResultList();
+        return new PageModel<>(content, pageParams, count(context));
     }
 
     @Override
-    public void updateCount(Long id, Integer newCount) {
+    public Long count(GiftCertificateModelContext context) {
+        CriteriaQuery<Long> countQuery = queryConstructor.constructCountQueryByContext(context);
+        return entityManager.createQuery(countQuery)
+                .getSingleResult();
+    }
+
+    @Override
+    @Transactional
+    public void updateCount(Long id, ActionWithCountModel action) {
         GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
+        //todo: read more about lock
+        entityManager.lock(giftCertificate, LockModeType.PESSIMISTIC_WRITE);
+        entityManager.refresh(giftCertificate);
+        Integer currentCount = giftCertificate.getCount();
+        int newCount;
+        if (action.getMode().equals(ActionWithCountModel.Mode.ADD)) {
+            newCount = currentCount + action.getCount();
+        } else {
+            newCount = currentCount - action.getCount();
+        }
         giftCertificate.setCount(newCount);
     }
 
@@ -93,7 +121,6 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
 
         successor.setId(null);
         setNotNullFieldsAvailableForModification(successor, modifications);
-        successor.setLastUpdateDate(LocalDateTime.now());
         successor.setState(ActualityStateModel.ACTUAL);
 
         entityManager.persist(successor);

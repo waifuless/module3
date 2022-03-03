@@ -1,5 +1,6 @@
 package com.epam.esm.gcs.business.service.impl;
 
+import com.epam.esm.gcs.business.dto.ActionWithCountDto;
 import com.epam.esm.gcs.business.dto.AppUserDto;
 import com.epam.esm.gcs.business.dto.GiftCertificateDto;
 import com.epam.esm.gcs.business.dto.UserOrderDto;
@@ -23,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.epam.esm.gcs.business.dto.ActionWithCountDto.Mode.REDUCE;
 
 @Service
 public class UserOrderServiceImpl extends AbstractReadService<UserOrderDto, UserOrderModel>
@@ -71,7 +74,8 @@ public class UserOrderServiceImpl extends AbstractReadService<UserOrderDto, User
         for (UserOrderPositionModel position : positions) {
             GiftCertificateModel giftCertificate = position.getGiftCertificate();
             orderPrice = orderPrice.add(giftCertificate.getPrice().multiply(BigDecimal.valueOf(position.getCount())));
-            giftCertificateService.reduceCount(giftCertificate.getId(), position.getCount());
+            ActionWithCountDto action = new ActionWithCountDto(REDUCE, position.getCount());
+            giftCertificateService.updateCount(giftCertificate.getId(), action);
         }
 
         userOrder.setPrice(orderPrice);
