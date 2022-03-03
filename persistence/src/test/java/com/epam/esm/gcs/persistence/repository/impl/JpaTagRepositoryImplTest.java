@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
-class PostgresTagRepositoryImplTest {
+class JpaTagRepositoryImplTest {
 
     private static final String TAG_TABLE = "tag";
 

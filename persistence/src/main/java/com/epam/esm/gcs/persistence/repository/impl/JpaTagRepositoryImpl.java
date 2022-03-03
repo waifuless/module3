@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> implements TagRepository {
+public class JpaTagRepositoryImpl extends AbstractReadRepository<TagModel> implements TagRepository {
 
     private static final String DELETE_QUERY = "DELETE FROM TagModel t WHERE t.id=:id";
     private static final String EXISTS_BY_NAME_QUERY = "SELECT COUNT(t)>0 FROM TagModel t WHERE t.name=:name";
@@ -62,7 +62,7 @@ public class PostgresTagRepositoryImpl extends AbstractReadRepository<TagModel> 
 
     private final JdbcTemplate jdbcTemplate;
 
-    public PostgresTagRepositoryImpl(EntityManager entityManager, Paginator paginator, JdbcTemplate jdbcTemplate) {
+    public JpaTagRepositoryImpl(EntityManager entityManager, Paginator paginator, JdbcTemplate jdbcTemplate) {
         super(entityManager, TagModel.class, paginator);
 
         this.entityManager = entityManager;

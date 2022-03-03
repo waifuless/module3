@@ -10,13 +10,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Repository
-public class PostgresUserOrderRepositoryImpl extends AbstractReadRepository<UserOrderModel>
+public class JpaUserOrderRepositoryImpl extends AbstractReadRepository<UserOrderModel>
         implements UserOrderRepository {
 
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public PostgresUserOrderRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+    public JpaUserOrderRepositoryImpl(EntityManager entityManager, Paginator paginator) {
         super(entityManager, UserOrderModel.class, paginator);
 
         this.entityManager = entityManager;

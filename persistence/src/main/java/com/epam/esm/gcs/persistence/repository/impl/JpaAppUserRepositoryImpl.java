@@ -9,14 +9,11 @@ import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUserModel> implements AppUserRepository {
+public class JpaAppUserRepositoryImpl extends AbstractReadRepository<AppUserModel> implements AppUserRepository {
 
     private static final String FIND_USER_ORDERS =
             "SELECT uo FROM UserOrderModel uo WHERE uo.user.id=:userId";
@@ -28,7 +25,7 @@ public class PostgresAppUserRepositoryImpl extends AbstractReadRepository<AppUse
 
     private final Paginator paginator;
 
-    public PostgresAppUserRepositoryImpl(EntityManager entityManager, Paginator paginator) {
+    public JpaAppUserRepositoryImpl(EntityManager entityManager, Paginator paginator) {
         super(entityManager, AppUserModel.class, paginator);
 
         this.paginator = paginator;

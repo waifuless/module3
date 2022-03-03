@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepository<GiftCertificateModel>
+public class JpaGiftCertificateRepositoryImpl extends AbstractReadRepository<GiftCertificateModel>
         implements GiftCertificateRepository {
 
     @PersistenceContext
@@ -31,9 +31,9 @@ public class PostgresGiftCertificateRepositoryImpl extends AbstractReadRepositor
     private final GiftCertificateQueryConstructor queryConstructor;
     private final Paginator paginator;
 
-    public PostgresGiftCertificateRepositoryImpl(EntityManager entityManager,
-                                                 GiftCertificateQueryConstructor queryConstructor,
-                                                 Paginator paginator) {
+    public JpaGiftCertificateRepositoryImpl(EntityManager entityManager,
+                                            GiftCertificateQueryConstructor queryConstructor,
+                                            Paginator paginator) {
         super(entityManager, GiftCertificateModel.class, paginator);
 
         this.entityManager = entityManager;
