@@ -30,14 +30,6 @@ public class AppUserServiceImpl extends AbstractReadService<AppUserDto, AppUserM
     }
 
     @Override
-    public List<AppUserDto> findUsersWithHighestPriceAmountOfAllOrders() {
-        return appUserRepository.findUsersWithHighestPriceAmountOfAllOrders()
-                .stream()
-                .map(model -> modelMapper.map(model, AppUserDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public PageDto<UserOrderDto> findUserOrders(Long userId, PageParamsDto pageParamsDto) {
         PageParamsModel pageParams = modelMapper.map(pageParamsDto, PageParamsModel.class);
 

@@ -13,13 +13,6 @@ import java.util.List;
 public interface AppUserRepository extends ReadRepository<AppUserModel> {
 
     /**
-     * Finds the highest price amount of all orders and returns users with such
-     *
-     * @return List of users with the highest price amount of all orders
-     */
-    List<AppUserModel> findUsersWithHighestPriceAmountOfAllOrders();
-
-    /**
      * Finds page of orders by specified user
      *
      * @param userId     - id of user to search

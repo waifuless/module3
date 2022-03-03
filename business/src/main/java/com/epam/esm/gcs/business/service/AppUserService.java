@@ -13,13 +13,6 @@ import java.util.List;
 public interface AppUserService extends ReadService<AppUserDto> {
 
     /**
-     * Finds the highest price amount of all orders and returns users with such
-     *
-     * @return List of users with the highest price amount of all orders
-     */
-    List<AppUserDto> findUsersWithHighestPriceAmountOfAllOrders();
-
-    /**
      * Finds page of orders by specified user
      *
      * @param userId        - id of user to search

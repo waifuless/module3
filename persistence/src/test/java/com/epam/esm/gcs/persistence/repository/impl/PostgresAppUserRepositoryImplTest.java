@@ -46,9 +46,4 @@ class PostgresAppUserRepositoryImplTest {
         vovaUser = entityManager.find(AppUserModel.class, 1L);
         tanyaUser = entityManager.find(AppUserModel.class, 2L);
     }
-
-    @Test
-    void findUsersWithHighestPriceAmountOfAllOrders_shouldReturnValidUser() {
-        assertIterableEquals(List.of(vovaUser), appUserRepository.findUsersWithHighestPriceAmountOfAllOrders());
-    }
 }

@@ -35,13 +35,11 @@ class TagServiceImplTest {
     private final TagServiceImpl tagService;
 
     private final TagRepository tagRepository;
-    private final AppUserService appUserService;
 
-    public TagServiceImplTest(@Mock TagRepository tagRepository, @Mock AppUserService appUserService) {
+    public TagServiceImplTest(@Mock TagRepository tagRepository) {
         this.tagService = new TagServiceImpl(tagRepository,
-                new ModelMapperTestConfig().modelMapper(), appUserService);
+                new ModelMapperTestConfig().modelMapper());
         this.tagRepository = tagRepository;
-        this.appUserService = appUserService;
     }
 
     @Test

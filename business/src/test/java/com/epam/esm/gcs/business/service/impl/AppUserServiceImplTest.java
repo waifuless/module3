@@ -31,15 +31,6 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void findUsersWithHighestPriceAmountOfAllOrders_invokesSuchRepositoryMethod() {
-        when(appUserRepository.findUsersWithHighestPriceAmountOfAllOrders()).thenReturn(new ArrayList<>());
-
-        appUserService.findUsersWithHighestPriceAmountOfAllOrders();
-
-        verify(appUserRepository, times(1)).findUsersWithHighestPriceAmountOfAllOrders();
-    }
-
-    @Test
     void findUserOrders_invokeSuchRepositoryMethod() {
         Long userId = 33L;
         Integer page = 1;
