@@ -10,6 +10,8 @@ import com.epam.esm.gcs.persistence.queryconstructor.GiftCertificateQueryConstru
 import com.epam.esm.gcs.persistence.repository.GiftCertificateRepository;
 import com.epam.esm.gcs.persistence.util.Paginator;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -68,7 +70,7 @@ public class JpaGiftCertificateRepositoryImpl extends AbstractReadRepository<Gif
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public void updateCount(Long id, ActionWithCountModel action) {
         GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
         //todo: read more about lock
