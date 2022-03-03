@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -20,9 +22,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @Builder
-public class UserOrderDto {
+public class UserOrderDto extends RepresentationModel<UserOrderDto> {
 
     private static final int DEFAULT_SCALE = 2;
     private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;

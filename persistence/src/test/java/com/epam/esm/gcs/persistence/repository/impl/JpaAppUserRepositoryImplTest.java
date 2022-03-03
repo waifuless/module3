@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 @RequiredArgsConstructor
 @SpringBootTest(classes = TestApplication.class)
 @Transactional
-class PostgresAppUserRepositoryImplTest {
+class JpaAppUserRepositoryImplTest {
 
     private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
     private static final String GIFT_CERTIFICATE_TAG_TABLE_NAME = "gift_certificate_tag";
@@ -33,6 +34,8 @@ class PostgresAppUserRepositoryImplTest {
 
     private final AppUserRepository appUserRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     private AppUserModel vovaUser;
@@ -42,10 +45,5 @@ class PostgresAppUserRepositoryImplTest {
     private void prepareModels() {
         vovaUser = entityManager.find(AppUserModel.class, 1L);
         tanyaUser = entityManager.find(AppUserModel.class, 2L);
-    }
-
-    @Test
-    void findUsersWithHighestPriceAmountOfAllOrders_shouldReturnValidUser() {
-        assertIterableEquals(List.of(vovaUser), appUserRepository.findUsersWithHighestPriceAmountOfAllOrders());
     }
 }

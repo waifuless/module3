@@ -1,10 +1,14 @@
 package com.epam.esm.gcs.business.validation;
 
 import com.epam.esm.gcs.business.exception.EntitiesArchivedException;
+import com.epam.esm.gcs.business.exception.GiftCertificateCountsNotEnoughException;
 import com.epam.esm.gcs.persistence.model.UserOrderPositionModel;
 
 import java.util.List;
 
+/**
+ * Validator for UserOrder
+ */
 public interface UserOrderValidator {
 
     /**
@@ -16,5 +20,12 @@ public interface UserOrderValidator {
      */
     void validateStates(List<UserOrderPositionModel> positions);
 
+    /**
+     * Checks that count of giftCertificates are enough for given UserOrderPositions
+     *
+     * @param positions - validation target
+     * @throws GiftCertificateCountsNotEnoughException - if count of any giftCertificate is not enough for
+     *                                                 UserOrderPosition
+     */
     void validateCountsAreEnough(List<UserOrderPositionModel> positions);
 }

@@ -1,10 +1,18 @@
 package com.epam.esm.gcs.web.controller;
 
+import com.epam.esm.gcs.business.dto.PageDto;
+import com.epam.esm.gcs.business.dto.PageParamsDto;
 import com.epam.esm.gcs.business.dto.TagDto;
 import com.epam.esm.gcs.business.dto.UserWithMostlyUsedTagsDto;
 import com.epam.esm.gcs.business.dto.group.OnTagCreate;
 import com.epam.esm.gcs.business.service.TagService;
+import com.epam.esm.gcs.web.assembler.AppUserRepresentationAssembler;
+import com.epam.esm.gcs.web.assembler.PagedRepresentationAssembler;
+import com.epam.esm.gcs.web.assembler.TagRepresentationAssembler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -21,36 +29,53 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/tags", produces = MediaTypes.HAL_JSON_VALUE)
 public class TagController {
 
     private static final String PATH_VARIABLE_NOT_POSITIVE_MSG = "violation.path.variable.not.positive";
 
     private final TagService tagService;
+    private final TagRepresentationAssembler tagRepresentationAssembler;
+    private final AppUserRepresentationAssembler appUserRepresentationAssembler;
+    private final PagedRepresentationAssembler<TagDto> pagedRepresentationAssembler;
 
     @GetMapping
-    public List<TagDto> findAll() {
-        return tagService.findAll();
+    public PagedModel<TagDto> finalPage(@Valid PageParamsDto pageParams) {
+        PageDto<TagDto> foundTags = tagService.findPage(pageParams);
+        return pagedRepresentationAssembler.toModel(foundTags, tagRepresentationAssembler);
     }
 
     @Validated(OnTagCreate.class)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public TagDto create(@Valid @RequestBody TagDto tag) {
-        return tagService.create(tag);
+        TagDto createdTag = tagService.create(tag);
+        return tagRepresentationAssembler.toModel(createdTag);
     }
 
     @GetMapping("/most-used-of-users-with-highest-orders-price-amount")
-    public List<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
-        return tagService.findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
+    public CollectionModel<UserWithMostlyUsedTagsDto> findMostUsedTagsOfUsersWithHighestOrdersAmount() {
+        List<UserWithMostlyUsedTagsDto> foundUsersWithMostlyUsedTags = tagService
+                .findMostWidelyUsedTagsOfUsersWithHighestOrderPriceAmount();
+        for (UserWithMostlyUsedTagsDto foundUsersWithMostlyUsedTag : foundUsersWithMostlyUsedTags) {
+            appUserRepresentationAssembler.toModel(foundUsersWithMostlyUsedTag.getAppUserModel());
+            foundUsersWithMostlyUsedTag.getMostUsedTags().forEach(tagRepresentationAssembler::toModel);
+        }
+        return CollectionModel.of(foundUsersWithMostlyUsedTags, linkTo(methodOn(TagController.class)
+                .findMostUsedTagsOfUsersWithHighestOrdersAmount())
+                .withSelfRel());
     }
 
     @GetMapping("/{id}")
     public TagDto findById(@PathVariable @Positive(message = PATH_VARIABLE_NOT_POSITIVE_MSG) Long id) {
-        return tagService.findById(id);
+        TagDto foundTag = tagService.findById(id);
+        return tagRepresentationAssembler.toModel(foundTag);
     }
 
     @DeleteMapping("/{id}")

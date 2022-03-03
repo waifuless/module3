@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -97,5 +98,14 @@ public class GiftCertificateModel {
 
     public void setPrice(BigDecimal price) {
         this.price = price == null ? null : price.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    }
+
+    @PrePersist
+    private void setDates() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (createDate == null) {
+            createDate = currentTime;
+        }
+        lastUpdateDate = currentTime;
     }
 }
