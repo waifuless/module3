@@ -72,10 +72,8 @@ public class JpaGiftCertificateRepositoryImpl extends AbstractReadRepository<Gif
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public void updateCount(Long id, ActionWithCountModel action) {
-        GiftCertificateModel giftCertificate = entityManager.find(GiftCertificateModel.class, id);
-        //todo: read more about lock
-        entityManager.lock(giftCertificate, LockModeType.PESSIMISTIC_WRITE);
-        entityManager.refresh(giftCertificate);
+        GiftCertificateModel giftCertificate = entityManager
+                .find(GiftCertificateModel.class, id, LockModeType.PESSIMISTIC_WRITE);
         Integer currentCount = giftCertificate.getCount();
         int newCount;
         if (action.getMode().equals(ActionWithCountModel.Mode.ADD)) {
